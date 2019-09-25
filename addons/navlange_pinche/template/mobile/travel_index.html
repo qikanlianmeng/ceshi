@@ -1,0 +1,665 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=4" />
+<style>
+	body {
+		background-color:#F3F3F3;
+	}
+    .mui-segmented-control.mui-segmented-control-inverted .mui-control-item {
+        border-bottom: 2px white solid;
+        color:grey;
+    }
+    .mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+        border-bottom: 2px {$conf['owner_color']} solid;
+        color:{$conf['owner_color']};
+    }
+    .mui-bar-tab .mui-tab-item.mui-active {
+        color: {$conf['owner_color']};
+    }
+    .mode {
+        height:35px;
+        line-height: 33px;
+        width:50px;
+        margin:0px auto;
+        text-align: center
+    }
+	.mode_active {
+		border-bottom:2px {$conf['owner_color']} solid;
+		color:{$conf['owner_color']}
+	}
+    a:hover {
+        text-decoration: none
+    }
+    .pin {
+        margin:5px;
+        padding:5px 10px;
+        background-color:white;
+    }
+    .travel {
+        margin:5px;
+        padding:5px 10px;
+        background-color:white;
+    }
+    .note_active {
+        background-color:{$conf['owner_color']};
+        border-color:{$conf['owner_color']};
+        color:white
+    }
+</style>
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+<div id="step_1">
+{if $menu_list}
+    <nav class="mui-bar mui-bar-tab">
+        {loop $menu_list $index $item}
+            {if ($item['name_en']=='general_release' AND $general_release_menu['display']=='1') OR $item['name_en'] != 'general_release'}
+                <a class="mui-tab-item{if $item['name_en']=='travel_index'} mui-active{/if}" href="{$item['url']}">
+                {if $item['name_en'] != 'general_release'}
+                    <div style="height:24px;padding-top:2px">
+                        {if $item['icon'] != ''}
+                        <img src="{php if($item['name_en']=='travel_index') echo tomedia($item['icon_active']);else echo tomedia($item['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_pinche/template/style/img/{$item['name_en']}{php if($item['name_en']=='travel_index') echo '_active';}.png'" width="20px" height="20px" />
+                        {else}
+                            <i class="iconfont icon-{$item['icon_name']}"></i>
+                        {/if}
+                    </div>
+                    <div style="height:21px;font-size:12px"><span class="mui-tab-label">{$item['customer_name']}</span></div>
+                {/if}
+                </a>
+            {/if}
+        {/loop}
+    </nav>
+
+    {if $general_release_menu['display'] == '1'}
+    <div style="width:50px;height:65px;position: fixed;bottom:0px;left:50%;margin-left:-25px;z-index: 11">
+        <div style="width:45px;height:45px;line-height: 45px;margin:0px auto;border-radius: 22.5px;background-color: #F7F7F7;text-align:center;color:#929292" onclick="location.href='{php echo $this->createMobileurl('general_release')}'">
+            {if $general_release_menu['icon'] != ''}
+            <img src="{php echo tomedia($release_menu['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_reserve_service/template/style/img/release.png'" width="40px" height="40px" />
+            {else}
+                <i class="iconfont icon-{$general_release_menu['icon_name']}" style="font-size:45px"></i>
+            {/if}
+        </div>
+        <div style="width:50px;height:20px;background-color: #F7F7F7;margin:0px auto;text-align: center;font-size:12px;color:#929292">
+            <span class="mui-tab-label">{$general_release_menu['customer_name']}</span>
+        </div>
+    </div>
+    {/if}
+{/if}
+    <link rel="stylesheet" href="./resource/components/swiper/swiper.min.css">
+    <div class="mui-slider">
+        <div class="mui-slider-group mui-slider-loop">
+            <div class="mui-slider-item">
+                <a href="javascript:void()"><img width="100%" height="auto" src="{php echo tomedia($banner_list[count($banner_list)-1]['img'])}" /></a>
+            </div>
+            {loop $banner_list $index $item}
+            <div class="mui-slider-item">
+                <a href="javascript:void()"><img width="100%" height="auto" src="{php echo tomedia($item['img'])}" /></a>
+            </div>
+            {/loop}
+            <div class="mui-slider-item">
+                <a href="javascript:void()"><img width="100%" height="auto" src="{php echo tomedia($banner_list[0]['img'])}" /></a>
+            </div>
+        </div>
+        <div class="mui-slider-indicator">   
+            {loop $banner_list $index $item}
+                <div class="mui-indicator {if $index==0}mui-active{/if}"></div> 
+            {/loop}
+        </div>  
+    </div>
+    <script>
+    var gallery = mui('.mui-slider');
+    gallery.slider({
+        interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
+    });
+    </script>
+    {if $conf['mode_menu_on'] == '1' && ($conf['pin_mode_on']=='1' OR $conf['fast_mode_on']=='1' OR $conf['charter_mode_on']=='1' OR $conf['cargo_mode_on']=='1' OR $conf['bus_mode_on']=='1')}
+    <div style="margin:0px;background-color: white">
+        <div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="height:40px">
+            <div id="all_item" class="mui-scroll">
+                {if $conf['pin_mode_on'] == '1'}
+                <a class="mui-control-item mui-active" href="javascript:void(0)">
+                    {$conf['pin_mode_name']}
+                </a>
+                {/if}
+                {if $conf['fast_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_fast')}')">
+                    {$conf['fast_mode_name']}
+                </a>
+                {/if}
+                {if $conf['charter_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_charter')}')">
+                    {$conf['charter_mode_name']}
+                </a>
+                {/if}
+                {if $conf['cargo_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_cargo')}')">
+                    {$conf['cargo_mode_name']}
+                </a>
+                {/if}
+                {if $conf['bus_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_bus')}')">
+                    {$conf['bus_mode_name']}
+                </a>
+                {/if}
+            </div>
+        </div>
+        <script>
+            mui('.mui-scroll-wrapper').scroll({
+                deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+            });
+            function jump_out(url) {
+                location.href=url;
+            }
+        </script>
+        {/if}
+    </div>
+    <div id="travel_panel">
+        {if !empty($travel_info)}
+        {loop $travel_info $index $item}
+            <div class="travel">
+                <div style="padding-bottom: 5px">
+                    <div style="width:50px;text-align: center;height:40px">
+                        <img src="{$item['avatar']}" width="40px" height="40px" style="border-radius: 20px" />
+                    </div>
+                    <div style="margin:-40px 40px 0px 50px;">
+                         <div style="white-space: nowrap;text-overflow:ellipsis; overflow:hidden;">
+                            {$item['nickname']}&#12288;<span style="color:grey">{php echo $conf['passenger_info_available_before_pin'] == '1' ? $this->hidtel($item['mobile']) : $item['mobile']}</span>
+                        </div>
+                        <div>
+                            <span class="mui-badge" style="border-radius: 2px;background-color:{$conf['color']};color:white">信用分：{$item['credit_score']}</span>
+                            {if $conf['comment_display_on'] == '1'}
+                            &nbsp;<a href="{php echo $this->createMobileurl('comment_list',array('role'=>'client','uid'=>$item['uid']))}" style="color:{$conf['color']};text-decoration: underline;">评论</a>
+                            {/if}
+                        </div>
+                    </div>
+                    {if $conf['passenger_info_available_before_pin']=='0'}
+                        <div style="width:40px;margin:-40px 0px 0px auto;height:40px;line-height: 40px">
+                            <a href="tel:{$item['mobile']}" style="color:green"><i class="iconfont icon-bohao" style="font-size:30px"></i></a>
+                        </div>
+                    {/if}
+                </div>
+                <div class="container" style="border-top:1px #F3F3F3 solid;padding-bottom:8px;padding-top:5px;font-size:12px">
+                    <div class="row" style="padding:0px">
+                        <div class="col-xs-7" style="padding:0px 0px 0px 10px">
+                            <i class="iconfont icon-yuyue"></i> {php echo date('m月d日 H:i',$item['departure_time'])}
+                        </div>
+                        <div class="col-xs-2" style="padding:0px">
+                                {$item['amount']}人
+                        </div>
+                        <div class="col-xs-3" style="padding:0px;text-align: right">
+                            <span style="font-size:18px">{php echo intval($item['expected_price'])}</span>元
+                        </div>
+                    </div>
+                </div>
+                <div style="min-height: 50px;padding-left: 8px">
+                    <div style="white-space: nowrap;text-overflow:ellipsis; overflow:hidden;">
+                        <span style="color:green"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+                        <span style="position: relative;top:-5px">{php echo $this->rtrim_cn($item['departure_city'],'市')}-{$item['departure_station']}</span>
+                        <span style="font-size: 12px;color:grey;position: relative;top:-5px">{$item['departure_district']}</span>
+                    </div>
+                    <div style="padding-top:5px;white-space: nowrap;text-overflow:ellipsis; overflow:hidden;">
+                        <span style="color:red"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+                        <span style="position: relative;top:-5px">{php echo $this->rtrim_cn($item['terminal_city'],'市')}-{$item['terminal_station']}</span>
+                        <span style="font-size: 12px;color:grey;position: relative;top:-5px">{$item['terminal_district']}</span>
+                    </div>
+                </div>
+                <div style="border-top:1px #F3F3F3 solid">
+                    <div style="width:80px;margin:0px 0px 0px auto;padding-top:8px">
+                        {if $item['status']=='9'}
+                            <i class="iconfont icon-yiguoqi" style="font-size:30px"></i>
+                        {else}
+                            <button class="mui-btn" style="background-color:{$conf['owner_color']};border-color:{$conf['owner_color']};color:white" onclick="accept_travel({$item['id']},'{$item['departure_station']}','{$item['departure_city']}',{$item['lng']},{$item['lat']},'{$item['terminal_station']}','{$item['terminal_city']}',{$item['terminal_lng']},{$item['terminal_lat']},{$item['departure_time']},{$item['amount']},'{$item['note']}',{$item['expected_price']})">邀请同行</button>
+                        {/if}
+                    </div>
+                    {if $item['note']}
+                    <div style="margin:-41px 80px 0px 0px;min-height:41px;padding-top:10px;color:grey">
+                        备注：{$item['note']}
+                    </div>
+                    {/if}
+                </div>
+            </div>
+        {/loop}
+        {else}
+            <div style="margin-top:80px;text-align: center">
+                <i class="iconfont icon-dengdai" style="font-size:50px;color:grey"></i>
+            </div>
+            <div style="text-align: center;padding-top:10px;color:grey">
+                暂无匹配的乘客发布！<a href="{php echo $this->createMobileurl('travel_index')}" style="color:grey;text-decoration: underline;">查看其它</a>
+            </div>
+        {/if}
+    </div>
+    <div style="height:60px"></div>
+</div>
+
+<style>
+.pin_active {
+    border:1px {$conf['owner_color']} solid;
+}
+</style>
+<div id="step_2" style="display: none">
+    <div style="background-color:white">
+        <header class="mui-bar mui-bar-nav">
+            <a class="mui-icon mui-icon-arrowleft" href="javascript:cancel_pin()"></a>
+            <h1 class="mui-title">乘客行程信息</h1>
+        </header>
+        <div style="background-color: white;margin-top:40px">
+            <div class="container" style="padding-top:10px;font-size:12px">
+                <div class="row" style="padding:0px">
+                    <div class="col-xs-7" style="padding:0px 0px 0px 10px">
+                        <i class="iconfont icon-yuyue"></i> <span id="travel_departure_time"></span>
+                    </div>
+                    <div class="col-xs-2" style="padding:0px">
+                        <span id="travel_passenger_amount"></span>人
+                    </div>
+                    <div class="col-xs-3" style="padding:0px;text-align: center">
+                        <span id="travel_expected_price"></span>元
+                    </div>
+                </div>
+            </div>
+            <div style="padding:0px 10px;border-bottom:1px #F3F3F3 solid">
+                <div style="line-height: 40px">
+                    <i class="fa fa-circle-o" style="color: #3BBBA2"></i>
+                    <span id="travel_departure_station"></span>
+                </div>
+                <div style="line-height: 40px">
+                    <i class="fa fa-circle" style="color:#FB8641"></i>
+                    <span id="travel_terminal_station"></span>
+                </div>
+            </div>
+            <div style="padding: 5px 10px">
+                出行要求：<span id="travel_note"></span>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:10px;text-align: center;font-weight: bold;background-color:white;line-height: 30px;border-bottom:1px #F3F3F3 solid">
+        我的行程信息
+    </div>
+    <div id="my_pin_panel">
+        <div style="background-color: white;height:40px;border-bottom:1px #F3F3F3 solid">
+            <div style="width:30px;height:40px;line-height: 40px;color:#3BBBA2;text-align: center">
+                <i class="fa fa-circle-o"></i>
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px 30px">
+                <input id="my_departure_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="出发地" disabled="true" />
+            </div>
+        </div>
+        <div style="background-color: white;height:40px;border-bottom:1px #F3F3F3 solid">
+            <div style="width:30px;height:40px;line-height: 40px;color:#FB8641;text-align: center">
+                <i class="fa fa-circle"></i>
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px 30px">
+                <input id="my_terminal_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="目的地" disabled="true" />
+            </div>
+        </div>
+        <div style="height:40px;background-color: white">
+            <div style="height:40px;line-height: 40px;padding-left: 10px">
+                可拼座位数：
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px auto;width:130px;padding-top:3px">
+                <input id="my_passenger_amount" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" disabled="true" />
+            </div>
+        </div>
+        <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+            <div style="width:60px;height:40px;line-height: 40px;text-align: center">
+                价格：
+            </div>
+            <div style="height:40px;margin:-40px 30px 0px 60px">
+                <input id="my_price" type="number" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="请输入价格" disabled="true" />
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px auto;width:30px;text-align: center;line-height: 40px;color:grey">
+                元
+            </div>
+        </div>
+        <div style="height:50px"></div>
+        <div style="position: fixed;bottom:0px;width:100%;height:40px;text-align: center;line-height: 40px;background-color:{$conf['owner_color']};color:white" onclick="pin_confirm()">
+            确认接单
+        </div>
+    </div>
+    <div id="release_new_pin_panel">
+        <div style="background-color: white;height:40px;border-bottom:1px #F3F3F3 solid">
+            <div style="width:30px;height:40px;line-height: 40px;color:#3BBBA2;text-align: center">
+                <i class="fa fa-circle-o"></i>
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px 30px">
+                <input id="departure_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="出发地" onfocus="blur()" onclick="sel_departure_place()" />
+                <input type="hidden" id="lng" />
+                <input type="hidden" id="lat" />
+            </div>
+        </div>
+        <div style="background-color: white;height:40px;border-bottom:1px #F3F3F3 solid">
+            <div style="width:30px;height:40px;line-height: 40px;color:#FB8641;text-align: center">
+                <i class="fa fa-circle"></i>
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px 30px">
+                {if $conf['pin_terminal_station_mode']=='0'}
+                <input id="terminal_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="目的地" onfocus="blur()" onclick="sel_terminal_place()" />
+                {else if $conf['pin_terminal_station_mode']=='1'}
+                <input id="terminal_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" readonly="true" onfocus="blur()" placeholder="选择目的地" onclick="sel_terminal_station()" />
+                <script>
+                    function sel_terminal_station() {
+                        $("#step_3").hide();
+                        $("#terminal_station_panel").show();
+                    }
+                </script>
+                {/if}
+            </div>
+        </div>
+        <div style="background-color:white;height:50px;border-bottom:1px #F3F3F3 solid">
+            <div style="width:60px;height:50px;line-height: 50px;text-align:center;font-size:16px;color:grey">
+                途径：
+            </div>
+            <div style="margin:-50px 0px 0px 60px;height:50px">
+                <input id="stations" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:50px" placeholder="请输入中途经过的地址，多个地址请用,逗号隔开" />
+            </div>
+        </div>
+        <div style="height:40px;background-color: white">
+            <div style="height:40px;line-height: 40px;padding-left: 10px">
+                可拼座位数：
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px auto;width:130px;padding-top:3px">
+                <div class="mui-numbox" data-numbox-step='1' data-numbox-min='{php echo $max_amount > 0 ? 1 : 0}' data-numbox-max='{$max_amount}'>
+                    <button class="mui-btn mui-numbox-btn-minus" type="button">-</button>
+                    <input id="amount" name="amount" class="mui-numbox-input" value="1" type="number" />
+                    <button class="mui-btn mui-numbox-btn-plus" type="button">+</button>
+                </div>
+            </div>
+        </div>
+        <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+            <div style="width:80px;height:40px;line-height: 40px;padding-left:10px">
+                拼车价格：
+            </div>
+            <div style="height:40px;margin:-40px 60px 0px 80px">
+                <input id="price" type="number" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="请输入价格" />
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px auto;width:60px;text-align: center;line-height: 40px;color:grey">
+                元/位
+            </div>
+        </div>
+        <label style="padding:10px 10px 0px 10px"><i class="iconfont icon-tixing"></i>选择出行服务</label>
+        <div style="background-color:white;padding:10px">
+            {loop $note_template_list $index $item}
+                <button id="note_{$item['id']}" class="mui-btn mui-btn-default" onclick="change_note_status({$item['id']},'{$item['content']}')">{$item['content']}</button>
+            {/loop}
+        </div>
+        <div style="height:50px"></div>
+        <div style="position: fixed;bottom:0px;width:100%;height:40px;text-align: center;line-height: 40px;background-color:{$conf['owner_color']};color:white" onclick="generate_pin_and_accept_travel()">
+            确认接单并发布
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/array.js"></script>
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp"></script>
+<script>
+    var selected_travel = 0;
+    var selected_travel_departure = '';
+    var selected_travel_terminal = '';
+    var selected_travel_amount = 0;
+    var selected_pin = 0;
+    var departure_station = '';
+    var departure_city = '';
+    var terminal_station = '';
+    var terminal_city = '';
+    var selected_notes = new Array();
+
+    Date.prototype.format = function(format) {
+           var date = {
+                  "M+": this.getMonth() + 1,
+                  "d+": this.getDate(),
+                  "h+": this.getHours(),
+                  "m+": this.getMinutes(),
+                  "s+": this.getSeconds(),
+                  "q+": Math.floor((this.getMonth() + 3) / 3),
+                  "S+": this.getMilliseconds()
+           };
+           if (/(y+)/i.test(format)) {
+                  format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+           }
+           for (var k in date) {
+                  if (new RegExp("(" + k + ")").test(format)) {
+                         format = format.replace(RegExp.$1, RegExp.$1.length == 1
+                                ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+                  }
+           }
+           return format;
+    }
+    String.prototype.trim = function (char, type) {
+        if (char) {
+            if (type == 'left') {
+                return this.replace(new RegExp('^\\'+char+'+', 'g'), '');
+            } else if (type == 'right') {
+                return this.replace(new RegExp('\\'+char+'+$', 'g'), '');
+            }
+            return this.replace(new RegExp('^\\'+char+'+|\\'+char+'+$', 'g'), '');
+        }
+        return this.replace(/^\s+|\s+$/g, '');
+    };
+    wx.config(jssdkconfig);
+    var geocoder = new qq.maps.Geocoder({
+        complete:function(result){
+            var addressComponents = result.detail.addressComponents;
+            departure_city = addressComponents.city;
+            departure_station = addressComponents.street;
+            $("#departure_station").val(addressComponents.city.trim('市','right')+'-'+addressComponents.street);
+        }
+    }); 
+
+    function accept_travel(id,departure_station,departure_city,lng,lat,terminal_station,terminal_city,terminal_lng,terminal_lat,departure_time,passenger_amount,note,expected_price) {
+        if('{php echo $owner['status']=='1' ? 1 : 0}' == '0') {
+            var btnArray = ['取消','去认证'];
+            mui.confirm('立即去认证！','',btnArray,function(e){
+                if(e.index == 1) {
+                    location.href="{php echo $this->createMobileurl('owner_info')}";
+                }
+            })
+        } else {
+            selected_travel = id;
+            selected_travel_departure = departure_station;
+            selected_travel_terminal = terminal_station;
+            selected_travel_amount = passenger_amount;
+            refresh_step_2(departure_station,departure_city,lng,lat,terminal_station,terminal_city,terminal_lng,terminal_lat,departure_time,passenger_amount,note,expected_price);
+        }
+    }
+    function refresh_step_2(departure_station,departure_city,lng,lat,terminal_station,terminal_city,terminal_lng,terminal_lat,departure_time,passenger_amount,note,expected_price) {
+        $.post("{php echo $this->createMobileurl('owner_index',array('op'=>'get_owner_pin'))}",function(resp) {
+                resp = $.parseJSON(resp);
+                var pin = resp.message.message;
+                var newDate = new Date();
+                newDate.setTime(departure_time * 1000);
+                $("#travel_departure_time").html(newDate.format('d/M h:m'));
+                $("#travel_passenger_amount").html(passenger_amount);
+                $("#travel_departure_station").html(departure_station);
+                $("#travel_terminal_station").html(terminal_station);
+                $("#travel_expected_price").html(expected_price);
+                $("#travel_note").html(note);
+                if(pin.length == 0) {
+                    $("#amount").val(passenger_amount);
+                    $("#my_pin_panel").hide();
+                    $("#release_new_pin_panel").show();
+                    {if $conf['use_travel_as_pin_by_default_on'] == '0'}
+                        if($("#departure_station").val() == '') {
+                            wx.getLocation({
+                                type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                                success: function (res) {
+                                    $("#lng").val(res.longitude);
+                                    $("#lat").val(res.latitude);
+                                    var coord=new qq.maps.LatLng(res.latitude,res.longitude);
+                                    geocoder.getAddress(coord);
+                                }
+                            });
+                        }
+                    {else}
+                        self.departure_station = departure_station;
+                        self.departure_city = departure_city;
+                        self.terminal_station = terminal_station;
+                        self.terminal_city = terminal_city;
+                        $("#departure_station").val(departure_station);
+                        $("#lng").val(lng);
+                        $("#lat").val(lat);
+                        $("#terminal_station").val(terminal_station);
+                        $("#amount").val(passenger_amount);
+                        $("#price").val(expected_price);
+                    {/if}
+                    $("#step_1").hide();
+                    $("#step_2").show();
+                } else {
+                    if(pin[0].left_amount < passenger_amount) {
+                        mui.alert("您发布的拼车剩余座位数不足以容纳乘客出行人数！");
+                    } else {
+                        $("#my_departure_station").val(pin[0].departure_city.trim('市','right')+'-'+pin[0].departure_station);
+                        $("#my_terminal_station").val(pin[0].terminal_city.trim('市','right')+'-'+pin[0].terminal_station);
+                        $("#my_passenger_amount").val(pin[0].left_amount);
+                        $("#my_price").val(pin[0].price);
+                        selected_pin = pin[0].id;
+                        $("#my_pin_panel").show();
+                        $("#release_new_pin_panel").hide();
+                        $("#step_1").hide();
+                        $("#step_2").show();
+                    }
+                }
+            }
+        );
+    }
+  
+    function cancel_pin() {
+        $("#step_2").hide();
+        $("#step_1").show();
+    }
+    function pin_confirm() {
+        if(selected_pin == 0) {
+            mui.alert("请选择拼车！");
+        } else {
+            $.post("{php echo $this->createMobileurl('accept_travel_pin')}",{
+                    pin_id:selected_pin,
+                    travel_id:selected_travel
+                },function(resp) {
+                    resp = $.parseJSON(resp);
+                    if(resp.message.errno == '0') {
+                        mui.alert("接单成功！",function(){
+                            location.href="{php echo $this->createMobileurl('info')}&id=" + selected_pin;
+                        })
+                    } else if (resp.message.errno == '1') {
+                        alert("拼车已满！");
+                    } else {
+                        alert("拼车失败！");
+                    }
+                }
+            );
+        }
+    }
+    function change_note_status(id,content) {
+        if(in_array(selected_notes,content)) {
+            removeByValue(selected_notes,content);
+            $("#note_"+id).removeClass('note_active');
+        } else {
+            selected_notes.push(content);
+            $("#note_"+id).addClass('note_active');
+        }
+    }
+    mui(".mui-numbox").numbox().setOption('step',1);
+    mui(".mui-numbox").numbox().setOption('min',1);
+    function cancel_pin() {
+        $("#step_2").hide();
+        $("#step_1").show();
+    }
+    function generate_pin_and_accept_travel() {
+        var selected_note_str = '';
+        for(var i=0;i<selected_notes.length; i++) {
+            if(i>0) {
+                selected_note_str += ';';
+            }
+            selected_note_str += selected_notes[i];
+        }
+        if($("#departure_station").val() == '') {
+            mui.alert("请选择出发地！");
+        } else if ($("#terminal_station").val() == '') {
+            mui.alert("请选择目的地！");
+        } else if ($("#amount").val() < selected_travel_amount) {
+            mui.alert("拼车座位不能少于乘客数量！");
+        } else if ($("#price").val() == '') {
+            mui.alert("请输入拼车价格");
+        } else {
+            $.post("{php echo $this->createMobileurl('generate_pin_and_accept_travel')}",{
+                    travel_id:selected_travel,
+                    departure_station:departure_station,
+                    departure_city:departure_city,
+                    terminal_station:terminal_station,
+                    terminal_city:terminal_city,
+                    passenger_count:$("#amount").val(),
+                    price:$("#price").val(),
+                    note:selected_note_str,
+                    stations:$("#stations").val()
+                },
+                function(resp) {
+                    resp = $.parseJSON(resp);
+                    if(resp.message.errno == 0) {
+                        mui.alert("接单成功！",function(){
+                            location.href="{php echo $this->createMobileurl('info')}&id=" + resp.message.message;
+                        })
+                    } else if (resp.message.errno == 1) {
+                        mui.alert("车主不能接自己发布的出行！");
+                    } else if (resp.message.errno == 10) {
+                        location.href="{php echo murl('entry',array('m'=>'navlange_member','do'=>'login'),true,true)}";
+                    }
+                }
+            );
+        }
+    }
+</script>
+
+<iframe id="mapPage" width="100%" height="100%" frameborder=0 
+    src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=7G4BZ-JFT3X-5TQ4M-ZDK7B-AFSP5-NAFV2&referer=myapp" style="display:none">
+</iframe> 
+
+<script type="text/javascript">
+    var cur_place = '0';
+    $(function(){
+        $("#mapPage").attr('width',window.screen.width);
+        $("#mapPage").attr('height',window.screen.height);
+    })
+    window.addEventListener('message', function(event) {
+        // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
+        var loc = event.data;
+        if (loc && loc.module == 'locationPicker') {//防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
+            if(cur_place == '0') {
+                if(loc.poiname != '我的位置') {
+                    departure_city = loc.cityname;
+                    departure_station = loc.poiname;
+                    $("#departure_station").val(loc.cityname.trim('市','right')+'-'+loc.poiname);
+                }
+                $("#lng").val(loc.latlng.lng);
+                $("#lat").val(loc.latlng.lat);
+            } else if (cur_place == '1') {
+                if(loc.poiname != '我的位置') {
+                    terminal_city = loc.cityname;
+                    terminal_station = loc.poiname;
+                    $("#terminal_station").val(loc.cityname.trim('市','right')+'-'+loc.poiname);
+                }
+            }
+            $("#mapPage").hide();
+            $("#step_2").show();
+        }                                
+    }, false); 
+    function sel_departure_place() {
+        cur_place = '0';
+        $("#step_2").hide();
+        $("#mapPage").show();
+    }
+    function sel_terminal_place() {
+        cur_place = '1';
+        $("#step_2").hide();
+        $("#mapPage").show();
+    }
+</script>
+
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;bottom:30px;width:100%;height:30px;line-height:30px;margin-top:-15px;z-index:1000"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>

@@ -1,0 +1,58 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+body {
+    background-color:#F3F3F3;
+}
+a:hover {
+    text-decoration: none
+}
+</style>
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-icon mui-icon-arrowleft mui-pull-left mui-plus-visble" href="javascript:history.go(-1)"></a>
+    <h1 class="mui-title">评论</h1>
+</header>
+<div style="height:50px"></div>
+{if !empty($comment_info)}
+{loop $comment_info $index $item}
+    <div style="background-color:white;padding:5px 10px 10px 10px;{if $index != 0}border-top:1px #F3F3F3 solid{/if}">
+        <div style="width:40px;height:42px;text-align: center;padding-top:6px">
+            <img src="{$item['avatar']}" width="30px" height="30px" style="border-radius: 15px" onerror="this.src='{$_W['siteroot']}addons/navlange_pinche/template/style/img/default_head_img.png'" />
+        </div>
+        <div style="margin:-42px 120px 0px 40px;font-size:12px;height:42px">
+            <div>
+                {if $item['nickname']==''}
+                    车主
+                {else}
+                    {$item['nickname']}
+                {/if}
+            </div>
+            <div style="color:grey">
+                {php echo date('Y-m-d H:i',$item['time'])}
+            </div>
+        </div>
+        <div style="width:120px;margin:-42px 0px 0px auto;height:42px;text-align: right;padding-top:8px">
+            {if $item['comment_level']=='0'}
+                <span class="label label-success" style="font-size:14px;">好评</span>
+            {else if $item['comment_level'] == '1'}
+                <span class="label label-warning" style="font-size:14px;">中评</span>
+            {else if $item['comment_level'] == '2'}
+                <span class="label label-danger" style="font-size:14px;">差评</span>
+            {/if}
+        </div>
+        <div style="margin:0px 0px 0px 30px">
+            <div>
+                {loop $item['content'] $index $c}
+                    <span class="label label-warning">{$c}</span>
+                {/loop}
+            </div>
+            <div style="font-size:12px">
+                留言：{$item['other']}
+            </div>
+        </div>
+    </div>
+{/loop}
+{else}
+    <div style="margin-top:50px;text-align: center;color:grey">暂无评论！</div>
+{/if}

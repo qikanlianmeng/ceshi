@@ -1,0 +1,279 @@
+<?php defined('IN_IA') or exit('Access Denied');?><?php 
+$this->qc_template('header');
+?>
+<ol class="breadcrumb">
+    <li class="active">
+        <?php  if($op == 'recharge') { ?>
+            充值管理
+        <?php  } else if($op == 'withdraw') { ?>
+            提现管理
+        <?php  } else if($op == 'award') { ?>
+            奖励管理
+        <?php  } else if($op == 'award_withdraw') { ?>
+            奖励提现
+        <?php  } ?>
+    </li>
+</ol>
+<?php  if($op == 'recharge') { ?>
+    <div class="panel panel-default">
+        <div class="panel-heading">充值管理</div>
+        <div class="panel-body">
+            <table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+                <thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+                    <tr>
+                        <th style="text-align: center;width:50px">头像</th>
+                        <th style="text-align: center;width:100px">姓名</th>
+                        <th style="text-align: center;width:100px">金额</th>
+                        <th style="text-align: center;width:80px">状态</th>
+                        <th style="text-align: center;width:120px">时间</th>
+                        <th style="text-align: center;width:100px">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php  if(is_array($list)) { foreach($list as $index => $item) { ?>
+                        <tr id="<?php  echo $item['id'];?>">
+                            <td style="text-align: center">
+                                <img src="<?php  echo tomedia($item['avatar'])?>" width="30px" height="30px" style="border-radius: 15px" />
+                            </td>
+                            <td style="text-align: center"><?php echo $item['realname'] ? $item['realname'] : $item['nickname']?></td>
+                            <td style="text-align: center"><?php  echo $item['money'];?></td>
+                            <td style="text-align: center">
+                                <?php  if($item['status']=='1') { ?>
+                                <span class="label label-success">成功</span>
+                                <?php  } else if($item['status']=='0') { ?>
+                                <span class="label label-default">失败</span>
+                                <?php  } ?>
+                            </td>
+                            <td style="text-align: center">
+                                <?php  echo date('Y-m-d H:i',$item['time'])?>
+                            </td>
+                            <td style="text-align: center">
+                                
+                            </td>
+                        </tr>
+                    <?php  } } ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<?php  } else if($op == 'withdraw') { ?>
+    <div class="panel panel-default">
+        <div class="panel-heading">提现管理</div>
+        <div class="panel-body">
+            <table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+                <thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+                    <tr>
+                        <th style="text-align: center;width:50px">头像</th>
+                        <th style="text-align: center;width:100px">姓名</th>
+                        <th style="text-align: center;width:100px">联系电话</th>
+                        <th style="text-align: center;width:100px">金额</th>
+                        <th style="text-align: center;width:80px">状态</th>
+                        <th style="text-align: center;width:120px">时间</th>
+                        <th style="text-align: center;width:100px">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php  if(is_array($list)) { foreach($list as $index => $item) { ?>
+                        <tr id="<?php  echo $item['id'];?>">
+                            <td style="text-align: center">
+                                <img src="<?php  echo tomedia($item['avatar'])?>" width="30px" height="30px" style="border-radius: 15px" />
+                            </td>
+                            <td style="text-align: center"><?php echo $item['realname'] ? $item['realname'] : $item['nickname']?></td>
+                            <td style="text-align: center"><?php  echo $item['mobile'];?></td>
+                            <td style="text-align: center"><?php  echo $item['money'];?></td>
+                            <td style="text-align: center">
+                                <?php  if($item['status']=='1') { ?>
+                                <span class="label label-success">成功</span>
+                                <?php  } else if($item['status']=='0') { ?>
+                                <span class="label label-default">待审核</span>
+                                <?php  } ?>
+                            </td>
+                            <td style="text-align: center">
+                                <?php  echo date('Y-m-d H:i',$item['time'])?>
+                            </td>
+                            <td style="text-align: center">
+                                <?php  if($item['status'] == '0') { ?>
+                                <button class="btn btn-xs btn-primary" onclick="pay(<?php  echo $item['id'];?>)">已支付</button>
+                                <?php  } ?>
+                            </td>
+                        </tr>
+                    <?php  } } ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<script type="text/javascript">
+    function pay(id) {
+        var r = confirm("已支付给车主！");
+        if(r) {
+            $.post("<?php  echo $this->createWeburl('finance',array('op'=>'pay_withdraw'))?>",{
+                    id:id
+                },function(response) {
+                    resp = $.parseJSON(response);
+                    if(resp.message.errno == '0') {
+                        alert("操作成功！");
+                        $("#"+id).children('td').eq(3).html('<span class="label label-success">成功</span>');
+                        $("#"+id).children('td').eq(5).html('');
+                    } else {
+                        alert("操作失败！");
+                    }
+                }
+            );
+        }
+    }
+</script>
+<?php  } else if($op == 'award') { ?>
+<div class="panel panel-default">
+    <div class="panel-heading">奖励</div>
+    <div class="panel-body">
+        <table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+            <thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+                <tr>
+                    <th style="text-align: center;width:200px">获奖者</th>
+                    <th style="text-align: center">描述</th>
+                    <th style="text-align: center;width:120px">奖励金额</th>
+                    <th style="text-align: center;width:150px">时间</th>
+                    <!--th style="text-align: center;width:80px">状态</th-->
+                    <th style="text-align: center;width:120px">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php  if(is_array($list)) { foreach($list as $index => $item) { ?>
+                    <tr id="<?php  echo $item['id'];?>">
+                        <td style="text-align: center">
+                            <img src="<?php  echo $item['avatar'];?>" width="30px" height="30px" style="border-radius: 15px" />
+                            <?php echo $item['realname'] ? $item['realname'] : $item['nickname']?>
+                        </td>
+                        <td style="text-align: center">
+                            <?php  echo $item['description'];?>
+                        </td>
+                        <td style="text-align: center">
+                            <?php  echo $item['money'];?>
+                        </td>
+                        <td style="text-align: center">
+                            <?php  echo date('Y-m-d H:i:s',$item['generate_time'])?>
+                        </td>
+                        <!--td style="text-align: center">
+                            <?php  if($item['status']=='1') { ?>
+                            <span class="label label-success">成功</span>
+                            <?php  } else if($item['status']=='0') { ?>
+                            <span class="label label-default">待审核</span>
+                            <?php  } ?>
+                        </td-->
+                        <td style="text-align: center">
+                            <?php  if($item['status'] == '0') { ?>
+                            <!--button class="btn btn-xs btn-success" onclick="accept(<?php  echo $item['id'];?>)">同意</button-->
+                            <?php  } ?>
+                            <a href="javascript:delete_award_record(<?php  echo $item['id'];?>)"><i class="fa fa-trash" style="color:red"></i></a>
+                        </td>
+                    </tr>
+                <?php  } } ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+function accept(id) {
+    $.post("<?php  echo $this->createWeburl('finance',array('op'=>'accept_award'))?>",{
+            id:id
+        },function(resp) {
+            resp = $.parseJSON(resp);
+            if(resp.message.errno == 0) {
+                tankuang(200,'审核成功！');
+                $("#"+id).children('td').eq(3).html('<span class="label label-success">成功</span>');
+                $("#"+id).children('td').eq(4).children('button').eq(0).hide();
+            }
+        }
+    );
+}
+function delete_award_record(id) {
+    $.post("<?php  echo $this->createWeburl('finance',array('op'=>'delete_award_record'))?>",{
+            id:id
+        },function(resp) {
+            resp = $.parseJSON(resp);
+            if(resp.message.errno == 0) {
+                tankuang(200,'删除成功！');
+                $("#"+id).remove();
+            }
+        }
+    );
+}
+</script>
+<?php  } else if($op == 'award_withdraw') { ?>
+    <div class="panel panel-default">
+        <div class="panel-heading">提现管理</div>
+        <div class="panel-body">
+            <table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+                <thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+                    <tr>
+                        <th style="text-align: center;width:50px">头像</th>
+                        <th style="text-align: center;width:100px">姓名</th>
+                        <th style="text-align: center;width:100px">联系电话</th>
+                        <th style="text-align: center;width:100px">金额</th>
+                        <th style="text-align: center;width:80px">状态</th>
+                        <th style="text-align: center;width:120px">时间</th>
+                        <th style="text-align: center;width:100px">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php  if(is_array($list)) { foreach($list as $index => $item) { ?>
+                        <tr id="<?php  echo $item['id'];?>">
+                            <td style="text-align: center">
+                                <img src="<?php  echo tomedia($item['avatar'])?>" width="30px" height="30px" style="border-radius: 15px" />
+                            </td>
+                            <td style="text-align: center"><?php echo $item['realname'] ? $item['realname'] : $item['nickname']?></td>
+                            <td style="text-align: center"><?php  echo $item['mobile'];?></td>
+                            <td style="text-align: center"><?php  echo $item['money'];?></td>
+                            <td style="text-align: center">
+                                <?php  if($item['status']=='1') { ?>
+                                <span class="label label-success">成功</span>
+                                <?php  } else if($item['status']=='0') { ?>
+                                <span class="label label-default">待审核</span>
+                                <?php  } ?>
+                            </td>
+                            <td style="text-align: center">
+                                <?php  echo date('Y-m-d H:i',$item['time'])?>
+                            </td>
+                            <td style="text-align: center">
+                                <?php  if($item['status'] == '0') { ?>
+                                <button class="btn btn-xs btn-primary" onclick="pay(<?php  echo $item['id'];?>)">已支付</button>
+                                <?php  } ?>
+                            </td>
+                        </tr>
+                    <?php  } } ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<script type="text/javascript">
+    function pay(id) {
+        var r = confirm("已支付给车主！");
+        if(r) {
+            $.post("<?php  echo $this->createWeburl('finance',array('op'=>'pay_award'))?>",{
+                    id:id
+                },function(response) {
+                    resp = $.parseJSON(response);
+                    if(resp.message.errno == '0') {
+                        alert("操作成功！");
+                        $("#"+id).children('td').eq(4).html('<span class="label label-success">成功</span>');
+                        $("#"+id).children('td').eq(6).html('');
+                    } else {
+                        alert("操作失败！");
+                    }
+                }
+            );
+        }
+    }
+</script>
+<?php  } ?>
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;top:50%;width:100%;height:30px;line-height:30px;margin-top:-15px;"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>

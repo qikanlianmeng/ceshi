@@ -1,0 +1,58 @@
+{template 'common/header'}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        分享设置
+    </div>
+    <div class="panel-body">
+        <form class="form-horizontal" role="form" action="" method="POST">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">分享提示</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="info_share_hint" value="{$conf['info_share_hint']}" type="text" placeholder="请输入分享提示语">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">分享页面打开标题</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="info_share_page_title" value="{$conf['info_share_page_title']}" type="text" placeholder="请输入分享标题">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">分享标题</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="info_share_title" value="{$conf['info_share_title']}" type="text" placeholder="请输入分享标题">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">分享描述</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="info_share_desc" value="{$conf['info_share_desc']}" type="text" placeholder="请输入分享描述">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">分享图片</label>
+                <div class="col-sm-10">
+                    {php if($conf['info_share_img'] != '') echo tpl_form_field_image('info_share_img', $conf['info_share_img']); else echo tpl_form_field_image('info_share_img');}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">二维码提示语</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="info_share_qrcode_hint" value="{$conf['info_share_qrcode_hint']}" type="text" placeholder="请输入二维码提示语">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">分享二维码</label>
+                <div class="col-sm-10">
+                    {php if($conf['info_share_qrcode'] != '') echo tpl_form_field_image('info_share_qrcode', $conf['info_share_qrcode']); else echo tpl_form_field_image('info_share_qrcode');}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="submit" class="btn btn-default" name="share_submit" value="设置">
+                    <input type="hidden" name="token" value="{$_W['token']}" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

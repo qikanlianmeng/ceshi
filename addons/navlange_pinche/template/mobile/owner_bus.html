@@ -1,0 +1,528 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=4" />
+<style>
+    body{
+        background-color: {$conf['bg_color']}
+    }
+    .mui-bar-tab .mui-tab-item.mui-active {
+        color: {$conf['owner_color']};
+    }
+    .pin{
+        margin:10px;
+        border-radius:5px;
+        border:1px #EFEFEF solid;
+        background-color: white;
+        padding: 10px 10px 0px 10px;
+    }
+    .traval_info_item{
+        margin:5px;
+        font-size:12px;
+    }
+    .item {
+        margin:0px 10px;
+        border:1px #E0E0E0 solid;
+        padding:8px 5px;
+        font-size:12px;
+    }
+    .item_border_top_0 {
+        border-top:0px;
+    }
+    .item_content {
+        height:20px;
+    }
+    .item_1 {
+        color: grey;
+        border-right:1px #E0E0E0 solid;
+        width:60px;
+        line-height: 20px
+    }
+    .item_2_0 {
+        position: relative;
+        top:-20px;
+        margin-left:60px;
+        margin-right:40px;
+    }
+    .item_2_1 {
+        position: relative;
+        top:-20px;
+        margin-left:60px;
+    }
+    .item_2_2 {
+        position: relative;
+        top:-20px;
+        margin-left:60px;
+        margin-right:50px;
+    }
+    .item_3_0 {
+        position: relative;
+        top:-40px;
+        margin:0px 0px 0px auto;
+        width:40px;
+        text-align: right;
+        margin-right:10px;
+        line-height: 20px
+    }
+    .item_3_1 {
+        position: relative;
+        top:-40px;
+        margin:0px 0px 0px auto;
+        width:50px;
+        line-height: 20px;
+        color:#E0E0E0;
+    }
+    a:hover {
+        text-decoration: none
+    }
+</style>
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+<div id="step_1">
+    <!--header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-person mui-pull-left mui-plus-visble" href="javascript:person()"></a>
+        <a class="mui-pull-right" style="font-size:14px;height:44px;line-height: 44px" href="{php echo $this->createMobileurl('bus')}"><img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon2.png" height="20px" width="auto" />&nbsp;乘客</a>
+        {if $conf['city_on']=='1'}
+        <h1 class="mui-title" style="font-weight: normal"><span class="mui-icon mui-icon-location" style="font-size:16px"></span><span onclick="change_city()">{php echo $this->rtrim_cn($_SESSION['city'],'市');}&nbsp;<i class="fa fa-angle-down"></i></span></h1>
+        {/if}
+    </header>
+    <script>
+    var mask = mui.createMask(function(){
+        $("#travel_release_panel").show();
+        $("#person_panel").hide();
+    });//callback为用户点击蒙版时自动执行的回调；;
+    function person() {
+        $("#travel_release_panel").hide();
+        mask.show();
+        $("#person_panel").show();
+    }
+    </script>
+    <div id="person_panel" style="position: fixed;width:60%;top:0px;height:100%;background-color: white;z-index: 999;display:none">
+        <div style="margin-top:40px;text-align: center">
+            <img src="{$_W['fans']['headimgurl']}" width="50px" height="50px" style="border-radius: 40px;border:2px white solid" />
+        </div>
+        <div style="text-align: center">
+            {$_W['fans']['nickname']}
+        </div>
+        {if $conf['member_on'] == '1' && $member_info['level_id'] > 0}
+            <div style="text-align: center;font-size:12px;color:grey" onclick="location.href='{php echo murl('entry', array('m' => 'navlange_member', 'do' => 'index'), true, true);}'">
+                {$member_info['level']}
+            </div>
+        {/if}
+        <div style="margin-top:40px">
+            <div style="height:40px;margin-left:30px" onclick="location.href='{php echo $this->createMobileurl('bus_order');}'">
+                <div style="width:40px;height:40px;text-align: center;padding-top:9px">
+                    <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/travel.png" height="20px" width="auto" />
+                </div>
+                <div style="margin:-40px 0px 0px 40px;height:40px;line-height: 40px">
+                    行程
+                </div>
+            </div>
+            <div style="height:40px;margin-top:20px;margin-left:30px" onclick="location.href='{php echo $this->createMobileurl('owner');}'">
+                <div style="width:40px;height:40px;text-align: center;padding-top:9px">
+                    <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/person_profile.png" height="20px" width="auto" />
+                </div>
+                <div style="margin:-40px 0px 0px 40px;height:40px;line-height: 40px">
+                    司机中心
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height:44px"></div-->
+{if $menu_list}
+    <nav class="mui-bar mui-bar-tab">
+        {loop $menu_list $index $item}
+            {if ($item['name_en']=='general_release' AND $general_release_menu['display']=='1') OR $item['name_en'] != 'general_release'}
+                <a class="mui-tab-item{if $item['name_en']=='travel_index'} mui-active{/if}" href="{$item['url']}">
+                {if $item['name_en'] != 'general_release'}
+                    <div style="height:24px;padding-top:2px">
+                        {if $item['icon'] != ''}
+                        <img src="{php if($item['name_en']=='travel_index') echo tomedia($item['icon_active']);else echo tomedia($item['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_pinche/template/style/img/{$item['name_en']}{php if($item['name_en']=='travel_index') echo '_active';}.png'" width="20px" height="20px" />
+                        {else}
+                            <i class="iconfont icon-{$item['icon_name']}"></i>
+                        {/if}
+                    </div>
+                    <div style="height:21px;font-size:12px"><span class="mui-tab-label">{$item['customer_name']}</span></div>
+                {/if}
+                </a>
+            {/if}
+        {/loop}
+    </nav>
+
+    {if $general_release_menu['display'] == '1'}
+    <div style="width:50px;height:65px;position: fixed;bottom:0px;left:50%;margin-left:-25px;z-index: 11">
+        <div style="width:45px;height:45px;line-height: 45px;margin:0px auto;border-radius: 22.5px;background-color: #F7F7F7;text-align:center;color:#929292" onclick="location.href='{php echo $this->createMobileurl('general_release')}'">
+            {if $general_release_menu['icon'] != ''}
+            <img src="{php echo tomedia($release_menu['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_reserve_service/template/style/img/release.png'" width="40px" height="40px" />
+            {else}
+                <i class="iconfont icon-{$general_release_menu['icon_name']}" style="font-size:45px"></i>
+            {/if}
+        </div>
+        <div style="width:50px;height:20px;background-color: #F7F7F7;margin:0px auto;text-align: center;font-size:12px;color:#929292">
+            <span class="mui-tab-label">{$general_release_menu['customer_name']}</span>
+        </div>
+    </div>
+    {/if}
+{/if}
+    {if !empty($banner_list)}
+    <link rel="stylesheet" href="./resource/components/swiper/swiper.min.css">
+    <div class="mui-slider">
+        <div class="mui-slider-group mui-slider-loop">
+            <div class="mui-slider-item">
+                <a href="{$banner_list[count($banner_list)-1]['url']}"><img width="100%" height="auto" src="{php echo tomedia($banner_list[count($banner_list)-1]['img'])}" /></a>
+            </div>
+            {loop $banner_list $index $item}
+            <div class="mui-slider-item">
+                <a href="{$item['url']}"><img width="100%" height="auto" src="{php echo tomedia($item['img'])}" /></a>
+            </div>
+            {/loop}
+            <div class="mui-slider-item">
+                <a href="{$banner_list[0]['url']}"><img width="100%" height="auto" src="{php echo tomedia($banner_list[0]['img'])}" /></a>
+            </div>
+        </div>
+        <div class="mui-slider-indicator">   
+            {loop $banner_list $index $item}
+                <div class="mui-indicator {if $index==0}mui-active{/if}"></div> 
+            {/loop}
+        </div>  
+    </div>
+    <script>
+    var gallery = mui('.mui-slider');
+    gallery.slider({
+        interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
+    });
+    </script>
+    {/if}
+    
+    {if $conf['mode_menu_on'] == '1'}
+    <style>
+    .mui-segmented-control.mui-segmented-control-inverted .mui-control-item {
+        border-bottom: 2px white solid;
+        color:grey;
+    }
+    .mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+        border-bottom: 2px {$conf['owner_color']} solid;
+        color:{$conf['owner_color']};
+    }
+    </style>
+    <div style="margin:0px;background-color: white">
+        <div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="height:40px">
+            <div id="all_item" class="mui-scroll">
+                {if $conf['pin_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('travel_index')}')">
+                    {$conf['pin_mode_name']}
+                </a>
+                {/if}
+                {if $conf['fast_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_fast')}')">
+                    {$conf['fast_mode_name']}
+                </a>
+                {/if}
+                {if $conf['charter_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_charter')}')">
+                    {$conf['charter_mode_name']}
+                </a>
+                {/if}
+                {if $conf['cargo_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_cargo')}')">
+                    {$conf['cargo_mode_name']}
+                </a>
+                {/if}
+                {if $conf['bus_mode_on'] == '1'}
+                <a class="mui-control-item mui-active" href="javascript:void(0)">
+                    {$conf['bus_mode_name']}
+                </a>
+                {/if}
+            </div>
+        </div>
+    </div>
+    <script>
+        mui('.mui-scroll-wrapper').scroll({
+            deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+        });
+        function jump_out(url) {
+            location.href=url;
+        }
+    </script>
+    {/if}
+
+    {if count($travel_info) == 0}
+        <div style="width:260px;margin:40px auto">
+            <div style="width:90px;height:80px">
+                <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/empty_order.png" width="80px" height="80px" />
+            </div>
+            <div style="margin:-80px 0px 0px 90px;padding-top:30px">
+                暂无乘客发布出行需求！
+            </div>
+        </div>
+    {else}
+        <div id="all_travel">
+        {loop $travel_info $index $item}
+            <div id="travel_{$item['id']}" class="pin">
+                <div class="traval_info_item">
+                    <div style="width:40px;height:30px;text-align: center">
+                        <img src="{$item['headimgurl']}" onerror="this.src='{$_W['siteroot']}addons/navlange_pinche/template/style/img/default_head_img.png'" width="30px" height="30px" style="border-radius: 15px" />
+                    </div>
+                    <div style="height:30px;line-height: 30px;margin:-30px 120px 0px 40px">
+                        {if $item['nickname']==''}
+                            乘客
+                        {else}
+                            {$item['nickname']}
+                        {/if}
+                    </div>
+                    <div style="height:30px;margin:-30px 0px 0px auto;width:120px;line-height: 30px">
+                        发布：{php echo date('d/m H:i',$item['release_time']);}
+                    </div>
+                </div>
+                <div class="traval_info_item">
+                    线路：{$item['departure_station']}->{$item['terminal_station']}
+                </div>
+                <div class="traval_info_item">
+                    出行时间：
+                    {if $item['fix_departure_time']}
+                    {php echo date('Y-m-d',$item['departure_time'])}
+                    {else}
+                    {php echo date('Y-m-d H:i',$item['departure_time'])}
+                    {/if}
+                </div>
+                <div class="traval_info_item">
+                    联系电话：<a href="tel:{$item['mobile']}">{$item['mobile']}</a>
+                </div>
+                <div style="border-top: 1px #EFEFEF solid"></div>
+                <div style="width:200px;margin:5px auto 0px auto;text-align:center">
+                    <button type="button" class="mui-btn mui-btn-warning mui-btn-block" onclick="accept_travel({$item['id']})" style="background-color: #54BCDE;border:0px">接单</button>
+                </div>
+            </div>
+        {/loop}
+        </div>
+        <script>
+        function accept_travel(id) {
+            $.post("{php echo $this->createMobileurl('owner_bus',array('op'=>'pick_travel'))}",{
+                    id:id
+                },function(resp) {
+                    resp = $.parseJSON(resp);
+                    if(resp.message.errno == 0) {
+                        mui.alert("接单成功！",function(){
+                            location.reload();
+                        });
+                    }
+                }
+            );
+        }
+        </script>
+    {/if}
+</div>
+
+<script>
+    function change_city() {
+        $("#step_1").hide();
+        $("#city_panel").show();
+    }
+</script>
+<style>
+    .city_item {
+        height:40px;
+        line-height: 40px;
+        background-color: white;
+        padding:0px 10px;
+    }
+</style>
+<div id="city_panel" style="background-color: {$conf['bg_color']};display:none">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-left-nav mui-pull-left" href="javascript:cancel_city_select()"></a>
+        <h1 class="mui-title">选择城市</h1>
+    </header>
+    <script type="text/javascript">
+        function cancel_city_select() {
+            $("#city_panel").hide();
+            $("#step_1").show();
+        }
+    </script>
+    <div style="position: fixed;top:0px;right:0px;width:30px;height:100%;text-align: center;background:rgba(0, 0, 0, 0.1)!important;filter:Alpha(opacity=10); background:#000;z-index: 2;padding-top: 100px;color:grey">
+        {loop $all_city $index $item}
+            <div>{$item['alphabetical_index']}</div>
+        {/loop}
+    </div>
+    <div style="height:60px"></div>
+    <div style="height:40px;line-height: 40px;background-color: white;padding:0px 10px">
+        <span style="color:grey">当前城市：</span>
+        <span id="step_2_cur_city">{php echo $this->rtrim_cn($_SESSION['city'],'市');}</span>
+    </div>
+    {loop $all_city $index $item}
+        <div style="height:40px;line-height: 40px;padding:0px 10px;color:grey">{$item['alphabetical_index']}</div>
+        {loop $item['city'] $i $city}
+            <div class="city_item" onclick="sel_city({$city['id']},'{$city['city']}')">
+                {php echo $this->rtrim_cn($city['city'],'市');}
+            </div>
+        {/loop}
+    {/loop}
+</div>
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gCF3WxqfpdvaRxciR9m1Nm7lbgEwXrky"></script>
+<script src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/location_convertor.js"></script>
+<script>
+var center;
+var map;
+var marker;// 创建标注
+{if $owner['lng'] == ''}
+wx.config(jssdkconfig);
+wx.ready(function(){
+    wx.getLocation({
+        type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+        success: function (res) {
+            $("#map_container").css('width',window.screen.width);
+            $("#map_container").css('height',window.screen.height);
+            var cur_latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+            var cur_longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+            $("#lng").val(cur_longitude);
+            $("#lat").val(cur_latitude);
+            var bd_point = gcj02tobd09(cur_longitude,cur_latitude);
+            var gpsPoint = new BMap.Point(bd_point[0], bd_point[1]);
+            get_position(gpsPoint);
+        }
+    });     
+});
+function get_position(point) {
+    center = point;
+    var geoc = new BMap.Geocoder();
+    geoc.getLocation(point, function(rs){
+        var addComp = rs.addressComponents;
+        $("#location").val(addComp.street + addComp.streetNumber);
+    })
+}
+{else}
+center = new BMap.Point({$owner['lng']},{$owner['lat']});
+{/if}
+function sel_location() {
+    $("#step_1").hide();
+    $("#district_panel").show();
+    map = new BMap.Map("map_container");
+    marker = new BMap.Marker(center);// 创建标注
+    map.centerAndZoom(center, 13);
+    map.addOverlay(marker);             // 将标注添加到地图中
+    marker.enableDragging();
+    marker.addEventListener("dragend",function(e){
+        center = new BMap.Point(e.point.lng,e.point.lat);
+        var geoc = new BMap.Geocoder();
+        geoc.getLocation(center, function(rs){
+            var addComp = rs.addressComponents;
+            $("#location").val(addComp.street + addComp.streetNumber);
+            var gcj_point = bd09togcj02(e.point.lng,e.point.lat);
+            $("#lng").val(gcj_point[0]);
+            $("#lat").val(gcj_point[1]);
+        });    
+    })
+}
+function theLocation(){
+    if($("#search_address").val() == "") {
+        alert("请输入要搜索的地名！");
+    } else {  
+        var local = new BMap.LocalSearch(map, {
+            onSearchComplete:function(res) {
+                center = res.getPoi(0).point;
+                var gcj_point = bd09togcj02(center.lng,center.lat);
+                $("#lng").val(gcj_point[0]);
+                $("#lat").val(gcj_point[1]);
+                map.centerAndZoom(res.getPoi(0).point, 13);
+                marker.setPosition(res.getPoi(0).point);
+                var geoc = new BMap.Geocoder();
+                geoc.getLocation(res.getPoi(0).point, function(rs){
+                    var addComp = rs.addressComponents;
+                    $("#location").val(addComp.street + addComp.streetNumber);
+                })
+            }
+        });
+        local.search($("#search_address").val());
+    }
+}
+
+$(function(){
+    var win_height = document.body.clientHeight;
+    $("#city_panel").css('min-height',win_height);
+})
+function sel_city(id,city) {
+    location.href="{php echo $this->createMobileurl('owner_index')}"+"&city="+id;
+}
+String.prototype.trim = function (char, type) {
+    if (char) {
+        if (type == 'left') {
+            return this.replace(new RegExp('^\\'+char+'+', 'g'), '');
+        } else if (type == 'right') {
+            return this.replace(new RegExp('\\'+char+'+$', 'g'), '');
+        }
+        return this.replace(new RegExp('^\\'+char+'+|\\'+char+'+$', 'g'), '');
+    }
+    return this.replace(/^\s+|\s+$/g, '');
+};
+</script>
+
+<div id="district_panel" style="width:100%;height:100%;display:none;z-index: 999;position: fixed;">
+    <div id="map_container" style="position: fixed;width:100%;height:100%;top:0px">
+
+    </div>
+    <div style="position: fixed;top:10px;width:100%;">
+        <div style="margin:0px 10px">
+            <div class="input-group">
+                <input id="search_address" class="form-control" placeholder="请输入地址">
+                <span class="input-group-addon" onclick="theLocation()"><i class="fa fa-search"></i></span>
+            </div>
+        </div>
+    </div>
+    <div style="position: fixed;bottom:0px;width:100%;text-align: center;background:rgba(0, 0, 0, 0.6)!important;filter:Alpha(opacity=60); background:#000;padding:5px;color:white">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-8" style="text-align: left;line-height: 33px">
+                    精确地图标注有助于司机找到您！
+                </div>
+                <div class="col-xs-4" style="text-align: right">
+                    <button class="mui-btn mui-btn-warning" onclick="sel_address_confirm()">选取</button>
+                </div>
+            </div>              
+        </div>
+    </div>
+</div>
+<script>
+    function sel_address_confirm() {
+        $('#district_panel').hide();
+        $("#step_1").show();
+        tankuang(200,'地图标注成功！');
+    }
+</script>
+
+{if $need_check == '1'}
+<div id="mask" style="position: fixed;top:0px;width:100%;height:100%;background:rgba(0, 0, 0, 0.6)!important;filter:Alpha(opacity=60); background:#000;z-index:999;">
+    <div style="margin-top:30%;width:100%;color:white">
+        <div style="text-align: center;font-size:18px">
+            <i class="fa fa-info-circle"></i>&nbsp;尚未认证车主不能发布拼车！
+        </div>
+        <div style="text-align: center;margin-top:20px">
+            <button class="mui-btn mui-btn-outlined" style="border-color:white;color:white;font-size:18px" onclick="location.href='{php echo $this->createMobileurl('bus')}'">返回</button>
+            <button class="mui-btn mui-btn-outlined" style="border-color:white;color:white;font-size:18px" onclick="location.href='{php echo $this->createMobileurl('owner_info')}'">去认证</button>
+        </div>
+    </div>
+</div>
+{else if $conf['release_need_license']=='1'&& $owner['credit_score']<$conf['pin_release_need_credit_score']}
+<div id="mask" style="position: fixed;top:0px;width:100%;height:100%;background:rgba(0, 0, 0, 0.6)!important;filter:Alpha(opacity=60); background:#000;z-index:999;">
+    <div style="margin-top:30%;width:100%;color:white">
+        <div style="text-align: center;font-size:18px">
+            <i class="fa fa-info-circle"></i>&nbsp;当前信誉值低于发布所需最低信誉值，不能发布拼车！
+        </div>
+        <div style="text-align: center;margin-top:20px">
+            <button class="mui-btn mui-btn-outlined" style="border-color:white;color:white;font-size:18px" onclick="location.href='{php echo $this->createMobileurl('index')}'">返回</button>
+        </div>
+    </div>
+</div>
+{/if}
+
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;bottom:30px;width:100%;height:30px;line-height:30px;margin-top:-15px;z-index:1000"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>

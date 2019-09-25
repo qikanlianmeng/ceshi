@@ -1,0 +1,914 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=9" />
+<link rel="stylesheet" href="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.css" />
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.js"></script>
+<script>
+wx.config(jssdkconfig);
+wx.ready(function(){
+    wx.onMenuShareAppMessage({
+        title: '{$conf['info_share_title']}', // 分享标题
+        desc: '{$share_info}', // 分享描述
+        link: '{php echo murl('entry', array('m' => 'navlange_pinche', 'do' => 'share', 'id' => $_GPC['id']), true, true)}', // 分享链接
+        imgUrl: '{php echo tomedia($conf['info_share_img']);}', // 分享图标
+        type: '', // 分享类型,music、video或link，不填默认为link
+        dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+        success: function () { 
+            share_success();
+        },
+        cancel: function () { 
+        }
+    });
+    wx.onMenuShareTimeline({
+        title: '{$conf['info_share_title']}', // 分享标题
+        desc: '{$share_info}', // 分享描述
+        link: '{php echo murl('entry', array('m' => 'navlange_pinche', 'do' => 'share', 'id' => $_GPC['id']), true, true)}', // 分享链接
+        imgUrl: '{php echo tomedia($conf['info_share_img']);}', // 分享图标
+        type: '', // 分享类型,music、video或link，不填默认为link
+        dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+        success: function () { 
+            share_success();
+        },
+        cancel: function () { 
+        }
+    });
+});
+function share_success() {
+	$.post("{php echo $this->createMobileurl('info',array('op'=>'share_success'))}",{
+			id:{$_GPC['id']}
+		},function(resp) {
+			
+		}
+	);
+}
+</script>
+<style>
+body{
+	background-color: #F3F3F3;
+}
+.express{
+	margin:10px;
+	border-radius:5px;
+	border:1px #EFEFEF solid;
+	background-color: white;
+	padding: 10px;
+}
+.address{
+	margin:10px 15px;
+	font-size:80%;
+}
+a:hover {
+	text-decoration: none
+}
+.member_avatar {
+	width:80px;
+	display:inline-block;
+	text-align: center;
+	padding:0px;
+	color:grey;
+}
+.member_avatar .nickname {
+	font-size:12px;
+	text-align:center;
+	color:grey;
+	white-space: nowrap;
+	text-overflow:ellipsis;
+	overflow:hidden;
+}
+.member_avatar_active img {
+	border:2px {$conf['owner_color']} solid;
+}
+.member_avatar_active span {
+	color:{$conf['owner_color']};
+}
+.member_avatar_active .nickname {
+	color:{$conf['owner_color']};
+}
+</style>
+<div id="main_panel">
+	<header class="mui-bar mui-bar-nav">
+	    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+    	<h1 class="mui-title">拼车成员</h1>
+	</header>
+	<div style="height:45px"></div>
+	<div id="{$pin['id']}" class="express">
+			{if $pin['is_fixed']=='1'}
+				<div style="margin-left: 10px;margin-bottom:8px">
+					<span class="label label-danger">固定</span>&#12288;<span>{php echo date('d/m H:i',$pin['fixed_expire'])}</span>
+				</div>
+			{/if}
+			{if $pin['is_stick']=='1'}
+				<div style="margin-left: 10px">
+					<span class="label label-success">置顶</span>&#12288;<span>{php echo date('d/m H:i',$pin['stick_expire'])}</span>
+				</div>
+			{/if}
+			<div style="overflow-x: scroll;">
+				{loop $member $index $item}
+					<div id="avatar_{$item['id']}" class="member_avatar {if $index==0}member_avatar_active{/if}" onclick="sel_member({$item['id']})">
+						<img src="{$item['avatar']}" width="40px" height="40px" style="border-radius: 20px;position: relative;left:10px" />
+						<span style="position: relative;left:0px;top:-10px"><i class="iconfont icon-xuanzhong"></i></span>
+						<div class="nickname">{$item['nickname']}</div>
+					</div>
+				{/loop}
+				{if $pin['left_amount'] > 0 && ($pin['status']=='0' || $pin['status']=='1')}
+					<div class="member_avatar" onclick="location.href='{php echo $this->createMobileurl('travel_index')}&departure_station={$pin['departure_station']}&terminal_station={$pin['terminal_station']}'">
+						<div style="width:80px;height:40px;line-height: 40px">
+							<i class="iconfont icon-jia" style="font-size:40px"></i>
+						</div>
+						<div class="nickname">再拼一个</div>
+					</div>
+				{/if}
+			</div>
+			<div style="border-top:1px #F3F3F3 solid;padding-top:10px">
+				{if !empty($member_info)}
+				<div class="member">
+					<div>
+	                	<div style="width:30px;text-align: center;height:30px;line-height: 30px">
+		                    <i class="iconfont icon-yuyue"></i>
+		                </div>
+		                <div id="departure_time" style="margin:-30px 60px 0px 30px;height:30px;line-height: 30px;width:150px">
+							{php echo date('m/d H:i',$member_info['departure_time'])}
+		                </div>
+		                <div style="margin:-30px 60px 0px 180px;line-height: 30px">
+		                	<span id="amount">{$member_info['amount']}</span>人
+		                </div>
+		                <div style="width:60px;height:30px;margin:-30px 0px 0px auto">
+							<span class="label label-success" style="padding:8px 10px" onclick="open_location()">一键导航</span>
+		                </div>
+	                </div>
+	                <div>
+	                    <span style="color:green"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+	                    <span id="departure_station" style="position: relative;top:-5px">{php echo $this->rtrim_cn($member_info['departure_city'],'市')}-{$member_info['departure_station']}</span>
+	                </div>
+	                <div style="padding-top:5px">
+	                    <span style="color:red"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+	                    <span id="terminal_station" style="position: relative;top:-5px">{php echo $this->rtrim_cn($member_info['terminal_city'],'市')}-{$member_info['terminal_station']}</span>
+	                </div>
+				</div>
+				<div style="border-top:1px #F3F3F3 solid;padding-top:10px">
+					<div style="width:100px;height:30px;line-height: 30px">
+						<span id="member_price" style="font-size: 26px">{$member_info['price']}</span>元
+					</div>
+					<div style="margin:-30px 0px 0px 100px;text-align: right">
+						<button id="op_tel" style="{if $member_info['status']=='0' || $member_info['status'] == '1' || $member_info['status']=='3'}{else}display:none{/if}" class="mui-btn mui-btn-default" onclick="call_member()">联系乘客</button>
+						<button id="op_confirm" style="{if $member_info['status']=='0'}{else}display:none{/if}" class="mui-btn mui-btn-danger" onclick="confirm()">确认</button>
+						<button id="op_receive" style="background-color:{$conf['owner_color']};border-color:{$conf['owner_color']};color:white;{if $member_info['status']=='1' && $member_info['owner_comming_to_departure_station']=='0'}{else}display:none{/if}" class="mui-btn" onclick="go_to_departure_station()">去接乘客</button>
+						<button id="op_arrive_departure" class="mui-btn" style="background-color:{$conf['owner_color']};border-color:{$conf['owner_color']};color:white;{if $member_info['status']=='1' && $member_info['owner_comming_to_departure_station']=='1' && $member_info['owner_arrived_departure_station']=='0'}{else}display:none{/if}" onclick="arrive_departure_station()">达到出发地</button>
+						<button id="op_cancel_member" class="mui-btn" style="background-color:{$conf['owner_color']};border-color:{$conf['owner_color']};color:white;{if $member_info['status']=='1' && $member_info['owner_arrived_departure_station']=='1'}{else}display:none{/if}" onclick="cancel_member()">取消</button>
+						<button id="op_arrive_terminal" class="mui-btn" style="background-color:{$conf['owner_color']};border-color:{$conf['owner_color']};color:white;{if $member_info['status']=='4'}{else}display:none{/if}" onclick="arrive_terminal_station()">到达目的地</button>
+					</div>
+				</div>
+				{else}
+				<div style="text-align: center">
+					<div>
+						<span class="mui-icon mui-icon-info" style="color:#EF9627;font-size: 40px"></span>
+					</div>
+					<div>
+						暂无拼车成员
+					</div>
+				</div>
+				{/if}
+			</div>
+			<div style="height:20px"></div>
+		<div id="cancel_panel" style="padding-top:10px;{if $member_info['status']=='2'}{else}display:none{/if}">
+			<span id="cancel_reason" style="color:red">已取消！原因：{php echo $member_info['cancel_reason'] ? $member_info['cancel_reason'] : $member_info['owner_cancel_reason']}</span>
+		</div>
+		<div id="passenger_comment_panel" style="margin-top:40px;{if $comment}{else}display:none{/if}">
+			<div style="border-top:1px #F3F3F3 solid"></div>
+			<div style="text-align: center;background-color:white;width:100px;height:20px;line-height: 20px;margin-top:-10px;margin-left:auto;margin-right:auto">TA对我的评价</div>
+			<div id="passenger_comment_content">
+				<div>
+					<label>评价：</label>
+					<div style="margin-left:60px;margin-top:-25px">
+						<div class="container" style="font-size:12px">
+							<div class="row">
+								<div class="col-xs-6" style="padding:0px">
+									{if $comment['comment_level']=='0'}
+										<span class="mui-badge mui-badge-success">好评</span>
+									{else if $comment['comment_level']=='1'}
+										<span class="mui-badge mui-badge-warning">中评</span>
+									{else if $comment['comment_level'] == '2'} 
+										<span class="mui-badge mui-badge-danger">差评</span>
+									{/if}
+								</div>
+								<div class="col-xs-6" style="padding:0px;text-align: right">
+									{$comment['time']}
+								</div>
+							</div>
+						</div>
+						<div>
+							{loop $comment['content'] $i $c}
+								<span class="label label-warning">{$c}</span>
+							{/loop}
+						</div>
+						<div style="font-size:12px;margin-top:3px">
+							留言：{$comment['other']}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="my_comment_panel" style="margin-top:50px;{if $my_comment OR $member_info['status']=='6' OR $member_info['status']=='7'}{else}display:none{/if}">
+			<div style="border-top:1px #F3F3F3 solid"></div>
+			<div style="text-align: center;background-color:white;width:100px;height:20px;line-height: 20px;margin-top:-10px;margin-left:auto;margin-right:auto">我对TA的评价</div>
+				<div id="my_comment" style="{if empty($my_comment)}display:none{/if}">
+					<label>评价：</label>
+					<div style="margin-left:60px;margin-top:-25px">
+						<div class="container" style="font-size:12px">
+							<div class="row">
+								<div class="col-xs-6" style="padding:0px">
+									{if $my_comment['comment_level']=='0'}
+										<span class="mui-badge mui-badge-success">好评</span>
+									{else if $my_comment['comment_level']=='1'}
+										<span class="mui-badge mui-badge-warning">中评</span>
+									{else if $my_comment['comment_level'] == '2'} 
+										<span class="mui-badge mui-badge-danger">差评</span>
+									{/if}
+								</div>
+								<div class="col-xs-6" style="padding:0px;text-align: right">
+									{$my_comment['time']}
+								</div>
+							</div>
+						</div>
+						<div>
+							{loop $my_comment['content'] $i $c}
+								<span class="label label-warning">{$c}</span>
+							{/loop}
+						</div>
+						<div style="font-size:12px;margin-top:3px">
+							留言：{$my_comment['other']}
+						</div>
+					</div>
+				</div>
+			<form id="my_comment_content" style="{if !empty($my_comment) OR $pin['status']<>'3'}display:none{/if}">
+				<div>
+				    <div class="mui-input-row mui-radio mui-left" style="width:100px;margin:0px auto 0px 50px;height:44px">
+				        <label style="margin-bottom: 0px;padding-top:15px;padding-left:50px">好评</label>
+				        <input name="comment_level" value="0" type="radio">
+				    </div> 
+				    <div class="mui-input-row mui-radio mui-left" style="width:100px;margin:-44px auto 0px 150px;height:44px">
+				        <label style="margin-bottom: 0px;padding-top:15px;padding-left:50px">中评</label>
+				        <input name="comment_level" value="1" type="radio">
+				    </div> 
+				    <div class="mui-input-row mui-radio mui-left" style="width:100px;margin:-44px auto 0px 250px;height:44px">
+				        <label style="margin-bottom: 0px;padding-top:15px;padding-left:50px">差评</label>
+				        <input name="comment_level" value="2" type="radio">
+				    </div> 
+				</div>
+				<div>
+					{loop $template $index $item}
+						<button id="btn_{$item['id']}" type="button" class="mui-btn mui-btn-warning mui-btn-outlined" style="margin-top:5px" onclick="select_comment({$item['id']})">{$item['content']}</button>
+					{/loop}
+				</div>
+				<div style="padding-top:10px">
+					<label>其它：</label>
+					<input id="comment" name="comment" class="form-control" placeholder="请输入其它评价！">
+				</div>
+					<div style="text-align: right;margin-top:5px">
+						<button class="mui-btn" style="background-color:{$conf['owner_color']};color:white" onclick="submit_comment();return false;">提交</button>
+					</div>
+			</form>
+		</div>
+	</div>
+<script src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/array.js"></script>
+<script>
+	Date.prototype.format = function(format) {
+       var date = {
+              "M+": this.getMonth() + 1,
+              "d+": this.getDate(),
+              "h+": this.getHours(),
+              "m+": this.getMinutes(),
+              "s+": this.getSeconds(),
+              "q+": Math.floor((this.getMonth() + 3) / 3),
+              "S+": this.getMilliseconds()
+       };
+       if (/(y+)/i.test(format)) {
+              format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+       }
+       for (var k in date) {
+              if (new RegExp("(" + k + ")").test(format)) {
+                     format = format.replace(RegExp.$1, RegExp.$1.length == 1
+                            ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+              }
+       }
+       return format;
+	}
+	String.prototype.trim = function (char, type) {
+        if (char) {
+            if (type == 'left') {
+                return this.replace(new RegExp('^\\'+char+'+', 'g'), '');
+            } else if (type == 'right') {
+                return this.replace(new RegExp('\\'+char+'+$', 'g'), '');
+            }
+            return this.replace(new RegExp('^\\'+char+'+|\\'+char+'+$', 'g'), '');
+        }
+        return this.replace(/^\s+|\s+$/g, '');
+    };
+    function runCount(t){
+  		if(t>0){
+            $("#op_cancel_member").css('background-color','#ADADAD');
+            $("#op_cancel_member").css('border-color','#ADADAD');
+    		$("#op_cancel_member").html(t);
+    		t = t-1;
+    		setTimeout(function(){runCount(t);},1000);
+  		}else{
+    		cancel_on = '1';
+    		$("#op_cancel_member").css('background-color',"{$conf['owner_color']}");
+    		$("#op_cancel_member").css('border-color',"{$conf['owner_color']}");
+    		$("#op_cancel_member").html('取消');
+  		}
+	}
+
+	var picker = new mui.PopPicker();
+	picker.setData([{value:'0',text:'联系不到乘客'},{value:'1',text:'突发交通事故'},{value:'2',text:'车辆故障'}]); 
+	var selected_comment = new Array();
+	var selected_member_id = {php echo $member ? $member_info['id'] : 0};
+	var status = '{$member_info['status']}';
+	var owner_comming_to_departure_station = '{$member_info['owner_comming_to_departure_station']}';
+	var owner_arrived_departure_station = '{$member_info['owner_arrived_departure_station']}';
+	var lng = {$member_info['lng']};
+	var lat = {$member_info['lat']};
+	var terminal_lng = {$member_info['terminal_lng']};
+	var terminal_lat = {$member_info['terminal_lat']};
+	var mobile = '{$member_info['mobile']}';
+	var amount = {$member_info['amount']};
+	{if $member_info['status'] == '1' && $member_info['owner_arrived_departure_station'] == '1' && ($member_info['owner_arrived_departure_station_time']+180)<TIMESTAMP}
+	var cancel_on = 1;
+	{else}
+	var cancel_on = 0;
+		{if $member_info['status'] == '1' && $member_info['owner_arrived_departure_station'] == '1' && ($member_info['owner_arrived_departure_station_time']+180)>TIMESTAMP} 
+		runCount({php echo $member_info['owner_arrived_departure_station_time']+180-TIMESTAMP;});
+		{/if}
+	{/if}
+	function sel_member(id) {
+		selected_member_id = id;
+		$("div[id^='avatar_']").removeClass('member_avatar_active');
+		$("#avatar_"+id).addClass('member_avatar_active');
+		$.post("{php echo $this->createMobileurl('info',array('op'=>'get_passenger_info'))}",{
+				id:id
+			},function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					$("#member_price").html(resp.message.message.price);
+					mobile = resp.message.message.mobile;
+					lng = parseFloat(resp.message.message.lng);
+					lat = parseFloat(resp.message.message.lat);
+					terminal_lng = parseFloat(resp.message.message.terminal_lng);
+					terminal_lat = parseFloat(resp.message.message.terminal_lat);
+					owner_arrived_departure_station = resp.message.message.owner_arrived_departure_station;
+					owner_arrived_departure_station_time = parseInt(resp.message.message.owner_arrived_departure_station_time);
+					owner_comming_to_departure_station = resp.message.message.owner_comming_to_departure_station;
+					status = resp.message.message.status;
+					amount = resp.message.message.amount;
+					var d = new Date(resp.message.message.departure_time*1000);
+					$("#departure_time").html(d.format('MM月dd日 hh:mm'));
+					$("#amount").html(amount);
+					$("#departure_station").html(resp.message.message.departure_city.trim('市','right')+"-"+resp.message.message.departure_station);
+					$("#terminal_station").html(resp.message.message.terminal_city.trim('市','right')+"-"+resp.message.message.terminal_station);
+					if(status == '2') {
+						$("#cancel_panel").show();
+						$("#cancel_reason").html('已取消！原因：'+resp.message.message.cancel_reason);
+					} else {
+						$("#cancel_panel").hide();
+					}
+					$("#comment").val('');
+					$("input[name='comment_level']").attr('checked',false);
+					var comment = resp.message.message.comment;
+					if(comment) {
+						$("#passenger_comment_content").html('');
+						var html = '<div>'+
+							'<label>评价：</label>'+
+							'<div style="margin-left:60px;margin-top:-25px">'+
+								'<div class="container" style="font-size:12px">'+
+									'<div class="row">'+
+										'<div class="col-xs-6" style="padding:0px">';
+										if(comment.comment_level == '0') {
+											html += '<span class="mui-badge mui-badge-success">好评</span>';
+										} else if (comment.comment_level == '1') {
+											html += '<span class="mui-badge mui-badge-warning">中评</span>';
+										} else if (comment.comment_level == '2') {
+											html += '<span class="mui-badge mui-badge-danger">差评</span>';
+										}
+								html +=			'</div>'+
+										'<div class="col-xs-6" style="padding:0px;text-align: right">'+
+											comment.time+
+										'</div>'+
+									'</div>'+
+								'</div>'+
+								'<div>';
+								if(comment.content) {
+									for(var j=0; j<comment.content.length; j++) {
+										if(j > 0) {
+											html += '<span class="label label-warning" style="margin-left:5px">'+comment.content[j]+'</span>';
+										} else {
+											html += '<span class="label label-warning">'+comment.content[j]+'</span>';
+										}
+									}
+								}
+							html +=	'</div>'+
+								'<div style="font-size:12px;margin-top:3px">'+
+									'留言：'+comment.other+
+								'</div>'+
+							'</div>'+
+						'</div>';
+						$("#passenger_comment_content").append(html);
+						$("#passenger_comment_panel").show();
+					} else {
+						$("#passenger_comment_panel").hide();
+					}
+					var my_comment = resp.message.message.my_comment;
+					if(status == '6' || status == '7' || my_comment) {
+						$("#my_comment_panel").show();
+					} else {
+						$("#my_comment_panel").hide();
+					}
+					if(my_comment) {
+						$("#my_comment").html('');
+							var html = '<div>'+
+								'<label>评价：</label>'+
+								'<div style="margin-left:60px;margin-top:-25px">'+
+									'<div class="container" style="font-size:12px">'+
+										'<div class="row">'+
+											'<div class="col-xs-6" style="padding:0px">';
+											if(my_comment.comment_level == '0') {
+												html += '<span class="mui-badge mui-badge-success">好评</span>';
+											} else if (my_comment.comment_level == '1') {
+												html += '<span class="mui-badge mui-badge-warning">中评</span>';
+											} else if (my_comment.comment_level == '2') {
+												html += '<span class="mui-badge mui-badge-danger">差评</span>';
+											}
+								html +=			'</div>'+
+											'<div class="col-xs-6" style="padding:0px;text-align: right">'+
+												my_comment.time+
+											'</div>'+
+										'</div>'+
+									'</div>'+
+									'<div>';
+									if(my_comment.content) {
+										for(var j=0; j<my_comment.content.length; j++) {
+											if(j > 0) {
+												html += '<span class="label label-warning" style="margin-left:5px">'+my_comment.content[j]+'</span>';
+											} else {
+												html += '<span class="label label-warning">'+my_comment.content[j]+'</span>';
+											}
+										}
+									}
+								html +=	'</div>'+
+									'<div style="font-size:12px;margin-top:3px">'+
+										'留言：'+my_comment.other+
+									'</div>'+
+								'</div>'+
+							'</div>';
+							$("#my_comment").append(html);
+						$("#my_comment").show();
+						$("#my_comment_content").hide();
+					} else {
+						$("#comment").val('');
+						$("input[name='comment_level']").attr('checked',false);
+						$("#my_comment").hide();
+						$("#my_comment_content").show();
+					}
+					if(status == '0' || status == '1' || status == '3') {
+						$("#op_tel").show();
+					} else {
+						$("#op_tel").hide();
+					}
+					if(status == '0') {
+						$("#op_confirm").show();
+					} else {
+						$("#op_confirm").hide();
+					}
+					if(status == '1' && owner_comming_to_departure_station=='0') {
+						$("#op_receive").show();
+					} else {
+						$("#op_receive").hide();
+					}
+					if(status == '1' && owner_comming_to_departure_station=='1' && owner_arrived_departure_station=='0') {
+						$("#op_arrive_departure").show();
+					} else {
+						$("#op_arrive_departure").hide();
+					}
+					if(status == '1' && owner_arrived_departure_station=='1') {
+						$("#op_cancel_member").show();
+						var cur_time = Date.parse(new Date())/1000;
+						if((owner_arrived_departure_station_time+180)>cur_time) {
+							runCount(owner_arrived_departure_station_time+180-cur_time);
+							cancel_on = '0';
+						} else {
+							cancel_on = '1';
+						}
+					} else {
+						$("#op_cancel_member").hide();
+						cancel_on = '0';
+					}
+					if(status == '4') {
+						$("#op_arrive_terminal").show();
+					} else {
+						$("#op_arrive_terminal").hide();
+					}
+				}
+			}
+		);
+	}
+	function call_member() {
+		window.location.href = "tel:"+mobile;
+	}
+	function open_location() {
+		if(owner_arrived_departure_station=='0') {
+			wx.openLocation({
+				latitude: lat, // 纬度，浮点数，范围为90 ~ -90
+				longitude: lng, // 经度，浮点数，范围为180 ~ -180。
+				name: '', // 位置名
+				address: '', // 地址详情说明
+				scale: 13, // 地图缩放级别,整形值,范围从1~28。默认为最大
+				infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
+			});
+		} else {
+			wx.openLocation({
+				latitude: terminal_lat, // 纬度，浮点数，范围为90 ~ -90
+				longitude: terminal_lng, // 经度，浮点数，范围为180 ~ -180。
+				name: '', // 位置名
+				address: '', // 地址详情说明
+				scale: 13, // 地图缩放级别,整形值,范围从1~28。默认为最大
+				infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
+			});
+		}
+	}
+	function confirm() {
+		$.post("{php echo $this->createMobileurl('info',array('op'=>'confirm'))}",{
+				id:selected_member_id
+			},function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					alert("订单确认成功！");
+					sel_member(selected_member_id);
+				}
+			}
+		);
+	}
+	function go_to_departure_station() {
+		$.post("{php echo $this->createMobileurl('go_to_departure_station')}",{
+				member_id:selected_member_id
+			},function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					tankuang(200,'一路平安！');
+					sel_member(selected_member_id);
+				}
+			}
+		);
+	}
+	function arrive_departure_station() {
+		$.post("{php echo $this->createMobileurl('arrive_departure_station')}",{
+				member_id:selected_member_id
+			},function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					tankuang(200,'已到达乘客所在出发地！');
+					sel_member(selected_member_id);
+				}
+			}
+		);
+	}
+	function arrive_terminal_station() {
+		$.post("{php echo $this->createMobileurl('owner_arrive_terminal_station_pin')}",{
+				member_id:selected_member_id
+			},function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					tankuang(200,'已到达目的地！');
+					sel_member(selected_member_id);
+				}
+			}
+		);
+	}
+	function cancel_member() {
+		if(cancel_on == '1') {
+			picker.show(function (selectItems) {
+			    wx.getLocation({
+		            type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+		            success: function (res) {
+		                $.post("{php echo $this->createMobileurl('cancel_member_by_owner')}",{
+		                      	member_id:selected_member_id,
+		                        lng:res.longitude,
+		                        lat:res.latitude,
+		                        cancel_reason:selectItems[0].text
+		                    },function(resp){
+		                        resp = $.parseJSON(resp);
+		                        if(resp.message.errno == 0) {
+		                        	mui.alert("取消成功！",function(){
+		                        		sel_member(selected_member_id);
+		                        	})
+		                        } else {
+		                        	mui.alert("取消失败！");
+		                        }
+		                    }
+		                );
+		            }
+		        });
+			})
+		}
+	}
+	function select_comment(template_id) {
+		if(!in_array(selected_comment,template_id)) {
+			selected_comment.push(template_id);
+			$("#btn_"+template_id).removeClass('mui-btn-outlined');
+		} else {
+			removeByValue(selected_comment,template_id);
+			$("#btn_"+template_id).addClass('mui-btn-outlined');
+		}
+	}
+	function submit_comment() {
+		if($("input[name='comment_level']:checked").val()==null) {
+			alert("请选择好、中、差评！");
+		} else if(selected_comment.length == 0 && $("#comment").val() == "") {
+			alert("请选择或者输入评论！");
+		} else {
+			$.post("{php echo $this->createMobileurl('info',array('op'=>'comment'))}",{
+					pin_id:{$_GPC['id']},
+					member_id:selected_member_id,
+					template:selected_comment,
+					other:$("#comment").val(),
+					comment_level:$("input[name='comment_level']:checked").val()
+				},function(resp) {
+					resp = $.parseJSON(resp);
+					if(resp.message.errno == '0') {
+						mui.alert("感谢您的评价！",function(){
+							sel_member(selected_member_id);
+						})
+					}
+				}
+			);
+		}
+	}
+</script>
+{if $is_owner == '1' && $pin['status'] == '0'}
+	<div style="margin:10px;padding:0px 10px">
+		{if $pin['type']!='1'}
+		<button class="mui-btn mui-btn-block" style="background-color:{$conf['owner_color']};color:white;border:0px;margin-bottom:20px" onclick="depart({$pin['id']})">出发</button>
+		{/if}
+		{if $conf['pin_fixed_on']=='1'}
+			<span style="font-size:12px;color:grey;text-align: right">显示在顶置上方，可固定24、36、48小时！</span>
+			<button class="mui-btn mui-btn-block" style="background-color:red;color:white;border:0px" onclick="fixed()">申请固定</button>
+		{/if}
+		{if $conf['pin_stick_on']=='1'}
+			<span style="font-size:12px;color:grey;text-align: right">在其Ta车主最上方显示1-2-3小时，最多5小时！</span>
+			<button class="mui-btn mui-btn-block" style="background-color:green;color:white;border:0px" onclick="stick()">申请置顶</button>
+		{/if}
+	</div>
+	<script type="text/javascript">
+		function depart(id) {
+			$.post("{php echo $this->createMobileurl('info',array('op'=>'depart'))}",{
+					id:id
+				},function(resp) {
+					resp = $.parseJSON(resp);
+					if(resp.message.errno == 0) {
+						alert("车辆已出发，请谨慎驾驶！");
+						location.reload();
+					} else {
+						alert("出行失败！");
+					}
+				}
+			);
+		}
+		{if $conf['pin_fixed_on']=='1'}
+			function fixed() {
+				$("#main_panel").hide();
+				$("#fixed_panel").show();
+			}
+		{/if}
+		{if $conf['pin_stick_on']=='1'}
+			function stick() {
+				$("#main_panel").hide();
+				$("#stick_panel").show();
+			}
+		{/if}
+	</script>
+{/if}
+
+	<div style="margin:20px 10px 20px 10px">
+	    <button type="button" class="mui-btn mui-btn-success mui-btn-block" onclick="share()">分享给好友</button>
+	</div>
+	<script>
+	function share() {
+	    $("#share_panel").show();
+	}
+	</script>
+	<div id="share_panel" style="position: absolute;top:0px;width:100%;height:100%;display:none;background:rgba(0, 0, 0, 0.6)!important;filter:Alpha(opacity=60); background:#000">
+	    <div style="text-align: right;">
+	        <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/share_arrow.png" />
+	    </div>
+	    <div style="text-align: center;color:white;margin:15px">
+	        {$conf['info_share_hint']}
+	    </div>
+	    <div style="text-align: center">
+	        <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/share_btn.png" onclick="cancel_share()" />
+	    </div>
+	</div>
+	<script>
+	function cancel_share() {
+	    $("#share_panel").hide();
+	}
+	</script>
+</div>
+{if $is_owner == '1' && $pin['status']=='1'}
+<div id="terminal_panel" style="position: absolute;top:0px;width:100%;height:100%;display:none;background:rgba(0, 0, 0, 0.6)!important;filter:Alpha(opacity=60); background:#000">
+   <div style="width:200px;margin:200px auto 0px auto;background-color: white;border-radius: 5px">
+		<div class="mui-input-row">
+	        <label>费用</label>
+	    	<input id="price" type="text" class="mui-input-clear" placeholder="请输入出行费用">
+	    </div>
+	    <div style="border-top:1px #F3F3F3 solid;padding:10px 10px 5px 10px">
+			<button class="mui-btn mui-btn-block" style="background-color: {$conf['owner_color']};border-color:{$conf['owner_color']};color:white" onclick="confirm_arrival()">确认到达</button>
+	    </div>
+   </div>
+</div>
+<script>
+function confirm_arrival() {
+	if($("#price").val() == '') {
+		alert("请输入此次用户出行费用！");
+		$("#price").focus();
+	} else {
+		$.post("{php echo $this->createMobileurl('info',array('op'=>'confirm_arrival'))}",{
+				id:{$pin['id']},
+				price:$("#price").val()
+			},function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					alert("车辆已到达目的地！");
+					location.reload();
+				} else {
+					alert("提交失败！");
+				}
+			}
+		);
+	}
+}
+</script>
+{/if}
+
+{if $is_owner == '1' && $pin['status'] == '0' && ($conf['pin_fixed_on']=='1' || $conf['pin_stick_on']=='1')}
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_cwash/template/style/radio/iconfont.css">
+<style>
+    .package {
+        margin:5px 20px;
+        padding:5px;
+        background-color: white;
+        border:1px #a8a8a8 solid;
+        border-radius:5px;
+        color:#a8a8a8;
+    }
+    .package_active {
+        border:1px {$conf['owner_color']} solid;
+        color:{$conf['owner_color']};
+    }
+</style>
+{/if}
+{if $is_owner == '1' && $pin['status'] == '0' && $conf['pin_fixed_on']=='1'}
+<div id="fixed_panel" style="display:none">
+	<header class="mui-bar mui-bar-nav">
+	    <a class="mui-icon mui-icon-arrowleft mui-pull-left mui-plus-visble" href="javascript:cancel_fixed()"></a>
+	    <!--a class="mui-icon mui-icon-phone mui-pull-right"></a-->
+	    <h1 class="mui-title">固定套餐</h1>
+	</header>
+	<div style="height:44px"></div>
+	<div style="margin-top:20px">
+		{loop $fixed_package $index $item}
+			<div id="package_{$item['id']}" class="package" onclick="sel_fixed_package({$item['id']})">
+		        <div style="width:40px;height:50px;text-align: center;line-height: 50px">
+		            <i id="basic_service_{$item['id']}" class="iconfont icon-radio" style='font-size:24px'></i>
+		        </div>
+		        <div style="margin:-50px 0px 0px 50px;min-height: 50px;line-height: 50px;font-size:22px">
+		        	<div class="container">
+						<div class="row">
+							<div class="col-xs-6">
+		            			{$item['period']}小时
+							</div>
+							<div class="col-xs-6" style="text-align: right">
+								<i class="fa fa-cny"></i>{$item['price']}
+							</div>
+						</div>
+		        	</div>
+		        </div>
+		    </div>
+		{/loop}
+	</div>
+	<div style="margin:20px 10px 0px 10px;padding:0px 10px">
+		<button class="mui-btn mui-btn-block" style="background-color: {$conf['owner_color']};border-color:{$conf['owner_color']};color:white" onclick="buy_fixed()">确认购买</button>
+	</div>
+</div>
+<script>
+var selected_fixed_package = 0;
+function sel_fixed_package(id) {
+    if(selected_fixed_package != id) {
+        selected_fixed_package = id;
+        $("div[id^='package_']").removeClass('package_active');
+        $("#package_"+id).addClass('package_active');
+    }
+}
+function buy_fixed() {
+	if(selected_fixed_package == 0) {
+		alert("请选择购买套餐！");
+	} else {
+		$.post("{php echo $this->createMobileurl('info',array('op'=>'fixed_confirm'))}",{
+				pin_id:{$_GPC['id']},
+				fixed_package:selected_fixed_package
+			},function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == '0') {
+					alert("购买成功！");
+					location.reload();
+				} else if (resp.message.errno == '1') {
+					alert("购买失败！");
+				}
+			}
+		);
+	}
+}
+function cancel_fixed() {
+	$("#main_panel").show();
+	$("#fixed_panel").hide();
+}
+</script>
+{/if}
+
+{if $is_owner == '1' && $pin['status'] == '0' && $conf['pin_stick_on']=='1'}
+<div id="stick_panel" style="display:none">
+	<header class="mui-bar mui-bar-nav">
+	    <a class="mui-icon mui-icon-arrowleft mui-pull-left mui-plus-visble" href="javascript:cancel_stick()"></a>
+	    <!--a class="mui-icon mui-icon-phone mui-pull-right"></a-->
+	    <h1 class="mui-title">固定套餐</h1>
+	</header>
+	<div style="height:44px"></div>
+	<div style="margin-top:20px">
+		{loop $stick_package $index $item}
+			<div id="package_{$item['id']}" class="package" onclick="sel_stick_package({$item['id']})">
+		        <div style="width:40px;height:50px;text-align: center;line-height: 50px">
+		            <i id="basic_service_{$item['id']}" class="iconfont icon-radio" style='font-size:24px'></i>
+		        </div>
+		        <div style="margin:-50px 0px 0px 50px;min-height: 50px;line-height: 50px;font-size:22px">
+		        	<div class="container">
+						<div class="row">
+							<div class="col-xs-6">
+		            			{$item['period']}小时
+							</div>
+							<div class="col-xs-6" style="text-align: right">
+								<i class="fa fa-cny"></i>{$item['price']}
+							</div>
+						</div>
+		        	</div>
+		        </div>
+		    </div>
+		{/loop}
+	</div>
+	<div style="margin:20px 10px 0px 10px;padding:0px 10px">
+		<button class="mui-btn mui-btn-block" style="background-color: {$conf['owner_color']};border-color:{$conf['owner_color']};color:white" onclick="buy_stick()">确认购买</button>
+	</div>
+</div>
+<script>
+var selected_stick_package = 0;
+function sel_stick_package(id) {
+    if(selected_stick_package != id) {
+        selected_stick_package = id;
+        $("div[id^='package_']").removeClass('package_active');
+        $("#package_"+id).addClass('package_active');
+    }
+}
+function buy_stick() {
+	if(selected_stick_package == 0) {
+		alert("请选择购买套餐！");
+	} else {
+		$.post("{php echo $this->createMobileurl('info',array('op'=>'stick_confirm'))}",{
+				pin_id:{$_GPC['id']},
+				stick_package:selected_stick_package
+			},function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == '0') {
+					alert("购买成功！");
+					location.reload();
+				} else if (resp.message.errno == '1') {
+					alert("购买失败！");
+				}
+			}
+		);
+	}
+}
+function cancel_stick() {
+	$("#main_panel").show();
+	$("#stick_panel").hide();
+}
+</script>
+{/if}
+
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;bottom:30px;width:100%;height:30px;line-height:30px;margin-top:-15px;z-index:1000"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>

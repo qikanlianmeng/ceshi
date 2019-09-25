@@ -1,0 +1,343 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=8" />
+<style>
+	body {
+		background-color:#F3F3F3;
+	}
+	.member {
+		margin:10px;
+		background-color:white;
+		border-radius: 5px;
+		padding:10px;
+	}
+	a:hover {
+		text-decoration: none
+	}
+</style>
+<header class="mui-bar mui-bar-nav">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+ 	<h1 class="mui-title">我的行程</h1>
+</header>
+<div style="height:45px"></div>
+{loop $member_info $index $item}
+	<div class="member">
+		<div>
+			<div style="width:50px;text-align: center;height:40px">
+				<img src="{$item['owner']['avatar']}" width="40px" height="40px" style="border-radius: 20px" />
+			</div>
+			<div style="width:30px;text-align: center;height:40px;line-height: 40px;margin:-40px 0px 0px auto">
+				<a href="tel:{$item['owner']['tel']}" style="color:green"><i class="iconfont icon-bohao" style="font-size:30px"></i></a>
+			</div>
+			<div style="min-height: 40px;margin:-40px 30px 0px 50px">
+				<div>
+					{$item['owner']['nickname']}&#12288;<span class="mui-badge" style="background-color:white;color:{$conf['owner_color']};border:1px {$conf['owner_color']} solid">信用值：{$item['owner']['credit_score']}分</span>
+				</div>
+				<div>
+					<span class="mui-badge" style="background-color:{$conf['owner_color']};color:white;border-radius: 0px">{$item['owner']['car_number_1']}{$item['owner']['car_number_2']}&nbsp;{$item['owner']['car_number_3']}</span>
+					<span>{$item['owner']['car_series']}</span>
+					&#12288;
+					<span>已拼：{$item['pin']['pined_amount']}人</span>
+				</div>
+			</div>
+			{if $item['pin']['note']}
+			<div style="padding-top:10px">
+				服务：{$item['pin']['note']}
+			</div>
+			{/if}
+		</div>
+		<div style="border-top:1px #F3F3F3 solid;margin-top:10px">
+			<div style="padding-top:10px">
+                <div>
+                	<div style="width:30px;text-align: center;height:30px;line-height: 30px">
+	                    <i class="iconfont icon-yuyue"></i>
+	                </div>
+	                <div style="width:100px;height:30px;line-height: 30px;text-align: right;margin:-30px 0px 0px auto;color:{$conf['color']}">
+						{if $item['status']=='1'}
+                            {if $item['owner_arrived_departure_station']=='1'}
+                                司机已到出发地
+                            {else if $item['owner_comming_to_departure_station']=='1'}
+                                司机已出发
+                            {else}
+                                待出行
+                            {/if}
+						{else}
+							{php echo $this->trans_member_status($item['status'])}
+						{/if}
+	                </div>
+	                <div style="margin:-30px 100px 0px 30px;height:30px;line-height: 30px">
+						{php echo date('m/d H:i',$travel['departure_time'])}
+						&#12288;
+						<span>{$travel['amount']}人</span>
+	                </div>
+                </div>
+                <div>
+                    <span style="color:green"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+                    <span style="position: relative;top:-5px">{php echo $this->rtrim_cn($travel['departure_city'],'市')}-{$travel['departure_station']}</span>
+                </div>
+                <div style="padding-top:5px">
+                    <span style="color:red"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+                    <span style="position: relative;top:-5px">{php echo $this->rtrim_cn($travel['terminal_city'],'市')}-{$travel['terminal_station']}</span>
+                </div>
+            </div>
+		</div>
+		<div style="border-top:1px #F3F3F3 solid;padding-top:10px">
+			<div class="container">
+				<div class="row">
+					<div class="col-xs-4">
+						<span style="color:red;font-size: 18px">{$travel['expected_price']}</span><span style="color:red">元</span>
+					</div>
+					<div class="col-xs-8" style="text-align: right;padding:0px">
+						{if $item['status']=='0' OR $item['status'] == '1'}
+							<button class="mui-btn mui-btn-danger mui-btn-outlined" onclick="cancel_member({$item['id']},'{$item['owner_comming_to_departure_station']}')">取消行程</button>
+							{if $item['owner_arrived_departure_station']=='1'}
+							<button class="mui-btn" style="background-color:{$conf['color']};color:white" onclick="location.href='{php echo $this->createMobileurl('confirm',array('id'=>$_GPC['id']))}'">确认上车并付费</button>
+							{/if}
+						{/if}
+						{if $item['status']=='6'}
+							<button id="confirm_arrive_btn" class="mui-btn" style="background-color:{$conf['color']};color:white" onclick="confirm_arrive({$item['id']})">确认到达</button>
+						{/if}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="margin-top:40px;{if $comment}{else}display:none{/if}">
+			<div style="border-top:1px #F3F3F3 solid"></div>
+			<div style="text-align: center;background-color:white;width:100px;height:20px;line-height: 20px;margin-top:-10px;margin-left:auto;margin-right:auto">TA对我的评价</div>
+				<div>
+					<label>评价：</label>
+					<div style="margin-left:60px;margin-top:-25px">
+						<div class="container" style="font-size:12px">
+							<div class="row">
+								<div class="col-xs-6" style="padding:0px">
+									{if $comment['comment_level']=='0'}
+										<span class="mui-badge mui-badge-success">好评</span>
+									{else if $comment['comment_level']=='1'}
+										<span class="mui-badge mui-badge-warning">中评</span>
+									{else if $comment['comment_level'] == '2'} 
+										<span class="mui-badge mui-badge-danger">差评</span>
+									{/if}
+								</div>
+								<div class="col-xs-6" style="padding:0px;text-align: right">
+									{$comment['time']}
+								</div>
+							</div>
+						</div>
+						<div>
+							{loop $comment['content'] $i $c}
+								<span class="label label-warning">{$c}</span>
+							{/loop}
+						</div>
+						<div style="font-size:12px;margin-top:3px">
+							留言：{$comment['other']}
+						</div>
+					</div>
+				</div>
+		</div>
+		<div style="margin-top:40px;{if $item['my_comment']}{else}display:none{/if}">
+			<div style="border-top:1px #F3F3F3 solid"></div>
+			<div style="text-align: center;background-color:white;width:100px;height:20px;line-height: 20px;margin-top:-10px;margin-left:auto;margin-right:auto">我对TA的评价</div>
+				<div>
+					<label>评价：</label>
+					<div style="margin-left:60px;margin-top:-25px">
+						<div class="container" style="font-size:12px">
+							<div class="row">
+								<div class="col-xs-6" style="padding:0px">
+									{if $item['my_comment']['comment_level']=='0'}
+										<span class="mui-badge mui-badge-success">好评</span>
+									{else if $item['my_comment']['comment_level']=='1'}
+										<span class="mui-badge mui-badge-warning">中评</span>
+									{else if $item['my_comment']['comment_level'] == '2'} 
+										<span class="mui-badge mui-badge-danger">差评</span>
+									{/if}
+								</div>
+								<div class="col-xs-6" style="padding:0px;text-align: right">
+									{$item['my_comment']['time']}
+								</div>
+							</div>
+						</div>
+						<div>
+							{loop $item['my_comment']['content'] $i $c}
+								<span class="label label-warning">{$c}</span>
+							{/loop}
+						</div>
+						<div style="font-size:12px;margin-top:3px">
+							留言：{$item['my_comment']['other']}
+						</div>
+					</div>
+				</div>
+		</div>
+	</div>
+{/loop}
+	<div id="cancel_reason_panel" style="position: fixed;bottom:0px;min-height:200px;width:100%;background-color:white;padding:5px;display:none">
+        <div style="border-bottom:1px #F3F3F3 solid">
+            <div style="width:60px;height:40px">
+                <button class="mui-btn mui-btn-xs" onclick="cancel_reason()">取消</button>
+            </div>
+            <div style="margin:-40px 60px 0px 60px;height:40px;line-height: 40px;text-align: center">
+                <label>出行要求</label>
+            </div>
+            <div style="width:80px;height:40px;margin:-40px 0px 0px auto">
+                <button class="mui-btn mui-btn-xs mui-btn-success" onclick="confirm_cancel()">确认取消</button>
+            </div>
+        </div>
+        <div style="padding-top:10px">
+            <div style="text-align: center;padding:10px">
+                <i class="iconfont icon-tixing"></i>请选择取消理由！
+            </div>
+            {loop $cancel_reason_template_list $index $item}
+                <button id="note_{$item['id']}" class="mui-btn mui-btn-default" style="margin:3px" onclick="change_note_status({$item['id']},'{$item['content']}')">{$item['content']}</button>
+            {/loop}
+        </div>
+    </div>
+<script type="text/javascript" src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/array.js"></script>
+<script type="text/javascript">
+var canceling_member_id = 0;
+var confirming_member_id = 0;
+function cancel_member(id,owner_comming_to_departure_station) {
+	if(owner_comming_to_departure_station=='1') {
+		var btnArray = ['我再等等','确认取消'];
+        mui.confirm('车主已出发，如强行取消行程，会对您的信用分造成影响！','',btnArray,function(e){
+            if(e.index == 1) {
+                canceling_member_id = id;
+				$("#cancel_reason_panel").show();
+            }
+        })
+	} else {
+		canceling_member_id = id;
+		$("#cancel_reason_panel").show();
+	}
+}
+function cancel_reason() {
+	$("#cancel_reason_panel").hide();
+}
+	var selected_reason = new Array();
+    function change_note_status(id) {
+        if(in_array(selected_reason,id)) {
+            removeByValue(selected_reason,id);
+            $("#note_"+id).removeClass('mui-btn-warning');
+        } else {
+            selected_reason.push(id);
+            $("#note_"+id).addClass('mui-btn-warning');
+        }
+    }
+function confirm_cancel() {
+	$.post("{php echo $this->createMobileurl('cancel_member_by_passenger')}",{
+			id:canceling_member_id,
+			reason:selected_reason
+		},function(resp) {
+			console.log(resp);
+			resp = $.parseJSON(resp);
+			if(resp.message.errno == 0) {
+				mui.alert("拼车已取消！",function(){
+					location.href="{php echo $this->createMobileurl('todo_index')}";
+				})
+			} else {
+				mui.alert("取消失败！");
+			}
+		}
+	);
+}
+function confirm_arrive(id) {
+	confirming_member_id = id;
+	$.post("{php echo $this->createMobileurl('passenger_confirm_arrive_pin')}",{
+			id:id
+		},function(resp) {
+			console.log(resp);
+			resp = $.parseJSON(resp);
+			if(resp.message.errno == 0) {
+				mui.alert("出行已完成！",function(){
+					$("#confirm_arrive_btn").hide();
+					$("#comment_panel").show();
+				})
+			}
+		}
+	);
+}
+</script>
+
+{if $travel['status']=='6'}
+	<div id="comment_panel" style="position: fixed;bottom:0px;width: 100%;background-color:white;display:none">
+		<div style="border-bottom:1px #F3F3F3 solid">
+            <div style="width:60px;height:40px;padding-top:3px;text-align: center;">
+                <button class="mui-btn mui-btn-xs" onclick="cancel_comment()">取消</button>
+            </div>
+            <div style="margin:-40px 60px 0px 60px;height:40px;line-height: 40px;text-align: center">
+                <label>对车主评价</label>
+            </div>
+            <div style="width:60px;height:40px;margin:-40px 0px 0px auto;padding-top:3px">
+                <button class="mui-btn mui-btn-xs mui-btn-success" onclick="confirm_comment()">确认</button>
+            </div>
+        </div>
+		<div style="margin:10px">
+			<form action="" method="POST">
+				<div>
+			        <div class="mui-input-row" style="width:50px;margin:0px;height:40px;line-height: 40px">
+			            评价：
+			        </div>
+			        <div class="mui-input-row mui-radio mui-left" style="width:100px;margin:-40px auto 0px 50px;height:44px">
+			            <label style="margin-bottom: 0px;padding-top:15px;padding-left:50px">好评</label>
+			            <input name="comment_level" value="0" type="radio">
+			        </div> 
+			        <div class="mui-input-row mui-radio mui-left" style="width:100px;margin:-44px auto 0px 150px;height:44px">
+			            <label style="margin-bottom: 0px;padding-top:15px;padding-left:50px">中评</label>
+			            <input name="comment_level" value="1" type="radio">
+			        </div> 
+			        <div class="mui-input-row mui-radio mui-left" style="width:100px;margin:-44px auto 0px 250px;height:44px">
+			            <label style="margin-bottom: 0px;padding-top:15px;padding-left:50px">差评</label>
+			            <input name="comment_level" value="2" type="radio">
+			        </div> 
+			    </div>
+				<div>
+					{loop $template $index $item}
+						<button id="btn_{$item['id']}" type="button" class="mui-btn mui-btn-warning mui-btn-outlined" style="margin-top:5px" onclick="select_comment({$item['id']})">{$item['content']}</button>
+					{/loop}
+				</div>
+				<div style="padding-top:10px">
+					<label>其它：</label>
+					<input id="comment" name="comment" class="form-control" placeholder="请输入其它评价！">
+				</div>
+			</form>
+		</div>
+		<script src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/array.js"></script>
+		<script>
+		var selected_comment = new Array();
+		function select_comment(template_id) {
+			if(!in_array(selected_comment,template_id)) {
+				selected_comment.push(template_id);
+				$("#btn_"+template_id).removeClass('mui-btn-outlined');
+			} else {
+				removeByValue(selected_comment,template_id);
+				$("#btn_"+template_id).addClass('mui-btn-outlined');
+			}
+		}
+		function confirm_comment() {
+			if($("input[name='comment_level']:checked").val()==null) {
+				alert("请选择好、中、差评！");
+			} else if(selected_comment.length == 0 && $("#comment").val() == "") {
+				alert("请选择或者输入评论！");
+			} else {
+				$.post("{php echo $this->createMobileurl('passenger_comment_pin')}",{
+						member_id:confirming_member_id,
+						template:selected_comment,
+						other:$("#comment").val(),
+						comment_level:$("input[name='comment_level']:checked").val()
+					},function(resp) {
+						console.log(resp);
+						resp = $.parseJSON(resp);
+						if(resp.message.errno == '0') {
+							mui.alert("评价成功！",function(){
+								location.reload();
+							})
+						}
+					}
+				);
+			}
+		}
+		function cancel_comment() {
+			$("#comment_panel").hide();
+		}
+		</script>
+	</div>
+{/if}

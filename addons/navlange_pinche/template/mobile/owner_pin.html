@@ -1,0 +1,186 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=2" />
+<style>
+body{
+    background-color: #F3F3F3;
+}
+    .mui-segmented-control {
+        border:0px;
+    }
+    .mui-segmented-control .mui-control-item {
+        border:0px;
+        color:black;
+    }
+    .mui-segmented-control .mui-control-item.mui-active {
+        background-color: white;
+        color:red;
+        border-bottom:2px {$conf['owner_color']} solid;
+    }
+.express{
+    margin:10px;
+    border-radius:5px;
+    border:1px #EFEFEF solid;
+    background-color: white;
+    padding: 10px;
+}
+.address{
+    margin:10px 15px;
+    font-size:80%;
+}
+.send .goods {
+    color:#EA7F17;
+}
+.send .express-time {
+    color:#EA7F17;
+}
+.send .money {
+    color:#EA7F17;
+    text-align: right
+}
+.send .info {
+    background-color: #EA7F17;
+}
+.status {
+    height:24px;
+    line-height: 24px;
+    font-size:80%;
+}
+.status-0 {
+    color:#397ADB;
+}
+.status-1 {
+    color:#EA7F17;
+}
+.status-2 {
+    color:green;
+}
+a:hover {
+    text-decoration: none
+}
+</style>
+
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+    <nav class="mui-bar mui-bar-tab">
+        {loop $menu_list $index $item}
+            {if $general_release_menu['display']=='1'}
+                <a class="mui-tab-item{if $item['name_en']=='my_travel'} mui-active{/if}" href="{$item['url']}">
+                {if $item['name_en'] != 'general_release'}
+                    <div style="height:24px;padding-top:2px">
+                        {if $item['icon'] != ''}
+                        <img src="{php if($item['name_en']=='my_travel') echo tomedia($item['icon_active']);else echo tomedia($item['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_pinche/template/style/img/{$item['name_en']}{php if($item['name_en']=='my_travel') echo '_active';}.png'" width="20px" height="20px" />
+                        {else}
+                            <i class="iconfont icon-{$item['icon_name']}"></i>
+                        {/if}
+                    </div>
+                    <div style="height:21px;font-size:12px"><span class="mui-tab-label">{$item['customer_name']}</span></div>
+                {/if}
+                </a>
+            {/if}
+        {/loop}
+    </nav>
+
+    {if $general_release_menu['display'] == '1'}
+    <div style="width:50px;height:65px;position: fixed;bottom:0px;left:50%;margin-left:-25px;z-index: 11">
+        <div style="width:45px;height:45px;line-height: 45px;margin:0px auto;border-radius: 22.5px;background-color: #F7F7F7;text-align:center;color:#929292" onclick="location.href='{php echo $this->createMobileurl('general_release')}'">
+            {if $general_release_menu['icon'] != ''}
+            <img src="{php echo tomedia($release_menu['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_reserve_service/template/style/img/release.png'" width="40px" height="40px" />
+            {else}
+                <i class="iconfont icon-{$general_release_menu['icon_name']}" style="font-size:45px"></i>
+            {/if}
+        </div>
+        <div style="width:50px;height:20px;background-color: #F7F7F7;margin:0px auto;text-align: center;font-size:12px;color:#929292">
+            <span class="mui-tab-label">{$general_release_menu['customer_name']}</span>
+        </div>
+    </div>
+    {/if}
+
+<div id="segmentedControl" class="mui-segmented-control" style="background-color: white">
+    <a class="mui-control-item" href="{php echo $this->createMobileurl('my_travel')}">
+        {if $conf['core_mode']=='5'}货主{else}乘客{/if}行程
+    </a>
+    <a class="mui-control-item mui-active">
+        车主行程
+    </a>
+</div>
+{if !empty($pin)}
+{loop $pin $index $vo}
+    <div id="pin_{$vo['id']}" class='express send'>
+        <div class="container" style="padding-bottom:8px;padding-top:5px;font-size:12px">
+            <div class="row">
+                <div class="col-xs-7" style="padding:0px 0px 0px 10px">
+                    <i class="iconfont icon-yuyue"></i> {php echo date('m月d日 H:i',$vo['departure_time'])}
+                </div>
+                <div class="col-xs-2" style="padding:0px">
+                    {if $vo['left_amount']>0}
+                        {$vo['left_amount']}座
+                    {else}
+                        <span style="color:red">已满</span>
+                    {/if}
+                </div>
+                <div class="col-xs-3" style="padding:0px;text-align: right">
+                    {php echo intval($vo['price'])}元/<span style="font-size:12px">座</span>
+                </div>
+            </div>
+        </div>
+        <div style="padding-left: 8px">
+            <div>
+                <span style="color:green"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+                <span style="position: relative;top:-5px">{php echo $this->rtrim_cn($vo['departure_city'],'市')}-{$vo['departure_station']}</span>
+            </div>
+            <div style="padding-top:5px">
+                <span style="color:red"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+                <span style="position: relative;top:-5px">{php echo $this->rtrim_cn($vo['terminal_city'],'市')}-{$vo['terminal_station']}</span>
+            </div>
+        </div>
+        <div style="border-top: 1px #EFEFEF solid"></div>
+        <div style="margin:10px auto 0px auto">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-4 status" style="line-height: 33px">
+                        状态：{php echo $this->trans_pin_status($vo['status']);}
+                    </div>
+                    <div class="col-xs-8" style="text-align:right">
+                        {if $vo['status'] == '0' OR $vo['status']=='1'}
+                            <button type="button" class="mui-btn mui-btn-warning" onclick="location.href='{php echo $this->createMobileurl('pin_edit',array('id'=>$vo['id']))}'">编辑</button> 
+                        {/if}
+                        <button type="button" class="mui-btn mui-btn-success" onclick="location.href='{php echo $this->createMobileurl('info',array('id'=>$vo['id']))}'">详情</button> 
+                        {if $vo['status'] == '0'} 
+                            <button type="button" class="mui-btn mui-btn-danger" onclick="cancel_pin({$vo['id']})">取消</button>   
+                        {/if}                     
+                    </div>
+                </div>
+            </div>              
+        </div>
+    </div>
+{/loop}
+<script>
+function cancel_pin(id) {
+    var r = confirm("确认取消！");
+    if(r) {
+        $.post("{php echo $this->createMobileurl('cancel_pin')}",{
+                id:id
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == 0) {
+                    alert("取消成功！");
+                    $("#pin_"+id).remove();
+                }
+            }
+        );
+    }
+}
+</script>
+{else}
+    <div style="width:220px;margin:40px auto">
+        <div style="width:90px;height:80px">
+            <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/empty_order.png" width="80px" height="80px" />
+        </div>
+        <div style="margin:-80px 0px 0px 90px;padding-top:30px">
+            暂无拼车发布！
+        </div>
+    </div>
+{/if}

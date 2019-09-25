@@ -1,0 +1,55 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+    body {
+        background-color: #F3F3F3
+    }
+    a:hover {
+        text-decoration: none
+    }
+</style>
+<header id="header" class="mui-bar mui-bar-nav" style="background-color:  {php if($mode == '1') echo $conf['owner_color']; else echo $conf['color'];}">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" style="color: white"></a>
+    <h1 class="mui-title" style="color:white">个人资料</h1>
+</header>
+<div style="margin:100px 20px 0px 20px">
+    <form role="form" action="" method="POST">
+        <div>
+            <input id="realname" value="{$_W['member']['realname']}" style="width:100%;border:0px;border-radius: 18px;padding:10px" placeholder="请输入姓名" />
+        </div>
+        <div style="margin-top:10px">
+            <input id="mobile" value="{$_W['member']['mobile']}" type="number" style="width:100%;border:0px;border-radius: 18px;padding:10px" placeholder="请输入联系电话" />
+        </div>
+        <div style="margin-top:15px">
+            <input type="button" style="width:100%;border-radius: 18px;background-color: {php if($mode == '1') echo $conf['owner_color']; else echo $conf['color'];};color:white;border:0px;padding:9px" value="设置" onclick="set_profile()" />
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/check_reg.js"></script>
+<script>
+function set_profile() {
+    if($("#realname").val() == '') {
+        alert("请输入姓名！");
+        $("#realname").focus();
+    } else if (!checkPhone($("#mobile").val())) {
+        $("#mobile").focus();
+    } else {
+        $.post("{php echo $this->createMobileurl('person_profile',array('op'=>'set_profile'))}",{
+                realname:$("#realname").val(),
+                mobile:$("#mobile").val()
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == 0) {
+                    alert("设置成功！");
+                } else {
+                    alert("设置失败！");
+                }
+            }
+        );
+    }
+}
+</script>

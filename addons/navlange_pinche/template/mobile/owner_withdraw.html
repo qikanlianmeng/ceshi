@@ -1,0 +1,78 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+	a:hover {
+		text-decoration: none
+	}
+    .mui-input-group:before {
+        height:0px;
+    }
+    .mui-input-group:after {
+        height:0px;
+    }
+    .mui-input-group .mui-input-row:after {
+        height:1px;
+        background-color: #c8c7cc;
+        left:0px;
+    }
+</style>
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+<header class="mui-bar mui-bar-nav">
+  	<a class="mui-icon mui-action-back mui-icon-arrowleft"></a>
+  	<h1 class="mui-title">车主提现</h1>
+</header>
+<div id="withdraw_panel" style="margin-top:60px;margin-left:20px;margin-right:20px;">
+    <div>可提现金额：<span style="font-size:26px">{$mc_member['credit3']}</span>元</div>
+    <form class="mui-input-group">
+        <div id="other_money" class="mui-input-row">
+            <label>金额（元）</label>
+            <input id="withdraw_money" type="number" class="mui-input-clear" placeholder="请输入提取金额">
+        </div>
+        <span style="color:red">*到账时间：3-5个工作日</span>
+        <div class="mui-button-row" style="margin-top:20px">
+            <button type="button" class="mui-btn mui-btn-danger mui-btn-block" onclick="withdraw()">确认提取</button>
+        </div>
+    </form>
+</div>
+<script>
+function withdraw() {
+    if($("#withdraw_money").val() <= 0) {
+        mui.alert("请输入有效提取金额！");
+    } else if ($("#withdraw_money").val() <= {$conf['withdraw_min']}) {
+        mui.alert("提取金额不能低于：{$conf['withdraw_min']}元!");
+    } else {
+        $.post("{php echo $this->createMobileurl('owner_withdraw_submit')}",{
+                money:$("#withdraw_money").val()
+            },
+            function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == '0') {
+                    mui.alert("提取成功！",function(){
+                        location.href="{php echo $this->createMobileurl('deposit',array('mode'=>'1'))}";
+                    });
+                } else if (resp.message.errno == '1') {
+                    var message = resp.message.message;
+                    if (message == 'OVER_CREDIT') {
+                        mui.alert("提取金额超过用户余额！");
+                    } else if(message == 'NOTENOUGH') {
+                        mui.alert("系统账户余额不足，请及时联系系统管理员后台提取！",function(){
+                            location.href="{php echo $this->createMobileurl('deposit',array('mode'=>'1'))}";
+                        });
+                    } else {
+                        mui.alert("提取失败，请及时联系系统管理员后台提取！",function(){
+                            location.href="{php echo $this->createMobileurl('deposit',array('mode'=>'1'))}";
+                        });
+                    }
+                } else if (resp.message.errno == '2') {
+                    mui.alert("提取申请已提交！",function(){
+                        location.href="{php echo $this->createMobileurl('person')}";
+                    });
+                }
+            }
+        );
+    }
+}
+</script>

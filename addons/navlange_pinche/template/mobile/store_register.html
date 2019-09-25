@@ -1,0 +1,183 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" href="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.css" />
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.js"></script>
+<style>
+body {
+    background-color:#F3F3F3;
+}
+.mui-input-row label {
+    width:25%;
+}
+.mui-input-row label~input, .mui-input-row label~select, .mui-input-row label~textarea {
+    width:75%;
+}
+a:hover {
+    text-decoration: none
+}
+</style>
+<div style="width:100%">
+    <img src="{php echo tomedia($conf['store_register_head_img'])}" width="100%" height="auto" />
+</div>
+<div style="margin-top:-40px;text-align: center;line-height: 40px">
+    <button class="mui-btn" style="color:red;background-color:#ffffff;background-color:rgba(255,255,255,0.8);" onclick="show_agreement()">商户入驻规则</button>
+</div>
+<form id="register_form" class="mui-input-group" action="" method="POST">
+    {if !empty($store)}
+    <label style="font-weight: normal;padding:10px;width:100%;text-align: center">推荐码：<span style="font-size: 20px;font-weight: bold;color:red">{$store['sn']}</span></label>
+    {else}
+    <label style="font-weight: normal;margin:10px">在线提交商家入驻申请</label>
+    {/if}
+    <div class="mui-input-row">
+        <label>商家类型</label>
+        <input id="type" name="type" value="{php echo $store ? $store['type'] : '-1'}" type="hidden">
+        <input id="type_str" name="type_str" value="{if $store['type']=='0'}物流公司{/if}" readonly="true" onfocus="blur()" onclick="sel_type()" type="text" class="mui-input-clear" placeholder="请选择商家类型">
+    </div>
+    <script type="text/javascript">
+        var type_picker = new mui.PopPicker();
+        type_picker.setData([{value:'0',text:'物流公司'}]);
+        function sel_type() {
+            type_picker.show(function (selectItems) {
+                $("#type").val(selectItems[0].value);
+                $("#type_str").val(selectItems[0].text);
+            })
+        }
+    </script>
+    <div class="mui-input-row">
+        <label>商户名称</label>
+        <input name="name" value="{$store['name']}" type="text" class="mui-input-clear" placeholder="请输入商户名称">
+    </div>
+    <div class="mui-input-row" style="height:65px">
+        <label>缩略图</label>
+        <div class="mui-table-view-chevron">
+            <div class="mui-image-uploader">
+                <a href="javascript:;" class="mui-upload-btn mui-pull-right js-image-img_thumb webuploader-container"><div class="webuploader-pick"></div><div id="rt_rt_1bgo5013a1akg1cadcd81b0u1pig1" style="position: absolute; top: 0px; left: 0px; width: 40px; height: 40px; overflow: hidden; bottom: auto; right: auto;"><input type="file" name="file" class="webuploader-element-invisible" multiple="multiple"><label style="opacity: 0; width: 100%; height: 100%; display: block; cursor: pointer; background: rgb(255, 255, 255);"></label></div></a>
+                <div class="mui-image-preview js-image-preview mui-pull-right">
+                    <input type="hidden" value="" name="img_thumb" />
+                    {if !empty($store['img_thumb'])}
+                    <img src="{php echo tomedia($store['img_thumb'])}" data-id="" data-preview-src="" data-preview-group="__IMG_UPLOAD_img_thumb" />
+                    {/if}
+                </div>
+            </div>
+        </div>
+        <script>
+            util.image($('.js-image-img_thumb'), function(url){
+                $('.js-image-img_thumb').parent().find('.js-image-preview').html('<input type="hidden" value="'+url.attachment+'" name="img_thumb" /><img src="'+url.url+'" data-id="'+url.id+'" data-preview-src="" data-preview-group="__IMG_UPLOAD_img_thumb" />');
+            }, {
+                crop : false,
+                multiple : false,
+                preview : '__IMG_UPLOAD_img_thumb'
+            });
+        </script>
+    </div>
+    <div class="mui-input-row">
+        <label>联系电话</label>
+        <input name="mobile" value="{$store['mobile']}" type="text" class="mui-input-clear" placeholder="请输入商户联系电话">
+    </div>
+    <div class="mui-input-row">
+        <label>地区</label>
+        <input id="area" value="{$store['prov']}{$store['city']}{$store['district']}" type="text" readonly="true" onfocus="blur()" placeholder="请选择商家地区" />
+        <input type="hidden" name="prov" />
+        <input type="hidden" name="city" />
+        <input type="hidden" name="district" />
+    </div>
+    <div class="mui-input-row">
+        <label>详细地址</label>
+        <input id="address" name="address" value="{$store['address']}" type="text" class="mui-input-clear" placeholder="请输入商家详细地址" />
+    </div>
+    <div class="mui-input-row">
+        <label>规模</label>
+        <input id="scale" name="scale" value="{$store['scale']}" type="text" class="mui-input-clear" placeholder="请输入商家人数规模" />
+    </div>
+    <input type="submit" class="btn btn-default" name="register" style="display:none" value="提交">
+    <input type="hidden" name="token" value="{$_W['token']}" />
+</form>
+
+<link rel="stylesheet" href="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.css" />
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.js"></script>
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/components/districtpicker/mui.city.data-3.js"></script>
+<script>
+    var prov = '';
+    var city = '';
+    var district = '';
+    $("#area").click(function(){
+        var cityPicker = new mui.PopPicker({layer:3});
+        cityPicker.setData(cityData3);
+        /*for(var i=0; i<cityData3.length; i++) {
+            if(cityData3[i].text==prov) {
+                cityPicker.pickers[0].setSelectedIndex(i);
+                for(var j=0; j<cityData3[i].children.length; j++) {
+                    if((cityData3[i].children[j].text) == city) {
+                        cityPicker.pickers[1].setSelectedIndex(j);
+                        for(var k=0; k<cityData3[i].children[j].children.length; k++) {
+                            if((cityData3[i].children[j].children[k].text)==district) {
+                                cityPicker.pickers[2].setSelectedIndex(k);
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
+        cityPicker.show(function(items){
+            $("#area").val((items[0] || {}).text + (items[1] || {}).text + (items[2] || {}).text);
+            prov = (items[0] || {}).text;
+            city = (items[1] || {}).text;
+            district = (items[2] || {}).text;
+            $("input[name='prov']").val(prov);
+            $("input[name='city']").val(city);
+            $("input[name='district']").val(district);
+        })
+    })
+</script>
+<div class="mui-input-row">
+    <label>商户介绍</label>
+</div>
+<div class="mui-input-row" style="margin:0px 15px 10px 15px">
+    <textarea name="intro" type="text" rows="5" placeholder="请输入商户介绍">{$store['intro']}</textarea>
+</div>
+<div style="height:44px"></div>
+<div style="position: fixed;bottom:0px;width:100%;padding:3px;background-color: white;text-align: center">
+    {if empty($store)}
+        <button class="mui-btn mui-btn-block" style="background-color:{$conf['color']};border-color:{$conf['color']};color:white;margin-bottom:0px" onclick="register_submit()">申请入驻</button>
+    {else if $store['status']=='0'}
+        <button class="mui-btn mui-btn-block mui-btn-default" style="margin-bottom:0px">等待审核</button>
+    {else if $store['status']=='1'}
+        <!--button class="mui-btn mui-btn-block mui-btn-success" style="margin-bottom:0px" onclick="location.href='{php echo $this->createMobileurl('index',array('store'=>$store['id']))}'">进入店铺</button-->
+    {/if}
+</div>
+
+<div id="agreement_panel" style="position: absolute;top:0px;left:0px;width:100%;height:100;padding:10px;z-index: 999;display: none">
+    <div id="store_register_agreement" style="background-color: white;padding: 10px;overflow-y:scroll">
+        {php echo htmlspecialchars_decode(str_replace(array("\r\n", "\r", "\n"), "", $conf['store_register_agreement']));}
+    </div>
+    <div style="position: absolute;top:20px;right:20px;width:30px;height:30px">
+        <img src="{$_W['siteroot']}addons/navlange_shop_plugin_store/template/style/img/close.png" width="30px" height="30px" onclick="close_agreement()" />
+    </div>
+</div>
+<script>
+function register_submit() {
+    var input = document.createElement("input"); 
+    // 设置相应参数 
+    input.type = "hidden"; 
+    input.name = "intro"; 
+    input.value = $("textarea[name='intro']").val(); 
+    // 将该输入框插入到 form 中 
+    var form = document.getElementById("register_form");
+    form.appendChild(input); 
+    $("input[name='register']").click();
+}
+var mask = mui.createMask(function(){});//callback为用户点击蒙版时自动执行的回调；
+$(function(){
+    var height = document.documentElement.clientHeight-20;
+    $("#store_register_agreement").css('height',height);
+})
+function show_agreement() {
+    mask.show();//显示遮罩
+    $("#agreement_panel").show();
+}
+function close_agreement() {
+    $("#agreement_panel").hide();
+    mask.close();
+}
+</script>

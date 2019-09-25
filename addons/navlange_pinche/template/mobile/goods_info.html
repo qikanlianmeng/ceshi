@@ -1,0 +1,181 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=4" />
+<style>
+    body {
+        background-color:#F3F3F3;
+    }
+    a:hover {
+        text-decoration: none
+    }
+</style>
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+<label style="padding:10px 10px 0px 10px">线路信息</label>
+<div style="background-color:white;padding:10px">
+    <div class="container">
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                发站：
+            </div>
+            <div class="col-xs-9">
+                {$goods['departure_prov']}{$goods['departure_city']}{$goods['departure_district']}{$goods['departure_station']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                到站：
+            </div>
+            <div class="col-xs-9">
+                {$goods['terminal_prov']}{$goods['terminal_city']}{$goods['terminal_district']}{$goods['terminal_station']}
+            </div>
+        </div>
+    </div>
+</div>
+<label style="padding:10px 10px 0px 10px">货物信息</label>
+<div style="background-color:white;padding:10px">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                名称：
+            </div>
+            <div class="col-xs-9">
+                {$goods['goods_name']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                类型：
+            </div>
+            <div class="col-xs-9">
+                {php echo $this->trans_goods_type($goods['goods_type'])}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                体积：
+            </div>
+            <div class="col-xs-9">
+                {$goods['volume']}方
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                重量：
+            </div>
+            <div class="col-xs-9">
+                {$goods['weight']}吨
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                长：
+            </div>
+            <div class="col-xs-9">
+                {$goods['goods_length']}cm
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                宽：
+            </div>
+            <div class="col-xs-9">
+                {$goods['goods_width']}cm
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                高：
+            </div>
+            <div class="col-xs-9">
+                {$goods['goods_height']}cm
+            </div>
+        </div>
+    </div>
+</div>
+<label style="padding:10px 10px 0px 10px">服务需求</label>
+<div style="background-color:white;padding:10px">
+    <div class="container">
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                车型：
+            </div>
+            <div class="col-xs-9">
+                {php echo $this->trans_car_type($goods['car_type'])}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                车长：
+            </div>
+            <div class="col-xs-9">
+                {$goods['car_length']}米
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                配送需求：
+            </div>
+            <div class="col-xs-9">
+                {$goods['delivery_need']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                到站服务：
+            </div>
+            <div class="col-xs-9">
+                {$goods['arrival_service']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                需要盖雨布：
+            </div>
+            <div class="col-xs-9">
+                {if $goods['need_cover'] == '1'}是{else}否{/if}
+            </div>
+        </div>
+    </div>
+</div>
+<label style="padding:10px 10px 0px 10px">装货信息</label>
+<div style="background-color:white;padding:10px">
+    <div class="container">
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                装货时间：
+            </div>
+            <div class="col-xs-9">
+                {php echo date('Y-m-d H:i:s',$goods['start_time'])}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                到货时间：
+            </div>
+            <div class="col-xs-9">
+                {php echo date('Y-m-d H:i:s',$goods['end_time'])}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                联系电话：
+            </div>
+            <div class="col-xs-9">
+                {$goods['mobile']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                备注：
+            </div>
+            <div class="col-xs-9">
+                {$goods['note']}
+            </div>
+        </div>
+    </div>
+</div>
+<div style="height: 50px"></div>
+<div style="position: fixed;bottom:0px;width:100%;height:40px;line-height: 40px;text-align: center;background-color:{$conf['owner_color']};color:white" onclick="location.href='{php echo $this->createMobileurl('goods_confirm',array('id'=>$_GPC['id']))}'">接单</div>

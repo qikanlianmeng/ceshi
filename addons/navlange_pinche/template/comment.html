@@ -1,0 +1,460 @@
+<?php
+$this->qc_template('header');
+?>
+<ol class="breadcrumb">
+    <li class="active">
+        {if $op == 'index'}
+            评价管理
+        {else if $op == 'level'}
+            信用等级
+        {else if $op == 'credit'}
+            信用积分体系
+        {else if $op == 'template'}
+            乘客评论模板
+        {else if $op == 'owner_template'}
+            车主评论模板
+        {else if $op == 'suggestion'}
+            意见建议
+        {/if}
+    </li>
+</ol>
+{if $op == 'index'}
+<div class="panel panel-default">
+	<div class="panel-heading">
+		评价管理
+	</div>
+	<div class="panel-body">
+		<table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+			<thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+				<tr>
+					<th style="text-align: center">司机</th>
+					<th style="text-align: center">乘客</th>
+					<th style="text-align: center">线路</th>
+					<th style="text-align: center">出行时间</th>
+					<th style="text-align: center">评价等级</th>
+					<th style="text-align: center">评价内容</th>
+					<th style="text-align: center">留言</th>
+					<th style="text-align: center">评价时间</th>
+					<th style="text-align: center;width:100px">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $comment_info $index $item}
+					<tr id="{$item['id']}">
+						<td style="text-align: center">
+							<img src="{$item['owner_avatar']}" width="30px" height="30px" style="border-radius: 15px" />
+							{$item['owner_mobile']}
+						</td>
+						<td style="text-align: center">
+							<img src="{$item['avatar']}" width="30px" height="30px" style="border-radius: 15px" />
+							{$item['mobile']}
+						</td>
+						<td style="text-align: center">
+							{$item['departure_station']}->{$item['terminal_station']}
+						</td>
+						<td style="text-align: center">
+							{php echo date('Y-m-d H:i',$item['departure_time'])}
+						</td>
+						<td style="text-align: center">
+							{if $item['comment_level']=='0'}
+								<span class="label label-success">好评</span>
+							{else if $item['comment_level'] == '1'}
+								<span class="label label-success">中评</span>
+							{else if $item['comment_level'] == '2'}
+								<span class="label label-danger">差评</span>
+							{/if}
+						</td>
+						<td style="text-align: center">
+							{loop $item['content'] $i $it}
+								<span class="label label-warning">{$it}</span>
+							{/loop}
+						</td>
+						<td style="text-align: center">{$item['other']}</td>
+						<td style="text-align: center">{php echo date('Y-m-d H:i',$item['time'])}</td>
+						<td style="text-align: center">
+							<a href="javascript:delete_comment({$item['id']})" style="color:red"><i class="fa fa-trash"></i></a>
+						</td>
+					</tr>
+				{/loop}
+			</tbody>
+		</table>
+	</div>
+</div>
+<script>
+function delete_comment(id) {
+	$.post("{php echo $this->createWeburl('comment',array('op'=>'delete_comment'))}",{
+			id:id
+		},function(resp) {
+			resp = $.parseJSON(resp);
+			if(resp.message.errno == 0) {
+				$("#"+id).remove();
+				tankuang(300,'删除评论成功！');
+			}
+		}
+	);
+}
+</script>
+{else if $op == 'level'}
+<div class="panel panel-default">
+	<div class="panel-heading">
+		信用等级
+	</div>
+	<div class="panel-body">
+		<table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+			<thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+				<tr>
+					<th style="text-align: center">等级</th>
+					<th style="text-align: center">最低分数</th>
+					<th style="text-align: center;width:200px">排序</th>
+					<th style="text-align: center;width:100px">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $all_level $index $item}
+					<tr id="{$item['id']}">
+						<td style="text-align: center">
+							<span class="label" style="background-color:{$item['color']};color:white">{$item['name']}</span>
+						</td>
+						<td style="text-align: center">
+							{$item['score']}
+						</td>
+						<td style="text-align: center">
+							<div class="input-group">
+								<input id="order_index_{$item['id']}" type="number" class="form-control" value="{$item['order_index']}" />
+								<span class="input-group-addon" onclick="set_order_index({$item['id']})" style="cursor: pointer">设置</span>
+							</div>
+						</td>
+						<td style="text-align: center">
+							<a href="javascript:delete_level({$item['id']})" style="color:red"><i class="fa fa-trash"></i></a>
+						</td>
+					</tr>
+				{/loop}
+			</tbody>
+		</table>
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				添加等级
+			</div>
+			<div class="panel-body">
+				<form class="form-horizontal" role="form" action="" method="POST">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">名称</label>
+						<div class="col-sm-10">
+							<input name="name"  type="text" class="form-control" placeholder="请输入等级名称" />
+						</div>
+				  	</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">颜色</label>
+						<div class="col-sm-10">
+							{php echo tpl_form_field_color('color');}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label">最低分数</label>
+						<div class="col-sm-10">
+							<input name="score"  type="text" class="form-control" placeholder="请输入等级最低分数" />
+						</div>
+				  	</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<input type="submit" class="btn btn-default" name="add" value="添加">
+							<input type="hidden" name="token" value="{$_W['token']}" />
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+function delete_level(id) {
+	var r = confirm("删除等级！");
+	if(r) {
+		$.post("{php echo $this->createWeburl('comment',array('op'=>'delete_level'))}",{
+				id:id
+			},
+			function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					alert("删除成功！");
+					$("#"+id).remove();
+				}
+			}
+		);
+	}
+}
+function set_order_index(id) {
+	$.post("{php echo $this->createWeburl('comment', array('op' => 'set_level_order_index'));}",{
+			id:id,
+			order_index:$("#order_index_"+id).val()
+		},
+		function(resp) {
+			resp = $.parseJSON(resp);
+			if(resp.message.errno != 0) {
+				util.message('操作失败, 请稍后重试.')
+			} else {
+				util.message('操作成功', location.href, 'success');
+			}
+		}
+	);
+}
+</script>
+{else if $op == 'credit'}
+<div class="panel panel-default">
+	<div class="panel-heading">
+		信用积分设置
+	</div>
+	<div class="panel-body">
+		<form class="form-horizontal" role="form" action="" method="POST">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">乘客强行取消拼车</label>
+				<div class="col-sm-10">
+					<input name="passenger_cancel_pin_credit_score" value="{$conf['passenger_cancel_pin_credit_score']}"  type="text" class="form-control" placeholder="请输入好评增减积分" />
+					<label style="font-size:12px;color:red">如果需要减少积分，请设置为负数。比如要减10分请填写："-10"</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<input type="submit" class="btn btn-default" name="credit_score_submit" value="设置">
+					<input type="hidden" name="token" value="{$_W['token']}" />
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		评论积分设置
+	</div>
+	<div class="panel-body">
+		<form class="form-horizontal" role="form" action="" method="POST">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">好评</label>
+				<div class="col-sm-10">
+					<input name="level_0" value="{$conf['comment_level_0_point']}"  type="text" class="form-control" placeholder="请输入好评增减积分" />
+					<label style="font-size:12px;color:red">如果需要减少积分，请设置为负数。比如要减10分请填写："-10"</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">中评</label>
+				<div class="col-sm-10">
+					<input name="level_1" value="{$conf['comment_level_1_point']}"  type="text" class="form-control" placeholder="请输入中评增减积分" />
+					<label style="font-size:12px;color:red">如果需要减少积分，请设置为负数。比如要减10分请填写："-10"</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">差评</label>
+				<div class="col-sm-10">
+					<input name="level_2" value="{$conf['comment_level_2_point']}" type="text" class="form-control" placeholder="请输入差评增减积分" />
+					<label style="font-size:12px;color:red">如果需要减少积分，请设置为负数。比如要减10分请填写："-10"</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<input type="submit" class="btn btn-default" name="comment_credit_score_submit" value="设置">
+					<input type="hidden" name="token" value="{$_W['token']}" />
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{else if $op == 'template'}
+<div class="panel panel-default">
+	<div class="panel-heading">
+		乘客评论模板管理
+	</div>
+	<div class="panel-body">
+		<table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+			<thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+				<tr>
+					<th style="text-align: center">评论</th>
+					<th style="text-align: center;width:100px">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $template $index $item}
+					<tr id="{$item['id']}">
+						<td style="text-align: center">{$item['content']}</td>
+						<td style="text-align: center">
+							<a href="javascript:delete_pin({$item['id']})" style="color:red"><i class="fa fa-minus-square"></i></a>
+						</td>
+					</tr>
+				{/loop}
+			</tbody>
+		</table>
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				添加评论模板
+			</div>
+			<div class="panel-body">
+				<form class="form-horizontal" role="form" action="" method="POST">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">评论</label>
+						<div class="col-sm-10">
+							<input name="content"  type="text" class="form-control" placeholder="请输入评论" />
+						</div>
+				  	</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<input type="submit" class="btn btn-default" name="add" value="添加">
+							<input type="hidden" name="token" value="{$_W['token']}" />
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+function delete_pin(id) {
+	var r = confirm("删除模板！");
+	if(r) {
+		$.post("{php echo $this->createWeburl('comment',array('op'=>delete_template))}",{
+				id:id
+			},
+			function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					alert("删除成功！");
+					$("#"+id).remove();
+				}
+			}
+		);
+	}
+}
+</script>
+{else if $op == 'owner_template'}
+<div class="panel panel-default">
+	<div class="panel-heading">
+		车主评论模板管理
+	</div>
+	<div class="panel-body">
+		<table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+			<thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+				<tr>
+					<th style="text-align: center">评论</th>
+					<th style="text-align: center;width:100px">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $template $index $item}
+					<tr id="{$item['id']}">
+						<td style="text-align: center">{$item['content']}</td>
+						<td style="text-align: center">
+							<a href="javascript:delete_pin({$item['id']})" style="color:red"><i class="fa fa-minus-square"></i></a>
+						</td>
+					</tr>
+				{/loop}
+			</tbody>
+		</table>
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				添加评论模板
+			</div>
+			<div class="panel-body">
+				<form class="form-horizontal" role="form" action="" method="POST">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">评论</label>
+						<div class="col-sm-10">
+							<input name="content"  type="text" class="form-control" placeholder="请输入评论" />
+						</div>
+				  	</div>
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<input type="submit" class="btn btn-default" name="add" value="添加">
+							<input type="hidden" name="token" value="{$_W['token']}" />
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+function delete_pin(id) {
+	var r = confirm("删除模板！");
+	if(r) {
+		$.post("{php echo $this->createWeburl('comment',array('op'=>delete_template))}",{
+				id:id
+			},
+			function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					alert("删除成功！");
+					$("#"+id).remove();
+				}
+			}
+		);
+	}
+}
+</script>
+{else if $op == 'suggestion'}
+<div class="panel panel-default">
+	<div class="panel-heading">
+		意见建议管理
+	</div>
+	<div class="panel-body">
+		<table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+			<thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+				<tr>
+					<th style="text-align: center;width:50px">头像</th>
+					<th style="text-align: center;width:100px">姓名</th>
+					<th style="text-align: center;width:100px">联系电话</th>
+					<th style="text-align: center;">建议</th>
+					<th style="text-align: center;width:120px">提交时间</th>
+					<th style="text-align: center;width:100px">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $index $item}
+					<tr id="{$item['id']}">
+						<td style="text-align: center">
+							<img src="{$item['avatar']}" width="30px" height="30px" style="border-radius: 15px">
+						</td>
+						<td style="text-align: center">
+							{$item['name']}
+						</td>
+						<td style="text-align: center">
+							{$item['mobile']}
+						</td>
+						<td style="text-align: center">
+							{$item['content']}
+						</td>
+						<td style="text-align: center">
+							{php echo date('Y-m-d H:i',$item['release_time'])}
+						</td>
+						<td style="text-align: center">
+							<a href="javascript:delete_suggestion({$item['id']})" style="color:red"><i class="fa fa-minus-square"></i></a>
+						</td>
+					</tr>
+				{/loop}
+			</tbody>
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+	function delete_suggestion(id) {
+		$.post("{php echo $this->createWeburl('comment',array('op'=>'delete_suggestion'))}",{
+				id:id
+			},function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno == 0) {
+					tankuang(200,'删除成功！');
+					$("#"+id).remove();
+				}
+			}
+		);
+	}
+</script>
+{/if}
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;top:50%;width:100%;height:30px;line-height:30px;margin-top:-15px;"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>

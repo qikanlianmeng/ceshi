@@ -1,0 +1,130 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=2" />
+<style>
+	body {
+		background-color:#F3F3F3;
+	}
+    .mui-bar-tab .mui-tab-item.mui-active {
+        color: {$conf['color']};
+    }
+    a:hover {
+        text-decoration: none
+    }
+</style>
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+{if $menu_list}
+    <nav class="mui-bar mui-bar-tab">
+        {loop $menu_list $index $item}
+            {if $general_release_menu['display']=='1'}
+                <a class="mui-tab-item{if $item['name_en']=='general_release'} mui-active{/if}" href="{$item['url']}">
+                {if $item['name_en'] != 'general_release'}
+                    <div style="height:24px;padding-top:2px">
+                        {if $item['icon'] != ''}
+                        <img src="{php if($item['name_en']=='general_release') echo tomedia($item['icon_active']);else echo tomedia($item['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_pinche/template/style/img/{$item['name_en']}{php if($item['name_en']=='general_release') echo '_active';}.png'" width="20px" height="20px" />
+                        {else}
+                            <i class="iconfont icon-{$item['icon_name']}"></i>
+                        {/if}
+                    </div>
+                    <div style="height:21px;font-size:12px"><span class="mui-tab-label">{$item['customer_name']}</span></div>
+                {/if}
+                </a>
+            {/if}
+        {/loop}
+    </nav>
+
+{if $general_release_menu['display'] == '1'}
+<div style="width:50px;height:65px;position: fixed;bottom:0px;left:50%;margin-left:-25px;z-index: 11">
+        <div style="width:45px;height:45px;line-height: 45px;margin:0px auto;border-radius: 22.5px;background-color: #F7F7F7;text-align:center;color:{$conf['color']}" onclick="location.href='{php echo $this->createMobileurl('general_release')}'">
+            {if $general_release_menu['icon'] != ''}
+            <img src="{php echo tomedia($release_menu['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_reserve_service/template/style/img/release.png'" width="40px" height="40px" />
+            {else}
+                <i class="iconfont icon-{$general_release_menu['icon_name']}" style="font-size:45px"></i>
+            {/if}
+        </div>
+        <div style="width:50px;height:20px;background-color: #F7F7F7;margin:0px auto;text-align: center;font-size:12px;color:{$conf['color']}">
+            <span class="mui-tab-label">{$general_release_menu['customer_name']}</span>
+        </div>
+    </div>
+{/if}
+{/if}
+<div style="line-height: 50px;text-align: center;color:{$conf['color']};font-size:30px;">
+	发布中心
+</div>
+<div style="padding:10px 0px 10px 10px;background-color:white;margin-top:20px">
+    {if $conf['pin_mode_on']=='1'}
+	<div onclick="location.href='{php echo $this->createMobileurl('travel_release_pin')}'">
+		<div style="height:60px;width:60px;text-align: center;line-height: 60px">
+			<i class="iconfont icon-icon" style="font-size:50px;color:{$conf['color']};position:relative;top:-6px"></i>
+		</div>
+		<div style="width:40px;height:60px;margin:-60px 0px 0px auto;text-align: center;line-height: 60px">
+			<i class="iconfont icon-right"></i>
+		</div>
+		<div style="margin:-60px 40px 0px 60px;height:60px">
+			<div style="line-height:40px;font-size:20px">发布人找车[拼车]</div>
+            <div style="line-height: 20px;font-size:12px;color:grey">{$conf['pin_release_travel_note']}</div>
+		</div>
+	</div>
+    {/if}
+    {if $conf['fast_mode_on']=='1'}
+	<div onclick="location.href='{php echo $this->createMobileurl('fast')}'">
+		<div style="height:60px;width:60px;text-align: center;line-height: 60px">
+			<i class="iconfont icon-icon" style="font-size:50px;color:{$conf['color']}"></i>
+		</div>
+		<div style="width:40px;height:60px;margin:-60px 0px 0px auto;text-align: center;line-height: 60px">
+			<i class="iconfont icon-right"></i>
+		</div>
+		<div style="margin:-60px 40px 0px 60px;height:60px">
+			<div style="line-height:40px;font-size:20px">发布人找车[快车]</div>
+            <div style="line-height: 20px;font-size:12px;color:grey">{$conf['fast_release_travel_note']}</div>
+		</div>
+	</div>
+    {/if}
+    {if $conf['cargo_mode_on']=='1'}
+    <div onclick="location.href='{php echo $this->createMobileurl('cargo_release')}'">
+        <div style="height:60px;width:60px;text-align: center;line-height: 60px">
+            <i class="iconfont icon-icon" style="font-size:50px;color:{$conf['color']}"></i>
+        </div>
+        <div style="width:40px;height:60px;margin:-60px 0px 0px auto;text-align: center;line-height: 60px">
+            <i class="iconfont icon-right"></i>
+        </div>
+        <div style="margin:-60px 40px 0px 60px;height:60px">
+            <div style="line-height:40px;font-size:20px">发布人找车[带货]</div>
+            <div style="line-height: 20px;font-size:12px;color:grey">{$conf['cargo_release_travel_note']}</div>
+        </div>
+    </div>
+    {/if}
+</div>
+<div style="padding:10px 0px 10px 10px;background-color:white;margin-top:20px">
+    {if $conf['pin_mode_on']=='1'}
+    <div onclick="location.href='{php echo $this->createMobileurl('release_pin')}'">
+        <div style="height:60px;width:60px;text-align: center;line-height: 60px">
+            <i class="iconfont icon-zhaorendaiban" style="font-size:50px;color:{$conf['owner_color']}"></i>
+        </div>
+        <div style="width:40px;height:60px;margin:-60px 0px 0px auto;text-align: center;line-height: 60px">
+            <i class="iconfont icon-right"></i>
+        </div>
+        <div style="margin:-60px 40px 0px 60px;height:60px">
+            <div style="line-height:40px;font-size:20px">发布车找人</div>
+            <div style="line-height: 20px;font-size:12px;color:grey">{$conf['pin_release_pin_note']}</div>
+        </div>
+    </div>
+    {/if}
+    {if $conf['cargo_mode_on']=='1'}
+    <div onclick="location.href='{php echo $this->createMobileurl('cargo_line_release')}'">
+        <div style="height:60px;width:60px;text-align: center;line-height: 60px">
+            <i class="iconfont icon-zhaorendaiban" style="font-size:50px;color:{$conf['owner_color']}"></i>
+        </div>
+        <div style="width:40px;height:60px;margin:-60px 0px 0px auto;text-align: center;line-height: 60px">
+            <i class="iconfont icon-right"></i>
+        </div>
+        <div style="margin:-60px 40px 0px 60px;height:60px">
+            <div style="line-height:40px;font-size:20px">发布拼货专线</div>
+            <div style="line-height: 20px;font-size:12px;color:grey">{$conf['cargo_release_pin_note']}</div>
+        </div>
+    </div>
+    {/if}
+</div>

@@ -1,0 +1,710 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=5" />
+<link rel="stylesheet" href="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.css" />
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.js"></script>
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/components/districtpicker/mui.city.data-3.js"></script>
+<style>
+	body {
+		background-color:#F3F3F3;
+	}
+    .mui-bar-tab .mui-tab-item.mui-active {
+        color: {$conf['color']};
+    }
+    a:hover {
+        text-decoration: none
+    }
+
+    .item {
+        margin:0px 10px;
+        border:1px #E0E0E0 solid;
+        padding:8px 5px;
+        font-size:12px;
+    }
+    .item_border_top_0 {
+        border-top:0px;
+    }
+    .item_content {
+        height:20px;
+    }
+    .item_1 {
+        color: grey;
+        border-right:1px #E0E0E0 solid;
+        width:60px;
+        line-height: 20px
+    }
+    .item_2_0 {
+        position: relative;
+        top:-20px;
+        margin-left:60px;
+        margin-right:40px;
+    }
+    .item_2_1 {
+        position: relative;
+        top:-20px;
+        margin-left:60px;
+    }
+    .item_2_2 {
+        position: relative;
+        top:-20px;
+        margin-left:60px;
+        margin-right:70px;
+    }
+    .item_3_0 {
+        position: relative;
+        top:-40px;
+        margin:0px 0px 0px auto;
+        width:40px;
+        text-align: right;
+        margin-right:10px;
+        line-height: 20px
+    }
+    .item_3_1 {
+        position: relative;
+        top:-40px;
+        margin:0px 0px 0px auto;
+        width:70px;
+        line-height: 20px;
+        border-left:1px #E0E0E0 solid;
+        padding-left:5px;
+    }
+</style>
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;}); 
+</script>
+<div id="main_panel">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-arrowleft mui-pull-left mui-plus-visble" href="javascript:history.go(-1)"></a>
+        <h1 class="mui-title">{php echo $op == 'edit' ? '修改' : '发布'}拼货专线</h1>
+    </header>
+    <div style="height:50px"></div>
+    <div class="container" style="padding:0px">
+        <label style="padding-left:10px;color:{$conf['color']};font-weight: normal;margin-top:10px;margin-bottom:3px">专线信息</label>
+        <div class="mui-input-row" style="background-color:white;border-top:1px #F3F3F3 solid">
+            <label>专线名称</label>
+            <input id="cl_name" value="{$line['name']}" type="text" placeholder="请输入专线名称" />
+        </div>
+        {if $conf['cargo_goods_line_mode'] == '0'}
+        <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+            <div style="width:30px;height:40px;line-height: 40px;color:#3BBBA2;text-align: center">
+                <i class="fa fa-circle-o"></i>
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px 30px">
+                <input id="departure_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="出发地" value="{php echo $line['on'] == '1' ? $this->rtrim_cn($line['departure_city'],'市') . '-' . $line['departure_station'] . '(' . $line['departure_district'] . ')' : '-'}" onfocus="blur()" onclick="sel_departure_place()" />
+                <input type="hidden" id="lng" />
+                <input type="hidden" id="lat" />
+            </div>
+        </div>
+        <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+            <div style="width:30px;height:40px;line-height: 40px;color:#FB8641;text-align: center">
+                <i class="fa fa-circle"></i>
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px 30px">
+                <input id="terminal_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="目的地" value="{php echo $line['on']  == '1' ? $this->rtrim_cn($line['terminal_city'],'市') . '-' . $line['terminal_station'] . '(' . $line['terminal_district'] . ')' : '-'}" onfocus="blur()" onclick="sel_terminal_place()" />
+                <input type="hidden" id="terminal_lng" />
+                <input type="hidden" id="terminal_lat" />
+            </div>
+        </div>
+        {else}
+        <div style="background-color: white;height:80px;border-top:1px #F3F3F3 solid;padding:10px 0px">
+            <div style="width:30px;height:60px;line-height: 60px;color:#3BBBA2;text-align: center">
+                <i class="fa fa-circle-o"></i>
+            </div>
+            <div style="height:60px;margin:-60px 0px 0px 30px;padding-left:10px">
+                <div style="height:30px">
+                    <input id="departure_area" value="{$line['departure_prov']}{$line['departure_city']}{$line['departure_district']}" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:30px;font-size:16px" placeholder="出发地" onfocus="blur()" />
+                </div>
+                <div style="height:30px">
+                    <input id="departure_station_2" value="{$line['departure_station']}" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:30px;font-size:14px" placeholder="详细地址">
+                    <input type="hidden" id="release_lng" />
+                    <input type="hidden" id="release_lat" />
+                </div>
+            </div>
+        </div>
+        <div style="background-color: white;height:80px;border-top:1px #F3F3F3 solid;padding:10px 0px">
+            <div style="width:30px;height:60px;line-height: 60px;color:#FB8641;text-align: center">
+                <i class="fa fa-circle"></i>
+            </div>
+            <div style="height:60px;margin:-60px 0px 0px 30px;padding-left:10px">
+                <div style="height:30px">
+                    <input id="terminal_area" value="{$line['terminal_prov']}{$line['terminal_city']}{$line['terminal_district']}" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:30px;font-size:16px" placeholder="目的地" onfocus="blur()" />
+                </div>
+                <div style="height:30px">
+                    <input id="terminal_station_2" value="{$line['terminal_station']}" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:30px;font-size:14px" placeholder="详细地址">
+                    <input type="hidden" id="terminal_lng" />
+                    <input type="hidden" id="terminal_lat" />
+                </div>
+            </div>
+        </div>
+        {/if}
+        <div style="background-color:white;height:50px;border-top:1px #F3F3F3 solid">
+            <div style="width:60px;height:50px;line-height: 50px;text-align:center;font-size:16px;color:grey">
+                途径：
+            </div>
+            <div style="margin:-50px 0px 0px 60px;height:50px">
+                <input id="stations" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:50px" value="{$line['stations_str']}" placeholder="请输入中途经过的地址，多个地址请用,逗号隔开" />
+            </div>
+        </div>
+        <label style="padding-left:10px;color:{$conf['color']};font-weight: normal;margin-top:10px;margin-bottom:3px">运价</label>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-6" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:60px;height:40px;line-height: 40px;text-align: center">
+                            轻货
+                        </div>
+                        <div style="width:40px;height:40px;line-height: 40px;text-align: center;margin:-40px 0px 0px auto">
+                            元/方
+                        </div>
+                        <div style="height:40px;margin:-40px 40px 0px 60px">
+                            <input id="price_per_f" value="{$line['price_per_f']}" type="number" step="0.01" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="轻货运价" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6" style="padding:0px">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:50px;height:40px;line-height: 40px;text-align: center">
+                            重货
+                        </div>
+                        <div style="width:40px;height:40px;line-height: 40px;text-align: center;margin:-40px 0px 0px auto">
+                            元/吨
+                        </div>
+                        <div style="height:40px;margin:-40px 40px 0px 50px">
+                            <input id="price_per_d" value="{$line['price_per_d']}" type="number" step="0.01" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="重货运价" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mui-input-row mui-checkbox" style="background-color:white;border-top:1px #F3F3F3 solid">
+            <label style="margin-bottom:0px">运价含税</label>
+            <input name="price_include_tax" type="checkbox" {if $line['price_include_tax']=='1'}checked{/if}>
+        </div>
+        <label style="padding-left:10px;color:{$conf['color']};font-weight: normal;margin-top:10px;margin-bottom:3px">发站服务</label>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:70px;height:40px;line-height: 40px;text-align: center">
+                            发货服务
+                        </div>
+                        <div style="height:40px;margin:-40px 0px 0px 70px">
+                            <input id="note" readonly="true" onfocus="blur()" onclick="sel_note()" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:40px" value="{$line['note']}" placeholder="发货服务" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:70px;height:40px;line-height: 40px;text-align: center">
+                            业务电话
+                        </div>
+                        <div style="height:40px;margin:-40px 40px 0px 70px">
+                            <input id="start_tel" value="{$line['start_tel']}" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="业务电话" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-6" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:60px;height:40px;line-height: 40px;text-align: center">
+                            联系人
+                        </div>
+                        <div style="height:40px;margin:-40px 0px 0px 60px">
+                            <input id="start_name" value="{$line['start_name']}" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="联系人" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6" style="padding:0px">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:50px;height:40px;line-height: 40px;text-align: center">
+                            手机号
+                        </div>
+                        <div style="height:40px;margin:-40px 0px 0px 50px">
+                            <input id="start_mobile" value="{$line['start_mobile']}" type="number" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="手机号" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="note_panel" style="position: fixed;bottom:0px;min-height:200px;width:100%;background-color:white;padding:5px;display:none;z-index: 999">
+            <div style="border-bottom:1px #F3F3F3 solid">
+                <div style="width:60px;height:40px">
+                    <button class="mui-btn mui-btn-xs" onclick="cancel_note()">取消</button>
+                </div>
+                <div style="margin:-40px 60px 0px 60px;height:40px;line-height: 40px;text-align: center">
+                    <label>发货服务</label>
+                </div>
+                <div style="width:60px;height:40px;margin:-40px 0px 0px auto">
+                    <button class="mui-btn mui-btn-xs mui-btn-success" onclick="confirm_note()">确认</button>
+                </div>
+            </div>
+            <div style="padding-top:10px">
+                <div style="text-align: center;padding:10px">
+                    <i class="iconfont icon-tixing"></i>填写下列信息，方便乘客与你沟通！
+                </div>
+                {loop $note_template_list $index $item}
+                    <button id="note_{$item['id']}" class="mui-btn mui-btn-default" onclick="change_note_status({$item['id']},'{$item['content']}')">{$item['content']}</button>
+                {/loop}
+            </div>
+        </div>
+        <label style="padding-left:10px;color:{$conf['color']};font-weight: normal;margin-top:10px;margin-bottom:3px">到站服务</label>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:70px;height:40px;line-height: 40px;text-align: center">
+                            到货服务
+                        </div>
+                        <div style="height:40px;margin:-40px 0px 0px 70px">
+                            <input id="arrival_note" readonly="true" onfocus="blur()" onclick="sel_arrival_note()" style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:40px" value="{$line['arrival_note']}" placeholder="到货服务" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:70px;height:40px;line-height: 40px;text-align: center">
+                            业务电话
+                        </div>
+                        <div style="height:40px;margin:-40px 40px 0px 70px">
+                            <input id="arrival_tel" value="{$line['arrival_tel']}" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="业务电话" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-6" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:60px;height:40px;line-height: 40px;text-align: center">
+                            联系人
+                        </div>
+                        <div style="height:40px;margin:-40px 0px 0px 60px">
+                            <input id="arrival_name" value="{$line['arrival_name']}" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="联系人" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6" style="padding:0px">
+                    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                        <div style="width:50px;height:40px;line-height: 40px;text-align: center">
+                            手机号
+                        </div>
+                        <div style="height:40px;margin:-40px 0px 0px 50px">
+                            <input id="arrival_mobile" value="{$line['arrival_mobile']}" type="number" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="手机号" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="arrival_note_panel" style="position: fixed;bottom:0px;min-height:200px;width:100%;background-color:white;padding:5px;display:none;z-index: 999">
+            <div style="border-bottom:1px #F3F3F3 solid">
+                <div style="width:60px;height:40px">
+                    <button class="mui-btn mui-btn-xs" onclick="cancel_arrival_note()">取消</button>
+                </div>
+                <div style="margin:-40px 60px 0px 60px;height:40px;line-height: 40px;text-align: center">
+                    <label>到货服务</label>
+                </div>
+                <div style="width:60px;height:40px;margin:-40px 0px 0px auto">
+                    <button class="mui-btn mui-btn-xs mui-btn-success" onclick="confirm_arrival_note()">确认</button>
+                </div>
+            </div>
+            <div style="padding-top:10px">
+                <div style="text-align: center;padding:10px">
+                    <i class="iconfont icon-tixing"></i>填写下列信息，方便乘客与你沟通！
+                </div>
+                {loop $arrival_note_template_list $index $item}
+                    <button id="arrival_note_{$item['id']}" class="mui-btn mui-btn-default" onclick="change_arrival_note_status({$item['id']},'{$item['content']}')">{$item['content']}</button>
+                {/loop}
+            </div>
+        </div>
+        <div style="padding:10px">
+            {if $op == 'index'}
+            <button class="mui-btn mui-btn-warning mui-btn-block" onclick="release_submit()">确认发布</button>
+            {else}
+            <button class="mui-btn mui-btn-warning mui-btn-block" onclick="release_submit()">修改</button>
+            {/if}
+        </div>
+    </div>
+</div>
+<div style="height:50px"></div>
+
+
+
+<iframe id="mapPage" width="100%" height="100%" frameborder=0 
+    src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=7G4BZ-JFT3X-5TQ4M-ZDK7B-AFSP5-NAFV2&referer=myapp" style="display:none">
+</iframe> 
+
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp"></script>
+<script type="text/javascript" src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/array.js"></script>
+<script type="text/javascript">
+    String.prototype.trim = function (char, type) {
+        if (char) {
+            if (type == 'left') {
+                return this.replace(new RegExp('^\\'+char+'+', 'g'), '');
+            } else if (type == 'right') {
+                return this.replace(new RegExp('\\'+char+'+$', 'g'), '');
+            }
+            return this.replace(new RegExp('^\\'+char+'+|\\'+char+'+$', 'g'), '');
+        }
+        return this.replace(/^\s+|\s+$/g, '');
+    };
+    var departure_prov = '{$line['departure_prov']}';
+    var departure_station = '{$line['departure_station']}';
+    var departure_district = '{$line['departure_district']}';
+    var departure_city = '{$line['departure_city']}';
+    var terminal_prov = '{$line['terminal_prov']}';
+    var terminal_station = '{$line['terminal_station']}';
+    var terminal_district = '{$line['terminal_district']}';
+    var terminal_city = '{$line['terminal_city']}';
+    var cur_place = '0';
+    var is_init = '{php echo $line['on']=='1' ? '1' : '0'}';
+    {if $conf['cargo_goods_line_mode'] == '0'}
+    var geocoder = new qq.maps.Geocoder({
+        complete:function(result){
+            var addressComponents = result.detail.addressComponents;
+            if(is_init == '0') {
+                departure_prov = addressComponents.province;
+                departure_city = addressComponents.city;
+                departure_district = addressComponents.district;
+                departure_station = addressComponents.street;
+                $("#departure_station").val(addressComponents.city.trim('市','right')+'-'+addressComponents.street+'('+addressComponents.district+')');
+                is_init = '1';
+            } else {
+                if(cur_place == '0') {
+                    departure_prov = addressComponents.province;
+                    departure_district = addressComponents.district;
+                    $("#departure_station").val(departure_city.trim('市','right')+'-'+departure_station+'('+departure_district+')');
+                } else if (cur_place == '1') {
+                    terminal_prov = addressComponents.province;
+                    terminal_district = addressComponents.district;
+                    $("#terminal_station").val(terminal_city.trim('市','right')+'-'+terminal_station+'('+terminal_district+')');
+                }
+            }
+        }
+    });   
+    {if !($line['on'] == '1')}
+    wx.config(jssdkconfig);
+    wx.ready(function(){
+        wx.getLocation({
+            type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+            success: function (res) {
+                $("#lng").val(res.longitude);
+                $("#lat").val(res.latitude);
+                var coord=new qq.maps.LatLng(res.latitude,res.longitude);
+                geocoder.getAddress(coord);
+            }
+        });     
+    });
+    {/if}
+    $(function(){
+        $("#mapPage").attr('width',window.screen.width);
+        $("#mapPage").attr('height',window.screen.height);
+    })
+    window.addEventListener('message', function(event) {
+        // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
+        var loc = event.data;
+        if (loc && loc.module == 'locationPicker') {//防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
+            if(cur_place == '0') {
+                if(loc.poiname != '我的位置') {
+                    departure_city = loc.cityname;
+                    departure_station = loc.poiname;
+                }
+                $("#lng").val(loc.latlng.lng);
+                $("#lat").val(loc.latlng.lat);
+            } else if (cur_place == '1') {
+                if(loc.poiname != '我的位置') {
+                    terminal_city = loc.cityname;
+                    terminal_station = loc.poiname;
+                }
+                $("#terminal_lng").val(loc.latlng.lng);
+                $("#terminal_lat").val(loc.latlng.lat);
+            }
+            var coord=new qq.maps.LatLng(loc.latlng.lat,loc.latlng.lng);
+            geocoder.getAddress(coord);
+            $("#mapPage").hide();
+            $("#main_panel").show();
+        }                                
+    }, false); 
+    function sel_departure_place() {
+        cur_place = '0';
+        $("#main_panel").hide();
+        $("#mapPage").show();
+    }
+    function sel_terminal_place() {
+        cur_place = '1';
+        $("#main_panel").hide();
+        $("#mapPage").show();
+    }
+    {else}
+    $("#departure_station_2").change(function(){
+        departure_station = $("#departure_station_2").val();
+    })
+    $("#terminal_station_2").change(function(){
+        terminal_station = $("#terminal_station_2").val();
+    })
+    $("#departure_area").click(function(){
+        var cityPicker = new mui.PopPicker({layer:3});
+        cityPicker.setData(cityData3);
+        cityPicker.show(function(items){
+            $("#departure_area").val((items[0] || {}).text + (items[1] || {}).text + (items[2] || {}).text);
+            departure_prov = (items[0] || {}).text;
+            departure_city = (items[1] || {}).text;
+            departure_district = (items[2] || {}).text;
+        })
+    })
+    $("#terminal_area").click(function(){
+        var cityPicker = new mui.PopPicker({layer:3});
+        cityPicker.setData(cityData3);
+        cityPicker.show(function(items){
+            $("#terminal_area").val((items[0] || {}).text + (items[1] || {}).text + (items[2] || {}).text);
+            terminal_prov = (items[0] || {}).text;
+            terminal_city = (items[1] || {}).text;
+            terminal_district = (items[2] || {}).text;
+        })
+    })
+    {/if}
+
+
+    Date.prototype.format = function(format) {
+        var date = {
+            "M+": this.getMonth() + 1,
+            "d+": this.getDate(),
+            "h+": this.getHours(),
+            "m+": this.getMinutes(),
+            "s+": this.getSeconds(),
+            "q+": Math.floor((this.getMonth() + 3) / 3),
+            "S+": this.getMilliseconds()
+        };
+        if (/(y+)/i.test(format)) {
+            format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+        }
+        for (var k in date) {
+            if (new RegExp("(" + k + ")").test(format)) {
+                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+            }
+        }
+        return format;
+    }
+    var selected_notes = new Array();
+    function sel_note() {
+        $("#note_panel").show();
+    }
+    function change_note_status(id,content) {
+        if(in_array(selected_notes,content)) {
+            removeByValue(selected_notes,content);
+            $("#note_"+id).removeClass('mui-btn-warning');
+        } else {
+            selected_notes.push(content);
+            $("#note_"+id).addClass('mui-btn-warning');
+        }
+    }
+    function confirm_note() {
+        var html = '';
+        for(var i=0;i<selected_notes.length; i++) {
+            if(i > 0) {
+                html += ';';
+            }
+            html += selected_notes[i];
+        }
+        $("#note").val(html);
+        cancel_note();
+    }
+    function cancel_note() {
+        $("#note_panel").hide();
+    }
+
+    var selected_arrival_notes = new Array();
+    function sel_arrival_note() {
+        $("#arrival_note_panel").show();
+    }
+    function change_arrival_note_status(id,content) {
+        if(in_array(selected_arrival_notes,content)) {
+            removeByValue(selected_arrival_notes,content);
+            $("#arrival_note_"+id).removeClass('mui-btn-warning');
+        } else {
+            selected_arrival_notes.push(content);
+            $("#arrival_note_"+id).addClass('mui-btn-warning');
+        }
+    }
+    function confirm_arrival_note() {
+        var html = '';
+        for(var i=0;i<selected_arrival_notes.length; i++) {
+            if(i > 0) {
+                html += ';';
+            }
+            html += selected_arrival_notes[i];
+        }
+        $("#arrival_note").val(html);
+        cancel_arrival_note();
+    }
+    function cancel_arrival_note() {
+        $("#arrival_note_panel").hide();
+    }
+    function release_submit() {
+        if($("#cl_name").val() == '') {
+            alert("请输入专线名称！");
+            $("#cl_name").focus();
+        } else if($("#departure_station").val() == '') {
+            alert("请输入出发站！");
+            $("#departure_station").focus();
+        } else if($("#terminal_station").val() == '') {
+            alert("请输入目的站！");
+            $("#terminal_station").focus();
+        } else if ($("#price_per_f").val() < 0) {
+            alert("请输入有效轻货运价！");
+            $("#price_per_f").focus();
+        } else if ($("#price_per_d").val() < 0) {
+            alert("请输入有效重货运价！");
+            $("#price_per_d").focus();
+        } else if ($("#start_tel").val() == '') {
+            alert("请输入发站业务电话！");
+            $("#start_tel").focus();
+        } else if ($("#start_name").val() == '') {
+            alert("请输入发站联系人！");
+            $("#start_name").focus();
+        } else if ($("#start_mobile").val() == '') {
+            alert("请输入发站联系人手机号！");
+            $("#start_mobile").focus();
+        } else if ($("#arrival_tel").val() == '') {
+            alert("请输入到站业务电话！");
+            $("#arrival_tel").focus();
+        } else if ($("#arrival_name").val() == '') {
+            alert("请输入到站联系人！");
+            $("#arrival_name").focus();
+        } else if ($("#arrival_mobile").val() == '') {
+            alert("请输入到站联系人手机号！");
+            $("#arrival_mobile").focus();
+        } else {
+            $.post("{php echo $this->createMobileurl('cargo_line_release',array('op'=>'release_submit'))}",{
+                    is_edit:'{php echo $op == 'edit' ? '1' : '0'}',
+                    id:{php echo $_GPC['id'] > 0 ? $_GPC['id'] : 0},
+                    name: $("#cl_name").val(),
+                    departure_prov: departure_prov,
+                    departure_station:departure_station,
+                    departure_district: departure_district,
+                    departure_city:departure_city,
+                    terminal_prov: terminal_prov,
+                    terminal_station:terminal_station,
+                    terminal_district: terminal_district,
+                    terminal_city:terminal_city,
+                    lng:$("#lng").val(),
+                    lat:$("#lat").val(),
+                    terminal_lng:$("#terminal_lng").val(),
+                    terminal_lat:$("#terminal_lat").val(),
+                    note: $("#note").val(),
+                    stations:$("#stations").val(),
+                    price_per_f: $("#price_per_f").val(),
+                    price_per_d: $("#price_per_d").val(),
+                    price_include_tax: $("input[name='price_include_tax']:checked").val() == 'on' ? '1' : '0',
+                    arrival_note: $("#arrival_note").val(),
+                    start_tel: $("#start_tel").val(),
+                    start_name: $("#start_name").val(),
+                    start_mobile: $("#start_mobile").val(),
+                    arrival_tel: $("#arrival_tel").val(),
+                    arrival_name: $("#arrival_name").val(),
+                    arrival_mobile: $("#arrival_mobile").val(),
+                },function(resp) {
+                    console.log(resp);
+                    resp = $.parseJSON(resp);
+                    if(resp.message.errno == '0') {
+                        {if $op=='edit'}
+                        mui.alert("修改成功！");
+                        {else}
+                        mui.alert("发布成功！",function(){
+                        	location.href="{php echo $this->createMobileurl('store_line')}";
+                        })
+                        {/if}
+                    } else if (resp.message.errno == '10') {
+                        location.href="{php echo murl('entry',array('m'=>'navlange_member','do'=>'login'),true,true)}";
+                    } else {
+                        {if $op=='edit'}
+                        mui.alert("修改失败！");
+                        {else}
+                    	mui.alert("发布失败！");
+                        {/if}
+                    }
+                }
+            );
+        }
+    }
+</script>
+
+{if $conf['pin_departure_station_mode']=='1'}
+<div id="departure_station_panel" style="display:none;z-index:999;position: fixed;top:0px;min-height: 100%;width:100%;background-color: white">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-arrowleft" href="javascript:cancel_departure_station_sel()"></a>
+        <h1 class="mui-title">选择出发站</h1>
+    </header>
+    <div style="height:50px"></div>
+    <div>
+        {loop $departure_station $index $item}
+            <div style="margin:5px 10px;border:1px grey solid;border-radius: 3px;padding:5px" onclick="sel_departure_station_confirm('{$item['name']}')">
+                <span class="mui-icon mui-icon-checkmarkempty"></span>&nbsp;{$item['name']}
+            </div>
+        {/loop}
+    </div>
+</div>
+<script>
+function cancel_departure_station_sel() {
+    $("#departure_station_panel").hide();
+    $("#main_panel").show();
+}
+function sel_departure_station_confirm(name) {
+    $("#departure_station").val(name);
+    $("#departure_station_panel").hide();
+    $("#main_panel").show();
+}
+</script>
+{/if}
+
+{if $conf['pin_terminal_station_mode']=='1'}
+<div id="terminal_station_panel" style="display:none;z-index:999;position: fixed;top:0px;min-height: 100%;width:100%;background-color: white">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-arrowleft" href="javascript:cancel_terminal_station_sel()"></a>
+        <h1 class="mui-title">选择终点站</h1>
+    </header>
+    <div style="height:50px"></div>
+    <div>
+        {loop $terminal_station $index $item}
+            <div style="margin:5px 10px;border:1px grey solid;border-radius: 3px;padding:5px" onclick="sel_terminal_station_confirm('{$item['name']}')">
+                <span class="mui-icon mui-icon-checkmarkempty"></span>&nbsp;{$item['name']}
+            </div>
+        {/loop}
+    </div>
+</div>
+<script>
+function cancel_terminal_station_sel() {
+    $("#terminal_station_panel").hide();
+    $("#main_panel").show();
+}
+function sel_terminal_station_confirm(name) {
+    $("#terminal_station").val(name);
+    $("#terminal_station_panel").hide();
+    $("#main_panel").show();
+}
+</script>
+{/if}
+
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;bottom:30px;width:100%;height:30px;line-height:30px;margin-top:-15px;z-index:1000"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>

@@ -1,0 +1,805 @@
+<?php
+$this->qc_template('header');
+?>
+<ol class="breadcrumb">
+    {if $op == 'edit' OR $op == 'wx' OR $op == 'admin' OR $op == 'post'}
+    <li>
+        <a href="{php echo $this->createWeburl('store')}">商家管理</a>
+    </li>
+    {/if}
+    <li class="active">
+        {if $op == 'index'}
+            商家管理
+        {else if $op == 'edit'}
+            编辑商家
+        {else if $op == 'wx'}
+            绑定微信
+        {else if $op == 'admin'}
+            管理员
+        {else if $op == 'post'}
+            添加商家
+        {/if}
+    </li>
+</ol>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_reserve_show/template/style/qc_font/iconfont.css?&v=4">
+{if $op == 'index'}
+	<div class="panel panel-default">
+        <div class="panel-heading">商家列表</div>
+	    <div class="panel-body">
+            <div style="text-align: right">
+                <button class="btn btn-primary" onclick="location.href='{php echo $this->createWeburl('store',array('op'=>'post'))}'">添加商家</button>
+            </div>
+			<table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+				<thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+					<tr>
+                        <th style="width:60px">排序</th>
+					    <th style="text-align: center;width:150px">商家名称</th>
+					    <th style="text-align: center">商家地址</th>
+					    <th style="text-align: center;width:130px">联系电话</th>
+                        {if $permission=='ADMIN'}
+                        <th style="text-align: center;width:50px">默认</th>
+                        {/if}
+                        <th style="text-align: center;width:120px">
+                            业绩/收入
+                        </th>
+                        <th style="text-align: center;width:80px">
+                            状态
+                        </th>
+					    <th style="text-align: center;width:150px">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $store $index $item}
+						<tr id="{$item['id']}">
+                            <td>
+                                <input id="order_index_{$item['id']}" type="number" class="form-control" value="{$item['order_index']}" onchange="set_order_index({$item['id']})" style="padding-left:0px;padding-right:0px;text-align: center" />
+                            </td>
+							<td style="text-align: center">{$item['name']}</td>
+							<td style="text-align: center">{$item['address']}</td>
+							<td style="text-align: center">{$item['tel']}</td>
+                            {if $permission=='ADMIN'}
+                            <td style="text-align: center">
+                                <input type="checkbox" name="is_default_{$item['id']}" value="1" {if $item['is_default']=='1'}checked{/if} onchange="set_default({$item['id']})" />
+                            </td>
+                            {/if}
+                            <td style="text-align: center">
+                                {$item['total_income']}/{$item['deduct_income']}
+                            </td>
+                            <td style="text-align: center">
+                                {if $item['status']=='0'}
+                                    <span class="label label-default">待审核</span>
+                                {else if $item['status']=='1'}
+                                    <span class="label label-success">已审核</span>
+                                {/if}
+                            </td>
+							<td style="text-align: center">
+								<a href="{php echo $this->createWeburl('store',array('op'=>'edit','id'=>$item['id']))}" style="color:#4CB0F9"><i class="fa fa-edit"></i></a>
+                                <button class="btn btn-xs btn-success" onclick="location.href='{php echo $this->createWeburl('store',array('op'=>'wx','id'=>$item['id']))}'">
+                                    <i class="iconfont icon-weixin"></i>
+                                </button>
+                                {if $permission == 'ADMIN'}
+								<a href="javascript:delete_store({$item['id']})" style="color:red"><i class="fa fa-trash"></i></a>
+                                {/if}
+							</td>
+						</tr>
+					{/loop}
+				</tbody>
+			</table>
+		</div>
+	</div>
+<script>
+function set_order_index(id) {
+    $.post("{php echo $this->createWeburl('store', array('op' => 'set_store_order_index'));}",{
+            id:id,
+            order_index:$("#order_index_"+id).val()
+        },
+        function(resp) {
+            resp = $.parseJSON(resp);
+            if(resp.message.errno == 0) {
+                tankuang(300,'修改成功');
+                setTimeout('location.reload()',1000);
+            } else {
+                tankuang(300,'修改失败');
+            }
+        }
+    );
+}
+function set_default(id) {
+    var status = $("input[name='is_default_"+id+"']:checked").val();
+    $.post("{php echo $this->createWeburl('store',array('op'=>'set_default'))}",{
+            id:id,
+            status:status
+        },function(resp) {
+            resp = $.parseJSON(resp);
+            if(resp.message.errno == 0) {
+                location.reload();
+            }
+        }
+    );
+}
+function delete_store(id) {
+	var r = confirm("删除商家！");
+	if(r) {
+		$.post("{php echo $this->createWeburl('store', array('op' => 'delete_store'));}",{
+				id:id
+			},
+			function(resp) {
+				resp = $.parseJSON(resp);
+				if(resp.message.errno != 0) {
+					util.message('操作失败, 请稍后重试.')
+				} else {
+					util.message('操作成功', location.href, 'success');
+				}
+			}
+		);
+	}
+}
+</script>
+{else if $op == 'wx'}
+<div class="panel panel-info">
+    <div class="panel-heading">微信信息</div>
+    <div class="panel-body">
+        {if !empty($mc_member)}
+        <form class="form-horizontal" role="form" action="" method="POST">
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">微信头像</label>
+                <div class="col-sm-10">
+                    <img src="{$mc_member['avatar']}" width="30px" height="30px" style="border-radius: 15px" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">微信昵称</label>
+                <div class="col-sm-10">
+                    <input class="form-control" disabled="true" value="{$mc_member['nickname']}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">真实姓名</label>
+                <div class="col-sm-10">
+                    <input class="form-control" disabled="true" value="{$mc_member['realname']}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">联系电话</label>
+                <div class="col-sm-10">
+                    <input class="form-control" disabled="true" value="{$mc_member['mobile']}">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="submit" class="btn btn-danger" name="cancel_submit" value="解除绑定">
+                    <input type="hidden" name="token" value="{$_W['token']}" />
+                </div>
+            </div>
+        </form>
+        {else}
+            <form class="form-horizontal" role="form" action="" method="POST">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">成员查找</label>
+                    <div class="col-sm-10">
+                        <div class="input-group">
+                            <input name="search_key" type="text" class="form-control" placeholder="请输入成员昵称、姓名或者联系电话查找 例如： 阿^莫^之^家" />
+                            <span class="input-group-addon" style="cursor: pointer;" onclick="search_member()">查找</span>
+                        </div>
+                        <div id="member_info" style="margin-top:10px">
+
+                        </div>
+                        <input type="hidden" name="to_bind_member" id="to_bind_member"></input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <input type="submit" class="btn btn-default" name="bind_submit" value="绑定">
+                        <input type="hidden" name="token" value="{$_W['token']}" />
+                    </div>
+                </div>
+            </form>
+        {/if}
+    </div>
+</div>
+<script>
+function search_member() {
+    if($("input[name='search_key']").val() == "") {
+        alert("请输入要查找成员昵称、姓名或者联系电话！");
+    } else {
+        $.post("{php echo $this->createWeburl('search_member')}",{
+                search_key:$("input[name='search_key']").val()
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                var member = resp.message.message;
+                var html = "";
+                if(member.avatar != '') {
+                    html += '<img src="' + member.avatar + '" width="30px" height="30px" style="border-radius:15px" />';
+                }
+                if(member.nickname != '') {
+                    html += '<span>'+member.nickname+'</span>'
+                }
+                if(member.realname != '') {
+                    html += '&#12288;真实姓名：'+member.realname;
+                }
+                if(member.mobile != '') {
+                    html += '&#12288;联系电话：'+member.mobile;
+                }
+                $("#member_info").html(html);
+                $("#to_bind_member").val(member.uid);
+            }
+        );
+    }
+}
+</script>
+{else if $op == 'edit'}
+<div class="panel panel-warning">
+    <div class="panel-heading">后台用户信息</div>
+    <div class="panel-body">
+        {if $store['admin_uid']>0}
+        <form class="form-horizontal" role="form" action="" method="POST">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">用户名</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <input name="username" value="{$store['username']}" type="text" class="form-control" placeholder="请输入商店登入用户名" />
+                        <span class="input-group-addon" style="cursor: pointer;" onclick="update_username()">修改</span>
+                    </div>
+                </div>
+            </div>
+            <script>
+            function update_username() {
+                if($("input[name='username']").val() == '') {
+                    alert("请输入用户名！");
+                    $("input[name='username']").focus();
+                } else {
+                    $.post("{php echo $this->createWeburl('store',array('op'=>'update_username'))}",{
+                            username:$("input[name='username']").val(),
+                            admin_uid:{$store['admin_uid']}
+                        },function(resp) {
+                            resp = $.parseJSON(resp);
+                            if(resp.message.errno == 0) {
+                                alert("修改成功！");
+                            } else if(resp.message.errno == 1) {
+                                alert("用户名已存在！");
+                            } else {
+                                alert('修改失败！');
+                            }
+                        }
+                    );
+                }
+            }
+            </script>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">密码</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <input name="password" value="{$store['password']}" type="password" type="text" class="form-control" placeholder="请输入商店登入密码" />
+                        <span class="input-group-addon" style="cursor: pointer;" onclick="update_password()">修改</span>
+                    </div>
+                </div>
+            </div>
+            <script>
+            function update_password() {
+                if($("input[name='password']").val() == '') {
+                    alert("请输入用户密码！");
+                    $("input[name='password']").focus();
+                } else {
+                    $.post("{php echo $this->createWeburl('store',array('op'=>'update_password'))}",{
+                            password:$("input[name='password']").val(),
+                            admin_uid:{$store['admin_uid']}
+                        },function(resp) {
+                            resp = $.parseJSON(resp);
+                            if(resp.message.errno == 0) {
+                                alert("修改成功！");
+                            } else if(resp.message.errno == 1) {
+                                alert("用户名已存在！");
+                            } else {
+                                alert('修改失败！');
+                            }
+                        }
+                    );
+                }
+            }
+            </script>
+        </form>
+        <div style="border-top:1px #F3F3F3 dashed;padding-top:10px">
+            <button class="btn btn-danger" onclick="delete_admin()">解除后台用户</button>
+        </div>
+        <script>
+        function delete_admin() {
+            var r = confirm("解除绑定后，商家后台管理员用户将被删除！");
+            if(r) {
+                $.post("{php echo $this->createWeburl('store',array('op'=>'delete_admin'))}",{
+                        id:{$_GPC['id']}
+                    },function(resp) {
+                        resp = $.parseJSON(resp);
+                        if(resp.message.errno == 0) {
+                            alert("解除绑定成功！");
+                            location.reload();
+                        }
+                    }
+                );
+            }
+        }
+        </script>
+        {else}
+        <form class="form-horizontal" role="form" action="" method="POST">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">用户名</label>
+                <div class="col-sm-10">
+                    <input name="username" type="text" class="form-control" placeholder="请输入商店登入用户名" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">密码</label>
+                <div class="col-sm-10">
+                    <input name="password" type="password" type="text" class="form-control" placeholder="请输入商店登入密码" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="submit" class="btn btn-default" name="register_submit" value="注册后台用户">
+                    <input type="hidden" name="token" value="{$_W['token']}" />
+                </div>
+            </div>
+        </form>
+        {/if}
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">基础信息</div>
+	<div class="panel-body">
+	    <form class="form-horizontal" role="form" action="" method="POST">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">商家名称</label>
+				<div class="col-sm-10">
+					<input name="name" value="{$store['name']}" type="text" class="form-control" placeholder="请输入商家名称" />
+				</div>
+		  	</div>
+		  	<div class="form-group">
+                <label class="col-sm-2 control-label">商家编号</label>
+                <div class="col-sm-10">
+                    <input name="sn" value="{$store['sn']}" type="text" class="form-control" placeholder="请输入商家编号" />
+                </div>
+            </div>
+            <div class="form-group">
+				<label class="col-sm-2 control-label">商家联系电话</label>
+				<div class="col-sm-10">
+					<input name="tel" type="text" value="{$store['tel']}" class="form-control" placeholder="请输入商家联系电话" />
+				</div>
+		  	</div>
+		  	<div class="form-group">
+				<label for="name" class="col-sm-2 control-label">商家图片</label>
+				<div class="col-sm-10">
+					{php if($store['img'] != '') echo tpl_form_field_image('img',$store['img']); else echo tpl_form_field_image('img');}
+				</div>
+		  	</div>
+		  	<div class="form-group">
+                <label for="name" class="col-sm-2 control-label">商家简介</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="intro" placeholder="请输入商家简介">{$store['intro']}</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">营业执照</label>
+                <div class="col-sm-10">
+                    {php echo tpl_form_field_image('license',$store['license']);}
+                </div>
+            </div>
+            {if $conf['store_detail_on']=='1'}
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">商家详情</label>
+                <div class="col-sm-10">
+                    {php echo tpl_ueditor('detail', $store['detail']);}
+                </div>
+            </div>
+            {/if}
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label"></label>
+                <div class="col-sm-10">
+                    <a href="javascript:choose_address()" id="map">地图选取</a>
+                </div>
+            </div> 
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">经纬度</label>
+                <div class="col-sm-10">
+                    <div class="col-sm-2" style="padding-left:0px"><input id="lng" name="lng" value="{$store['lng']}" class="form-control" /></div>
+                    <div class="col-sm-2" style="padding-left:0px"><input id="lat" name="lat" value="{$store['lat']}" class="form-control" /></div>
+                </div>
+            </div> 
+            <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=gCF3WxqfpdvaRxciR9m1Nm7lbgEwXrky"></script>
+            <script>
+                var map = null;
+                var lng_tmp = 0;
+                var lat_tmp = 0;
+                function choose_address() {
+                    $("#map-dialog").modal();
+                    $('#map-dialog').on('shown.bs.modal', function () {
+                        if(map == null) {
+                            map = new BMap.Map("map-container");
+                        }
+                        if($("#lng").val()=='') {
+                            $("#location").val('{$default_city}' == '' ? '北京' : '{$default_city}');
+                            search_locate();
+                        } else {
+                            lng_tmp = $("#lng").val();
+                            lat_tmp = $("#lat").val();
+                            var point = new BMap.Point(lng_tmp,lat_tmp);
+                            locate(point);
+                        }
+                    })
+                }
+                function search_locate() {
+                    if($("#location").val() == "") {
+                        alert("输入查询位置！");
+                        $("#location").focus();
+                    } else {
+                        var myGeo = new BMap.Geocoder();
+                        myGeo.getPoint($("#location").val(),function(point) {
+                            if(point) {
+                                locate(point);
+                            }                           
+                        },$("#location").val());
+                    }                       
+                }
+                function locate(point) {
+                    map.centerAndZoom(point,16);
+                    map.addControl(new BMap.NavigationControl());
+                    var marker = new BMap.Marker(point);
+                    marker.enableDragging();
+                    marker.addEventListener("dragend",function(e){
+                        lng_tmp = e.point.lng;
+                        lat_tmp = e.point.lat;
+                    });    
+                    map.clearOverlays(); 
+                    map.addOverlay(marker);
+                }
+                function choose_address_confirm() {
+                    $("#lng").val(lng_tmp);
+                    $("#lat").val(lat_tmp);
+                    $("#map-dialog").modal('hide');
+                }
+            </script>  
+            <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">所在区域</label>
+                    <div class="col-sm-10">
+                        <div data-toggle="distpicker"><!-- container -->
+                            <select name="prov" data-province="{$store['prov']}"></select><!-- 省 -->
+                            <select name="city" data-city="{$store['city']}"></select><!-- 市 -->
+                            <select name="district" data-district="{$store['district']}"></select><!-- 区 -->
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    var requireExtend = require.config({
+                        paths: {
+                            'distpicker': '{$_W['siteroot']}addons/navlange_reserve_show/template/style/js/distpicker', //结尾不写.js
+                            'distpicker.data': '{$_W['siteroot']}addons/navlange_reserve_show/template/style/js/distpicker.data', //结尾不写.js
+                        },
+                        shim:{
+                             //依赖
+                            'distpicker' : {
+                                exports: '$',
+                                deps: ['distpicker.data']
+                            },
+                     
+                        }
+                    });
+                    requireExtend(["distpicker"]);
+                </script> 
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">商家地址</label>
+                <div class="col-sm-10">
+                    <input name="address" value="{$store['address']}" class="form-control" placeholder="请输入商家地址">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">qq</label>
+                <div class="col-sm-10">
+                    <input name="qq" value="{$store['qq']}" class="form-control" placeholder="请输入商家qq">
+                </div>
+            </div> 
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">email</label>
+                <div class="col-sm-10">
+                    <input name="email" value="{$store['email']}" class="form-control" placeholder="请输入商家email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">微信号</label>
+                <div class="col-sm-10">
+                    <input name="wx" value="{$store['wx']}" class="form-control" placeholder="请输入商家微信号">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">微信公众号</label>
+                <div class="col-sm-10">
+                    {php echo tpl_form_field_image('wx_qrcode',$store['wx_qrcode']);}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">小程序</label>
+                <div class="col-sm-10">
+                    {php echo tpl_form_field_image('wxapp',$store['wxapp']);}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">状态</label>
+                <div class="col-sm-10">
+                    <select class="form-control" name="status">
+                        <option {if $store['status']=='0'}selected{/if} value="0">待审核</option>
+                        <option {if $store['status']=='1'}selected{/if} value="1">已审核</option>
+                    </select>
+                </div>
+            </div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<input type="submit" class="btn btn-default" name="edit" value="修改">
+					<input type="hidden" name="token" value="{$_W['token']}" />
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+    <div id="map-dialog" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog we7-modal-dialog" style="width: 80%;"> 
+            <div class="modal-content">
+                <div class="modal-header"> 
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> 
+                    <h3>请选择地点</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input id="location" type="text" class="form-control" placeholder="请输入地址来直接查找相关位置" />
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" onclick="search_locate()"><i class="icon-search"></i> 搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="map-container" style="height: 400px; z-index: 0; background-color: rgb(243, 241, 236); color: rgb(0, 0, 0);">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="choose_address_confirm()">确认</button>
+                </div> 
+            </div>
+        </div>
+    </div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        资质证书
+    </div>
+    <div class="panel-body">
+        <div style="min-height: 50px">
+            {loop $qualification_gallery $index $item}
+                <b id="qualification_gallery_{$item['id']}">
+                    <img style="max-width: 300px" src="{php echo tomedia($item['img']);}" class="img-thumbnail">
+                    <label style="margin-left:-40px;width:40px;font-size:20px;color:red;cursor: pointer;" onclick="delete_qualification_gallery({$item['id']})"><i class="fa fa-minus-circle"></i></label>
+                </b>
+            {/loop}
+        </div>
+        <div class="panel panel-default" style="margin-top:20px">
+            <div class="panel-heading">
+                添加证书
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" role="form" action="" method="POST">
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label">商家证书</label>
+                        <div class="col-sm-10">
+                            {php echo tpl_form_field_image('qualification_gallery_img');}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <input type="submit" class="btn btn-default" name="qualification_gallery_add" value="添加">
+                            <input type="hidden" name="token" value="{$_W['token']}" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function delete_qualification_gallery(id) {
+    var r = confirm("删除证书！");
+    if(r) {
+        $.post("{php echo $this->createWeburl('store',array('op'=>'delete_qualification_gallery'))}",{
+                qualification_gallery_id:id
+            },
+            function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == 0) {
+                    $("#qualification_gallery_"+id).remove();
+                    tankuang(300,"删除成功！");
+                }
+            }
+        );
+    }
+}
+</script>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        商家图集
+    </div>
+    <div class="panel-body">
+        <div style="min-height: 50px">
+            {loop $gallery $index $item}
+                <b id="gallery_{$item['id']}">
+                    <img style="max-width: 300px" src="{php echo tomedia($item['img']);}" class="img-thumbnail">
+                    <label style="margin-left:-40px;width:40px;font-size:20px;color:red;cursor: pointer;" onclick="delete_gallery({$item['id']})"><i class="fa fa-minus-circle"></i></label>
+                </b>
+            {/loop}
+        </div>
+        <div class="panel panel-default" style="margin-top:20px">
+            <div class="panel-heading">
+                添加图片
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" role="form" action="" method="POST">
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label">商家图片</label>
+                        <div class="col-sm-10">
+                            {php echo tpl_form_field_image('gallery_img');}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <input type="submit" class="btn btn-default" name="gallery_add" value="添加">
+                            <input type="hidden" name="token" value="{$_W['token']}" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function delete_gallery(id) {
+    var r = confirm("删除图片！");
+    if(r) {
+        $.post("{php echo $this->createWeburl('store',array('op'=>'delete_gallery'))}",{
+                gallery_id:id
+            },
+            function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == 0) {
+                    $("#gallery_"+id).remove();
+                    tankuang(300,"删除成功！");
+                }
+            }
+        );
+    }
+}
+</script>
+{else if $op == 'post'}
+<div class="panel panel-default">
+	<div class="panel-body">
+	    <form class="form-horizontal" role="form" action="" method="POST">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">商家名称</label>
+				<div class="col-sm-10">
+					<input name="name" type="text" class="form-control" placeholder="请输入商家名称" />
+				</div>
+		  	</div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">商家编号</label>
+                <div class="col-sm-10">
+                    <input name="sn" type="text" class="form-control" placeholder="请输入商家编号" />
+                </div>
+            </div>
+            <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">所在区域</label>
+                    <div class="col-sm-10">
+                        <div data-toggle="distpicker"><!-- container -->
+                            <select name="prov"></select><!-- 省 -->
+                            <select name="city"></select><!-- 市 -->
+                            <select name="district"></select><!-- 区 -->
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    var requireExtend = require.config({
+                        paths: {
+                            'distpicker': '{$_W['siteroot']}addons/navlange_reserve_show/template/style/js/distpicker', //结尾不写.js
+                            'distpicker.data': '{$_W['siteroot']}addons/navlange_reserve_show/template/style/js/distpicker.data', //结尾不写.js
+                        },
+                        shim:{
+                             //依赖
+                            'distpicker' : {
+                                exports: '$',
+                                deps: ['distpicker.data']
+                            },
+                     
+                        }
+                    });
+                    requireExtend(["distpicker"]);
+                </script>
+		  	<div class="form-group">
+				<label class="col-sm-2 control-label">商家地址</label>
+				<div class="col-sm-10">
+					<input name="address" type="text" class="form-control" placeholder="请输入商家地址" />
+				</div>
+		  	</div>
+		  	<div class="form-group">
+				<label class="col-sm-2 control-label">商家联系电话</label>
+				<div class="col-sm-10">
+					<input name="tel" type="text" class="form-control" placeholder="请输入商家联系电话" />
+				</div>
+		  	</div>
+		  	<div class="form-group">
+				<label for="name" class="col-sm-2 control-label">商家图片</label>
+				<div class="col-sm-10">
+					{php echo tpl_form_field_image('img');}
+				</div>
+		  	</div>
+			<div class="form-group">
+                <label for="name" class="col-sm-2 control-label">商家简介</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="intro" placeholder="请输入商家简介"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">营业执照</label>
+                <div class="col-sm-10">
+                    {php echo tpl_form_field_image('license');}
+                </div>
+            </div>
+            {if $conf['store_detail_on'] == '1'}
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">商家详情</label>
+                <div class="col-sm-10">
+                    {php echo tpl_ueditor('detail');}
+                </div>
+            </div>
+            {/if}
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">qq</label>
+                <div class="col-sm-10">
+                    <input name="qq" class="form-control" placeholder="请输入商家qq">
+                </div>
+            </div> 
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">email</label>
+                <div class="col-sm-10">
+                    <input name="email" class="form-control" placeholder="请输入商家email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">微信号</label>
+                <div class="col-sm-10">
+                    <input name="wx" class="form-control" placeholder="请输入商家微信号">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">微信公众号</label>
+                <div class="col-sm-10">
+                    {php echo tpl_form_field_image('wx_qrcode');}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">小程序</label>
+                <div class="col-sm-10">
+                    {php echo tpl_form_field_image('wxapp');}
+                </div>
+            </div>
+            <div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<input type="submit" class="btn btn-default" name="add" value="添加">
+					<input type="hidden" name="token" value="{$_W['token']}" />
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{/if}
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;top:50%;width:100%;height:30px;line-height:30px;margin-top:-15px;"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>

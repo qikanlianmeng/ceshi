@@ -1,0 +1,90 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css">
+<style>
+	body{
+		background-color: #EEECED
+	}
+    .mui-bar-tab .mui-tab-item.mui-active {
+        color: {$conf['color']};
+    }
+    a:hover{
+        text-decoration: none
+    }
+</style>
+<script>
+	mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+
+{if empty($store_line)}
+<div style="margin-top:50px;text-align: center">
+    尚未发布专线！
+</div>
+<div style="margin-top:20px;text-align: center">
+    <button class="mui-btn mui-btn-xs" style="background-color:{$conf['owner_color']};color:white" onclick="location.href='{php echo $this->createMobileurl('cargo_line_release')}'">前往发布</button>
+</div>
+{else}
+    <div>
+        {loop $store_line $index $item}
+            <div id="{$item['id']}" style="margin:5px;background-color:white;border-radius:5px" onclick="sel_line_confirm('{$item['departure_city']}','{$item['departure_address']}','{$item['departure_district']}','{$item['terminal_city']}','{$item['terminal_address']}','{$item['terminal_district']}')">
+                <div style="width:60px;height:53px;margin:0px 0px 0px auto;text-align: center">
+                    <div style="padding-top:3px">
+                        <button class="mui-btn mui-btn-xs mui-btn-primary" style="padding:3px 10px" onclick="edit({$item['id']})">编辑</button>
+                    </div>
+                    <div style="margin-top:3px">
+                        <button class="mui-btn mui-btn-xs mui-btn-danger" style="padding:3px 10px" onclick="delete_line({$item['id']})">删除</button>
+                    </div>
+                </div>
+                <div style="margin:-53px 60px 0px 0px;min-height: 53px">
+                    <div class="container">
+                        <div class="row" style="padding:5px 0px">
+                            <div class="col-xs-1" style="color:#3BBBA2">
+                                始：
+                            </div>
+                            <div class="col-xs-10">
+                                <div>{$item['departure_station']}</div>
+                                <div>
+                                    {php echo $this->rtrim_cn($item['departure_city'],'市') . '-' . $item['departure_address'] . '(' . $item['departure_district'] . ')'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="border-top:1px #F3F3F3 dashed;padding:5px 0px">
+                            <div class="col-xs-1" style="color:#FB8641">
+                                终：
+                            </div>
+                            <div class="col-xs-10">
+                                <div>{$item['terminal_station']}</div>
+                                <div>
+                                    {php echo $this->rtrim_cn($item['terminal_city'],'市') . '-' . $item['terminal_address'] . '(' . $item['terminal_district'] . ')'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {/loop}
+    </div>
+{/if}
+<script type="text/javascript">
+    function edit(id) {
+        location.href="{php echo $this->createMobileurl('cargo_line_release',array('op'=>'edit'))}&id="+id;
+    }
+    function delete_line(id) {
+        var btnArray = ['取消','确认'];
+        mui.confirm('确认删除拼货专线！','',btnArray,function(e){
+            if(e.index == 1) {
+                $.post("{php echo $this->createMobileurl('store_line',array('op'=>'delete_line'));}",{id:id},
+                    function(resp) {
+                        resp = $.parseJSON(resp);
+                        if(resp.message.errno == '0') {
+                            mui.alert("删除拼货专线成功！",function(){
+                                $("#"+id).remove();
+                            })
+                        }
+                    }
+                );
+            }
+        })
+    }
+</script>

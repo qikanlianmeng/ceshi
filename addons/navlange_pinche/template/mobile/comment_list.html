@@ -1,0 +1,45 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=7" />
+{if empty($list)}
+<div style="margin-top:50px;text-align: center">
+	<div>
+		<i class="iconfont icon-zanwupingjia" style="font-size:50px"></i>
+	</div>
+	<div style="font-size:12px;color:grey;padding-top:10px">
+		暂无评论！
+	</div>
+</div>
+{/if}
+{loop $list $index $item}
+	<div style="padding:5px 10px">
+		<label>评价：</label>
+		<div style="margin-left:60px;margin-top:-25px">
+			<div class="container" style="font-size:12px">
+				<div class="row">
+					<div class="col-xs-6" style="padding:0px">
+						{if $item['comment_level']=='0'}
+							<span class="mui-badge mui-badge-success">好评</span>
+						{else if $item['comment_level']=='1'}
+							<span class="mui-badge mui-badge-warning">中评</span>
+						{else if $item['comment_level'] == '2'} 
+							<span class="mui-badge mui-badge-danger">差评</span>
+						{/if}
+					</div>
+					<div class="col-xs-6" style="padding:0px;text-align: right">
+						{php echo date('d/m H:i',$item['time'])}
+					</div>
+				</div>
+			</div>
+			<div>
+				{loop $item['content'] $i $c}
+					<span class="label label-warning">{$c}</span>
+				{/loop}
+			</div>
+			<div style="font-size:12px;margin-top:3px">
+				留言：{$item['other']}
+			</div>
+		</div>
+	</div>
+{/loop}

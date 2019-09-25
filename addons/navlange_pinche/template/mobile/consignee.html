@@ -1,0 +1,203 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+body {
+	background-color: #F3F3F3
+}
+a:hover{
+    text-decoration: none
+}
+</style>
+<header class="mui-bar mui-bar-nav">
+  <a class="mui-icon mui-icon-arrowleft mui-pull-left mui-plus-visble" href="javascript:history.go(-1)"></a>
+  <h1 class="mui-title">我的地址</h1>
+</header>
+<div style="height:44px"></div>
+{if $op == 'index'}
+    <div style="height:10px"></div>
+    {loop $consignee $index $item}
+        <div style="padding:10px;background-color: white; {if $index != 0}border-top:1px #F3F3F3 dashed{/if}">
+            <div style="height:40px;width:40px;text-align: center;line-height: 40px;margin:0px 0px 0px auto" onclick="location.href='{php echo $this->createMobileurl('consignee',array('op'=>'edit','id'=>$item['id']))}'">
+                <i class="fa fa-edit"></i>
+            </div>
+            <div style="margin-top:-40px;margin-right:40px">
+                <div>{$item['username']}&nbsp;{$item['mobile']}</div>
+                <div>{$item['province']},{$item['city']},{$item['district']},{$item['address']}</div>
+            </div>
+        </div>
+    {/loop}
+    <div style="position: fixed;bottom:0px;height:40px;text-align: center;width:100%;line-height: 40px;background-color: {$conf['color']};color:white" onclick="location.href='{php echo $this->createMobileurl('consignee',array('op'=>'add'))}'">
+        添加地址
+    </div>
+{else if $op == 'add'}
+    <form class="mui-input-group" style="margin-top:10px">
+        <div class="mui-input-row">
+            <label style="width:30%">联系人</label>
+        	<input id="name" type="text" class="mui-input-clear" style="width:70%" placeholder="请输入联系人的姓名" />
+        </div>
+        <div class="mui-input-row">
+            <label style="width:30%">手机号码</label>
+        	<input id="tel" type="text" class="mui-input-clear" style="width:70%" placeholder="请输入联系人的手机号码" />
+        </div>
+        <div class="mui-input-row">
+            <label style="width:30%">地区</label>
+        	<input id="area" type="text" readonly="true" style="width:70%" placeholder="请选择联系人地址" />
+        </div>
+        <div class="mui-input-row">
+            <label style="width:30%">服务地址</label>
+        	<input id="address" type="text" class="mui-input-clear" style="width:70%" placeholder="请输入上门服务地址" />
+        </div>
+        <style type="text/css">
+            .mui-input-group .mui-input-row:after {
+                height:0px;
+            }
+        </style>
+        <div class="mui-input-row" style="height:auto">
+            <label style="width:30%">默认地址</label>
+        	<div style="float:right;width:70%">
+    			<div class="mui-input-row mui-checkbox">
+                    <label></label>
+                    <input name="default" value="1" type="checkbox">
+                </div>
+        	</div>
+        </div>
+    </form>
+    <div style="height:45px"></div>
+    <div style="position: fixed;bottom:0px;height:40px;text-align: center;width:100%;line-height: 40px;background-color: {$conf['color']};color:white" onclick="add()">
+    	保存
+    </div>
+    <link rel="stylesheet" href="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.css" />
+    <script type="text/javascript" src="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.js"></script>
+    <script type="text/javascript" src="{$_W['siteroot']}app/resource/components/districtpicker/mui.city.data-3.js"></script>
+    <script>
+    var prov = '';
+    var city = '';
+    var district = '';
+    $("#area").click(function(){
+    	var cityPicker = new mui.PopPicker({layer:3});
+    	cityPicker.setData(cityData3);
+    	cityPicker.show(function(items){
+    		$("#area").val((items[0] || {}).text + (items[1] || {}).text + (items[2] || {}).text);
+    		prov = (items[0] || {}).text;
+    		city = (items[1] || {}).text;
+    		district = (items[2] || {}).text;
+    	})
+    })
+    function add() {
+        $.post("{php echo $this->createMobileurl('consignee',array('op'=>'add_submit'))}",{
+                name:$("#name").val(),
+                tel:$("#tel").val(),
+                prov:prov,
+                city:city,
+                district:district,
+                address:$("#address").val(),
+                default:$("input[name='default']:checked").val() == '1' ? '1' : '0'
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == '0') {
+                    mui.alert("添加成功！",function(){
+                        history.back(-1);
+                    })
+                }
+            }
+        );
+    }
+    </script>
+{else if $op == 'edit'}
+    <form class="mui-input-group" style="margin-top:10px">
+        <div class="mui-input-row">
+            <label style="width:30%">联系人</label>
+            <input id="name" value="{$consignee['username']}" type="text" class="mui-input-clear" style="width:70%" placeholder="请输入联系人的姓名" />
+        </div>
+        <div class="mui-input-row">
+            <label style="width:30%">手机号码</label>
+            <input id="tel" value="{$consignee['mobile']}" type="text" class="mui-input-clear" style="width:70%" placeholder="请输入联系人的手机号码" />
+        </div>
+        <div class="mui-input-row">
+            <label style="width:30%">地区</label>
+            <input id="area" value="{$consignee['province']}{$consignee['city']}{$consignee['district']}" type="text" readonly="true" style="width:70%" placeholder="请选择联系人地址" />
+        </div>
+        <div class="mui-input-row">
+            <label style="width:30%">服务地址</label>
+            <input id="address" value="{$consignee['address']}" type="text" class="mui-input-clear" style="width:70%" placeholder="请输入上门服务地址" />
+        </div>
+        <style type="text/css">
+            .mui-input-group .mui-input-row:after {
+                height:0px;
+            }
+        </style>
+        <div class="mui-input-row" style="height:auto">
+            <label style="width:30%">默认地址</label>
+            <div style="float:right;width:70%">
+                <div class="mui-input-row mui-checkbox">
+                    <label></label>
+                    <input name="default" value="1" type="checkbox" {if $consignee['isdefault'] == '1'}checked{/if}>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div style="margin-top:10px;height:40px;line-height: 40px;padding-left:10px;color:red;background-color: white" onclick="delete_consignee({$consignee['id']})">删除地址</div>
+    <div style="height:45px"></div>
+    <div style="position: fixed;bottom:0px;height:40px;text-align: center;width:100%;line-height: 40px;background-color: {$conf['color']};color:white" onclick="edit()">
+        保存
+    </div>
+    <link rel="stylesheet" href="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.css" />
+    <script type="text/javascript" src="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.js"></script>
+    <script type="text/javascript" src="{$_W['siteroot']}app/resource/components/districtpicker/mui.city.data-3.js"></script>
+    <script>
+    var prov = '{$consignee['prov']}';
+    var city = '{$consignee['city']}';
+    var district = '{$consignee['district']}';
+    $("#area").click(function(){
+        var cityPicker = new mui.PopPicker({layer:3});
+        cityPicker.setData(cityData3);
+        cityPicker.show(function(items){
+            $("#area").val((items[0] || {}).text + (items[1] || {}).text + (items[2] || {}).text);
+            prov = (items[0] || {}).text;
+            city = (items[1] || {}).text;
+            district = (items[2] || {}).text;
+        })
+    })
+    function edit() {
+        $.post("{php echo $this->createMobileurl('consignee',array('op'=>'edit_submit'))}",{
+                name:$("#name").val(),
+                tel:$("#tel").val(),
+                prov:prov,
+                city:city,
+                district:district,
+                address:$("#address").val(),
+                default:$("input[name='default']:checked").val() == '1' ? '1' : '0',
+                id:{$consignee['id']}
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == '0') {
+                    mui.alert("编辑成功！",function(){
+                        history.back(-1);
+                    })
+                }
+            }
+        );
+    }
+    function delete_consignee(id) {
+        var btnArray = ['取消','确认'];
+        mui.confirm('确认取消地址！','',btnArray,function(e){
+            if(e.index == 1) {
+                $.post("{php echo $this->createMobileurl('consignee',array('op'=>'delete_consignee'));}",{id:id},
+                    function(resp) {
+                        resp = $.parseJSON(resp);
+                        if(resp.message.errno == '0') {
+                            mui.alert("删除地址成功！",function(){
+                                history.back(-1);
+                            })
+                        }
+                    }
+                );
+            }
+        })
+    }
+    </script>
+{/if}

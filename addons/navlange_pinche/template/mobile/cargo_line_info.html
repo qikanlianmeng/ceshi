@@ -1,0 +1,154 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=4" />
+<style>
+body {
+    background-color: #F3F3F3
+}
+a:hover {
+    text-decoration: none
+}
+</style>
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+<div style="background-color:white;padding:10px">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                专线名称：
+            </div>
+            <div class="col-xs-9">
+                {$line['name']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                发站：
+            </div>
+            <div class="col-xs-9">
+                {$line['departure_prov']}{$line['departure_city']}{$line['departure_district']}{$line['departure_station']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                到站：
+            </div>
+            <div class="col-xs-9">
+                {$line['terminal_prov']}{$line['terminal_city']}{$line['terminal_district']}{$line['terminal_station']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                途径：
+            </div>
+            <div class="col-xs-9">
+                {$line['stations_str']}
+            </div>
+        </div>
+    </div>
+</div>
+<label style="padding:10px 10px 0px 10px">运价</label>
+<div style="background-color:white;padding:10px">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                轻货：
+            </div>
+            <div class="col-xs-9">
+                {$line['price_per_f']}元/方
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                重货：
+            </div>
+            <div class="col-xs-9">
+                {$line['price_per_d']}元/吨
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                运价含税：
+            </div>
+            <div class="col-xs-9">
+                {if $line['price_include_tax'] == '1'}是{else}否{/if}
+            </div>
+        </div>
+    </div>
+</div>
+<label style="padding:10px 10px 0px 10px">发站服务</label>
+<div style="background-color:white;padding:10px">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                服务内容：
+            </div>
+            <div class="col-xs-9">
+                {$line['note']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                业务电话：
+            </div>
+            <div class="col-xs-9">
+                {$line['start_tel']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                联系人：
+            </div>
+            <div class="col-xs-9">
+                {$line['start_name']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                手机号：
+            </div>
+            <div class="col-xs-9">
+                {$line['start_mobile']}
+            </div>
+        </div>
+    </div>
+</div>
+<label style="padding:10px 10px 0px 10px">到站服务</label>
+<div style="background-color:white;padding:10px">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                服务内容：
+            </div>
+            <div class="col-xs-9">
+                {$line['arrival_note']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                业务电话：
+            </div>
+            <div class="col-xs-9">
+                {$line['arrival_tel']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                联系人：
+            </div>
+            <div class="col-xs-9">
+                {$line['arrival_name']}
+            </div>
+        </div>
+        <div class="row" style="padding-top:10px">
+            <div class="col-xs-3" style="padding:0px;text-align: right">
+                手机号：
+            </div>
+            <div class="col-xs-9">
+                {$line['arrival_mobile']}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,870 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.0766city.com" versionCode="0.8,1.0">
+	<application setting="false">
+		<name><![CDATA[【脐橙】拼车带货便民平台]]></name>
+		<identifie><![CDATA[navlange_pinche]]></identifie>
+		<version><![CDATA[2.33.0]]></version>
+		<type><![CDATA[services]]></type>
+		<ability><![CDATA[微信出行]]></ability>
+		<description><![CDATA[脐橙出行]]></description>
+		<author><![CDATA[阿莫之家社区]]></author>
+		<url><![CDATA[https://www.0766city.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+		</handles>
+		<rule embed="false" />
+		<card embed="false" />
+		<supports>
+			<item type="app" />
+        </supports>
+	</platform>
+	<bindings>
+		<cover>
+			<entry title="我的出行" do="my_travel" state="" direct="false" />
+			<entry title="快车入口" do="fast" state="" direct="false" />
+			<entry title="包车入口" do="charter" state="" direct="false" />
+			<entry title="带货入口" do="cargo" state="" direct="false" />
+			<entry title="班车专线" do="bus" state="" direct="false" />
+			<entry title="首页" do="todo_index" state="" direct="false" />
+			<entry title="个人中心" do="person" state="" direct="false" />
+		</cover>
+		<menu>
+			<entry title="管理后台" do="admin" state="" direct="false" />
+		</menu>
+		<page>
+			<entry title="首页" do="/navlange_pinche/pages/index/index" state="" direct="false" />
+		</page>
+	</bindings>
+	<permissions>
+	</permissions>
+	<install><![CDATA[CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_action` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(30) DEFAULT NULL,
+  `date` bigint(20) DEFAULT NULL,
+  `total_pin_cancel_times_today` int(8) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_banner` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) NOT NULL,
+  `img` varchar(128) NOT NULL,
+  `url` varchar(256) NOT NULL,
+  `page` varchar(25) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_bus_line` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `departure_station` varchar(50) DEFAULT NULL,
+  `terminal_station` varchar(50) DEFAULT NULL,
+  `fix_departure_time` varchar(1) DEFAULT '1',
+  `departure_time` varchar(10) DEFAULT NULL,
+  `terminal_time` varchar(10) DEFAULT NULL,
+  `boarding_place` varchar(128) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `departure_station_id` bigint(11) DEFAULT NULL,
+  `departure_prov` varchar(50) DEFAULT NULL,
+  `departure_city` varchar(50) DEFAULT NULL,
+  `departure_district` varchar(50) DEFAULT NULL,
+  `departure_address` varchar(128) DEFAULT NULL,
+  `departure_lng` decimal(15,10) DEFAULT NULL,
+  `departure_lat` decimal(15,10) DEFAULT NULL,
+  `terminal_station_id` bigint(11) DEFAULT NULL,
+  `terminal_prov` varchar(50) DEFAULT NULL,
+  `terminal_city` varchar(50) DEFAULT NULL,
+  `terminal_district` varchar(50) DEFAULT NULL,
+  `terminal_address` varchar(128) DEFAULT NULL,
+  `terminal_lng` decimal(15,10) DEFAULT NULL,
+  `terminal_lat` decimal(15,10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_bus_line_owner` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `bus_line_id` bigint(11) DEFAULT NULL,
+  `owner_id` bigint(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_bus_line_station` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `bus_line_id` bigint(11) DEFAULT NULL,
+  `station` varchar(128) DEFAULT NULL,
+  `order_index` int(8) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_cargo_accept_order` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` bigint(11) DEFAULT NULL,
+  `goods_id` bigint(11) DEFAULT NULL,
+  `owner_id` bigint(11) DEFAULT NULL,
+  `price` decimal(11,2) DEFAULT NULL,
+  `pay_tid` varchar(50) DEFAULT NULL,
+  `status` varchar(1) DEFAULT NULL,
+  `generate_time` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_city` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) NOT NULL,
+  `alphabetical_index` varchar(1) NOT NULL,
+  `prov` varchar(128) NOT NULL,
+  `city` varchar(128) NOT NULL,
+  `is_default` varchar(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=65 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_client` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) NOT NULL,
+  `uid` bigint(11) NOT NULL,
+  `openid` varchar(30) NOT NULL,
+  `register_time` bigint(20) NOT NULL,
+  `credit_score` int(8) NOT NULL DEFAULT '100',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_comment` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `owner_id` bigint(11) DEFAULT NULL,
+  `owner_uid` bigint(11) DEFAULT NULL,
+  `owner_openid` varchar(30) DEFAULT NULL,
+  `pin_id` int(8) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(30) DEFAULT NULL,
+  `comment_level` varchar(1) DEFAULT NULL,
+  `content` varchar(128) DEFAULT NULL,
+  `other` varchar(1024) DEFAULT NULL,
+  `time` int(20) DEFAULT NULL,
+  `type` varchar(1) DEFAULT '0',
+  `member_id` bigint(11) DEFAULT NULL,
+  `travel_id` bigint(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_comment_template` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) NOT NULL,
+  `content` varchar(256) NOT NULL,
+  `type` varchar(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_conf` (
+  `uniacid` int(8) NOT NULL DEFAULT '0',
+  `color` varchar(7) DEFAULT NULL,
+  `owner_color` varchar(7) NOT NULL,
+  `bg_color` varchar(7) DEFAULT NULL,
+  `use_advertise` varchar(1) DEFAULT '0',
+  `member_on` varchar(1) NOT NULL DEFAULT '0',
+  `member_type` varchar(2) DEFAULT NULL,
+  `release_need_license` varchar(1) DEFAULT '0',
+  `agreement_on` varchar(1) DEFAULT '1',
+  `agreement_title` varchar(128) DEFAULT NULL,
+  `agreement_content` text,
+  `pin_release_need_mode` varchar(1) DEFAULT '1',
+  `pin_release_need_price` varchar(1) DEFAULT '1',
+  `multi_pin_compete_on` varchar(1) DEFAULT '0',
+  `max_day_to_release` int(8) DEFAULT NULL,
+  `passenger_info_available_before_pin` varchar(1) DEFAULT '0',
+  `charter_advertise_on` varchar(1) DEFAULT '0',
+  `cargo_advertise_on` varchar(1) NOT NULL DEFAULT '0',
+  `fast_advertise_on` varchar(1) DEFAULT '0',
+  `pin_index_advertise_on` varchar(1) DEFAULT '0',
+  `pin_release_advertise_on` varchar(1) DEFAULT '0',
+  `bus_advertise_on` varchar(1) DEFAULT '0',
+  `mode_menu_on` varchar(1) DEFAULT '1',
+  `pin_mode_on` varchar(1) DEFAULT '1',
+  `pin_mode_name` varchar(20) NOT NULL DEFAULT '拼车',
+  `fast_mode_on` varchar(1) DEFAULT '1',
+  `fast_mode_name` varchar(20) NOT NULL DEFAULT '快车',
+  `charter_mode_on` varchar(1) DEFAULT '1',
+  `charter_mode_name` varchar(20) NOT NULL DEFAULT '包车',
+  `cargo_mode_on` varchar(1) DEFAULT '1',
+  `cargo_mode_name` varchar(20) DEFAULT '带货',
+  `bus_mode_on` varchar(1) DEFAULT '1',
+  `bus_mode_name` varchar(20) DEFAULT '班车专线',
+  `platform_deduct` int(5) DEFAULT '0',
+  `default_pay_mode` varchar(2) DEFAULT '1',
+  `pay_mode_0_on` varchar(1) DEFAULT '1',
+  `pay_mode_1_on` varchar(1) DEFAULT '1',
+  `pay_mode_9_on` varchar(1) DEFAULT '1',
+  `pin_fixed_on` varchar(1) DEFAULT '0',
+  `pin_stick_on` varchar(1) DEFAULT '0',
+  `comment_level_0_point` int(8) DEFAULT '0',
+  `comment_level_1_point` int(8) DEFAULT '0',
+  `comment_level_2_point` int(8) DEFAULT '0',
+  `pin_terminal_station_mode` varchar(2) DEFAULT '0',
+  `pin_departure_station_mode` varchar(2) DEFAULT '0',
+  `pin_line_mode` varchar(2) DEFAULT '0',
+  `info_share_page_title` varchar(128) DEFAULT '欢迎使用出行系统',
+  `info_share_hint` varchar(255) DEFAULT '欢迎分享给您的朋友！',
+  `info_share_title` varchar(128) DEFAULT '分享标题',
+  `info_share_desc` varchar(255) DEFAULT '分享描述',
+  `info_share_img` varchar(128) DEFAULT NULL,
+  `info_share_qrcode_hint` varchar(255) NOT NULL DEFAULT '此处是二维码提示',
+  `info_share_qrcode` varchar(128) NOT NULL,
+  `car_number_display` varchar(1) NOT NULL DEFAULT '0',
+  `owner_default_credit_score` int(5) DEFAULT '100',
+  `client_default_credit_score` int(5) DEFAULT '100',
+  `pin_release_need_credit_score` int(5) DEFAULT '80',
+  `pin_release_multi_on` varchar(1) DEFAULT '0',
+  `pin_index_line_on` varchar(1) DEFAULT '0',
+  `pin_index_line_amount` int(8) DEFAULT '1',
+  `bus_travel_release_on` varchar(1) DEFAULT '0',
+  `pin_display_days_before` int(8) DEFAULT '0',
+  `pin_cancel_times_per_day` int(8) DEFAULT '0',
+  `pin_progress_mode` varchar(2) DEFAULT '0',
+  `multi_pin_travel_release_on` varchar(1) DEFAULT '1',
+  `use_notice` text,
+  `owner_withdraw_to_mode` varchar(1) DEFAULT '0',
+  `need_travel_before_pin_on` varchar(1) DEFAULT '0',
+  `city_on` varchar(1) DEFAULT '1',
+  `passenger_cancel_pin_credit_score` int(8) DEFAULT '0',
+  `pin_release_travel_note` varchar(128) DEFAULT '顺路拼车方便快捷',
+  `pin_release_pin_note` varchar(128) DEFAULT '顺路接单省个油钱',
+  `fast_release_travel_note` varchar(128) DEFAULT '呼叫快车马上出发',
+  `passenger_mobile_by_force` varchar(1) NOT NULL DEFAULT '0',
+  `help_content` text NOT NULL,
+  `disclaimer` text NOT NULL,
+  `about_platform` text NOT NULL,
+  `owner_info_available_before_pin` varchar(1) DEFAULT '0',
+  `person_item_theme` varchar(1) DEFAULT '0',
+  `index_statistic_display_on` varchar(1) DEFAULT '1',
+  `index_nav_display_on` varchar(1) DEFAULT '1',
+  `use_travel_as_pin_by_default_on` varchar(1) DEFAULT '0',
+  `travel_release_notify_all_owner_on` varchar(1) DEFAULT '0',
+  `comment_display_on` varchar(1) DEFAULT '0',
+  `cargo_release_travel_note` varchar(128) DEFAULT '我有货要带',
+  `cargo_release_pin_note` varchar(128) DEFAULT '发布拼货专线',
+  `cargo_goods_line_mode` varchar(1) DEFAULT '0',
+  `image_nav_mode` varchar(1) DEFAULT '0',
+  `nav_img_1_title` varchar(20) DEFAULT NULL,
+  `nav_img_1_desc` varchar(50) DEFAULT NULL,
+  `nav_img_1` varchar(128) DEFAULT NULL,
+  `nav_img_1_color` varchar(7) DEFAULT NULL,
+  `nav_img_1_url` varchar(255) DEFAULT NULL,
+  `nav_img_2_title` varchar(20) DEFAULT NULL,
+  `nav_img_2_desc` varchar(50) DEFAULT NULL,
+  `nav_img_2` varchar(128) DEFAULT NULL,
+  `nav_img_2_color` varchar(7) DEFAULT NULL,
+  `nav_img_2_url` varchar(255) DEFAULT NULL,
+  `nav_img_3_title` varchar(20) DEFAULT NULL,
+  `nav_img_3_desc` varchar(50) DEFAULT NULL,
+  `nav_img_3` varchar(128) DEFAULT NULL,
+  `nav_img_3_color` varchar(7) DEFAULT NULL,
+  `nav_img_3_url` varchar(255) DEFAULT NULL,
+  `nav_img_4_title` varchar(20) DEFAULT NULL,
+  `nav_img_4_desc` varchar(50) DEFAULT NULL,
+  `nav_img_4` varchar(128) DEFAULT NULL,
+  `nav_img_4_color` varchar(7) DEFAULT NULL,
+  `nav_img_4_url` varchar(255) DEFAULT NULL,
+  `nav_img_5_title` varchar(20) DEFAULT NULL,
+  `nav_img_5_desc` varchar(50) DEFAULT NULL,
+  `nav_img_5` varchar(128) DEFAULT NULL,
+  `nav_img_5_color` varchar(7) DEFAULT NULL,
+  `nav_img_5_url` varchar(255) DEFAULT NULL,
+  `core_mode` varchar(1) DEFAULT '1',
+  `cargo_accept_price` decimal(11,2) DEFAULT '0.00',
+  `cargo_goods_type_on` varchar(1) DEFAULT '1',
+  `cargo_delivery_need_on` varchar(1) DEFAULT '1',
+  `cargo_arrival_service_on` varchar(1) DEFAULT '1',
+  `cargo_price_mode` varchar(1) DEFAULT '0',
+  `cargo_note_mode` varchar(1) DEFAULT '0',
+  `cargo_goods_size_on` varchar(1) DEFAULT '1',
+  `goods_list_banner_on` varchar(1) DEFAULT '0',
+  `general_release_cargo_name` varchar(25) DEFAULT '发货',
+  `index_toast_on` varchar(1) DEFAULT '0',
+  `index_toast_content` text,
+  `store_register_head_img` varchar(128) DEFAULT NULL,
+  `store_register_agreement` text,
+  `cargo_deposit_mode` varchar(1) DEFAULT '0',
+  `cargo_line_on` varchar(1) DEFAULT '1',
+  `index_discovery_on` varchar(1) DEFAULT '1',
+  `index_title` varchar(128) DEFAULT '便民出行',
+  `goods_time_mode` varchar(2) DEFAULT '0',
+  `withdraw_min` decimal(11,2) DEFAULT '0.00',
+  `goods_pay_mode_1_on` varchar(1) DEFAULT '1',
+  `goods_pay_mode_2_on` varchar(1) DEFAULT '1',
+  `goods_pay_mode_3_on` varchar(1) DEFAULT '1',
+  `my_travel_canceled_display_on` varchar(1) DEFAULT '1',
+  PRIMARY KEY (`uniacid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_credit3_record` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `mode` varchar(2) DEFAULT NULL,
+  `desc` varchar(128) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(50) DEFAULT NULL,
+  `sn` varchar(50) DEFAULT NULL,
+  `pay_tid` varchar(50) DEFAULT NULL,
+  `money` decimal(11,2) DEFAULT NULL,
+  `status` varchar(1) DEFAULT NULL,
+  `generate_time` decimal(20,0) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=184 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_credit4_record` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `mode` varchar(2) DEFAULT NULL,
+  `desc` varchar(128) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(50) DEFAULT NULL,
+  `sn` varchar(50) DEFAULT NULL,
+  `pay_tid` varchar(50) DEFAULT NULL,
+  `money` decimal(11,2) DEFAULT NULL,
+  `status` varchar(1) NOT NULL,
+  `generate_time` decimal(20,0) DEFAULT NULL,
+  `tid` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`,`status`)
+) ENGINE=MyISAM AUTO_INCREMENT=409 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_credit_level` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `color` varchar(10) DEFAULT NULL,
+  `score` int(8) DEFAULT NULL,
+  `order_index` int(8) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_gallery` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` bigint(11) DEFAULT NULL,
+  `type` varchar(2) DEFAULT NULL,
+  `travel_id` bigint(11) DEFAULT NULL,
+  `img` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_goods_insurance` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` bigint(11) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `money` decimal(11,2) DEFAULT '0.00',
+  `order_index` bigint(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_integral_record` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `type` varchar(2) DEFAULT '0' COMMENT '0:车主发布拼车;1：车主拼车完成;2:乘客分享',
+  `integral` int(8) DEFAULT NULL,
+  `time` bigint(20) DEFAULT NULL,
+  `pin_id` bigint(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_line` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) NOT NULL,
+  `name` varchar(50) DEFAULT '0',
+  `price` decimal(10,2) DEFAULT '0.00',
+  `departure_station` varchar(50) DEFAULT NULL,
+  `terminal_station` varchar(50) DEFAULT NULL,
+  `departure_station_id` bigint(11) DEFAULT NULL,
+  `departure_prov` varchar(50) DEFAULT NULL,
+  `departure_city` varchar(50) DEFAULT NULL,
+  `departure_district` varchar(50) DEFAULT NULL,
+  `departure_address` varchar(128) DEFAULT NULL,
+  `departure_lng` decimal(15,10) DEFAULT NULL,
+  `departure_lat` decimal(15,10) DEFAULT NULL,
+  `terminal_station_id` bigint(11) DEFAULT NULL,
+  `terminal_prov` varchar(50) DEFAULT NULL,
+  `terminal_city` varchar(50) DEFAULT NULL,
+  `terminal_district` varchar(50) DEFAULT NULL,
+  `terminal_address` varchar(128) DEFAULT NULL,
+  `terminal_lng` decimal(15,10) DEFAULT NULL,
+  `terminal_lat` decimal(15,10) DEFAULT NULL,
+  `stations_str` varchar(512) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT '0',
+  `store_id` bigint(11) DEFAULT '0',
+  `type` varchar(2) DEFAULT '0',
+  `note` text,
+  `price_per_f` decimal(11,2) DEFAULT '0.00',
+  `price_per_d` decimal(11,2) DEFAULT '0.00',
+  `price_include_tax` varchar(1) DEFAULT '1',
+  `start_note` text,
+  `arrival_note` text,
+  `start_tel` varchar(20) DEFAULT NULL,
+  `start_name` varchar(50) DEFAULT NULL,
+  `start_mobile` varchar(20) DEFAULT NULL,
+  `arrival_tel` varchar(20) DEFAULT NULL,
+  `arrival_name` varchar(50) DEFAULT NULL,
+  `arrival_mobile` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_line_price` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `line_id` bigint(11) DEFAULT NULL,
+  `passenger_amount` int(8) DEFAULT NULL,
+  `price` decimal(11,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_line_station` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `line_id` bigint(11) DEFAULT NULL,
+  `station_id` bigint(11) DEFAULT NULL,
+  `order_index` int(8) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_marketing_conf` (
+  `uniacid` int(8) NOT NULL,
+  `first_order_on` varchar(1) DEFAULT '0',
+  `first_order_free` varchar(1) NOT NULL DEFAULT '0',
+  `first_order_discount` decimal(11,2) NOT NULL,
+  `first_order_discount_min_consumption` decimal(11,2) DEFAULT NULL,
+  `fx_on` varchar(1) NOT NULL DEFAULT '0',
+  `svc_on` varchar(1) DEFAULT '0',
+  `owner_release_pin_integral` int(8) DEFAULT '0',
+  `owner_release_pin_integral_per_day` int(8) DEFAULT '0',
+  `owner_pin_success_integral` int(8) DEFAULT '0',
+  `owner_pin_success_integral_per_day` int(8) DEFAULT '0',
+  `passenger_share_integral` int(8) DEFAULT '0',
+  `passenger_share_integral_per_day` int(8) DEFAULT '0',
+  `owner_classify_on` varchar(1) DEFAULT '0',
+  `owner_classify` varchar(512) DEFAULT NULL,
+  `coupon_on` varchar(1) DEFAULT '0',
+  `coupon` varchar(128) DEFAULT NULL,
+  `owner_award_mode` varchar(2) DEFAULT '0',
+  `owner_fixed_award_money` decimal(11,2) DEFAULT '0.00',
+  `owner_award_ratio` decimal(11,2) DEFAULT '0.00',
+  `invite_award_mode` varchar(2) DEFAULT '0',
+  `inviter_award_ratio_from_order` decimal(11,2) DEFAULT '0.00',
+  `partner_award_money` decimal(11,2) DEFAULT '0.00',
+  `partner_award_mode` varchar(2) DEFAULT '0',
+  `partner_award_ratio` decimal(11,2) DEFAULT '0.00',
+  PRIMARY KEY (`uniacid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_member` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `type` varchar(2) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(30) DEFAULT NULL,
+  `sn` varchar(50) DEFAULT NULL,
+  `travel_id` bigint(11) NOT NULL,
+  `owner_id` bigint(11) DEFAULT NULL,
+  `pin_id` bigint(11) DEFAULT NULL,
+  `status` varchar(2) DEFAULT '',
+  `pin_time` bigint(20) NOT NULL,
+  `price` decimal(11,2) NOT NULL,
+  `pay_tid` varchar(50) NOT NULL,
+  `pay_mode` varchar(1) NOT NULL DEFAULT '0',
+  `payed_money` decimal(11,2) DEFAULT NULL,
+  `owner_comming_to_departure_station` varchar(1) DEFAULT '0',
+  `owner_arrived_departure_station` varchar(1) DEFAULT '0',
+  `cancel_reason` varchar(1024) DEFAULT NULL,
+  `passenger_amount` int(8) DEFAULT '0',
+  `owner_cancel_reason` varchar(1024) DEFAULT NULL,
+  `owner_cancel_lng` decimal(15,10) DEFAULT NULL,
+  `owner_cancel_lat` decimal(15,10) DEFAULT NULL,
+  `owner_arrived_departure_station_time` bigint(20) DEFAULT NULL,
+  `store_id` bigint(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=268 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_menu` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `type` varchar(1) DEFAULT '1' COMMENT '0:系统菜单;1:自定义菜单',
+  `name` varchar(20) DEFAULT NULL,
+  `customer_name` varchar(20) DEFAULT NULL,
+  `order_index` bigint(11) DEFAULT NULL,
+  `icon` varchar(128) DEFAULT NULL,
+  `icon_active` varchar(128) DEFAULT NULL,
+  `url` varchar(512) DEFAULT NULL,
+  `display` varchar(1) DEFAULT '1',
+  `name_en` varchar(128) DEFAULT NULL,
+  `mode` varchar(2) DEFAULT '0',
+  `icon_name` varchar(50) DEFAULT NULL,
+  `wxapp_url` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_message` (
+  `uniacid` int(8) NOT NULL DEFAULT '0',
+  `release_success` varchar(128) DEFAULT NULL,
+  `join_notice` varchar(128) DEFAULT NULL,
+  `join_result` varchar(128) DEFAULT NULL,
+  `sms_on` varchar(1) NOT NULL DEFAULT '0',
+  `juhe_key` varchar(50) NOT NULL,
+  `release_success_juhe_id` varchar(10) DEFAULT NULL,
+  `join_notice_juhe_id` varchar(10) DEFAULT NULL,
+  `join_result_juhe_id` varchar(10) DEFAULT NULL,
+  `pin_order_notice` varchar(128) DEFAULT NULL,
+  `pay` varchar(128) NOT NULL,
+  `owner_cancel` varchar(128) NOT NULL,
+  `passenger_cancel` varchar(128) NOT NULL,
+  `xcx_travel_been_accept` varchar(128) DEFAULT NULL,
+  `owner_register` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`uniacid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_note_template` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) NOT NULL,
+  `content` varchar(256) NOT NULL,
+  `scene` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_notice` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) NOT NULL,
+  `type` bigint(11) NOT NULL,
+  `title` varchar(512) NOT NULL,
+  `content` text,
+  `release_time` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_notice_type` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `color` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_owner` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) NOT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(30) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `tel` varchar(20) DEFAULT NULL,
+  `car_number_1` varchar(10) DEFAULT NULL,
+  `car_number_2` varchar(10) NOT NULL,
+  `car_number_3` varchar(10) NOT NULL,
+  `car_color` varchar(20) DEFAULT NULL,
+  `car_series` varchar(50) DEFAULT NULL,
+  `vehicle_travel_license` varchar(128) DEFAULT NULL,
+  `driving_license` varchar(128) DEFAULT NULL,
+  `car_img` varchar(128) DEFAULT NULL,
+  `status` varchar(1) DEFAULT '0',
+  `charter_on` varchar(1) DEFAULT '0',
+  `location` varchar(128) DEFAULT NULL,
+  `lng` decimal(15,10) DEFAULT NULL,
+  `lat` decimal(15,10) DEFAULT NULL,
+  `credit_score` int(8) DEFAULT '70',
+  `insurance_img` varchar(128) DEFAULT NULL,
+  `insurance_expire` bigint(20) DEFAULT NULL,
+  `total_income` decimal(11,2) DEFAULT '0.00',
+  `withdrawed_income` decimal(11,2) DEFAULT '0.00',
+  `working_on` varchar(1) DEFAULT '1',
+  `register_time` bigint(20) DEFAULT NULL,
+  `cl_on` varchar(1) DEFAULT '0',
+  `cl_departure_prov` varchar(50) DEFAULT NULL,
+  `cl_departure_city` varchar(50) DEFAULT NULL,
+  `cl_departure_district` varchar(50) DEFAULT NULL,
+  `cl_departure_station` varchar(128) DEFAULT NULL,
+  `cl_departure_lng` decimal(15,10) DEFAULT NULL,
+  `cl_departure_lat` decimal(15,10) DEFAULT NULL,
+  `cl_terminal_prov` varchar(50) DEFAULT NULL,
+  `cl_terminal_city` varchar(50) DEFAULT NULL,
+  `cl_terminal_district` varchar(50) DEFAULT NULL,
+  `cl_terminal_station` varchar(128) DEFAULT NULL,
+  `cl_terminal_lng` decimal(15,10) DEFAULT NULL,
+  `cl_terminal_lat` decimal(15,10) DEFAULT NULL,
+  `cl_stations_str` varchar(512) DEFAULT NULL,
+  `cl_note` text,
+  `cl_name` varchar(128) DEFAULT NULL,
+  `cl_price_per_f` decimal(11,2) DEFAULT '0.00',
+  `cl_price_per_d` decimal(11,2) DEFAULT '0.00',
+  `cl_price_include_tax` varchar(1) DEFAULT '1',
+  `cl_arrival_note` text,
+  `cl_start_tel` varchar(20) DEFAULT NULL,
+  `cl_start_name` varchar(50) DEFAULT NULL,
+  `cl_start_mobile` varchar(20) DEFAULT NULL,
+  `cl_arrival_tel` varchar(20) DEFAULT NULL,
+  `cl_arrival_name` varchar(50) DEFAULT NULL,
+  `cl_arrival_mobile` varchar(20) DEFAULT NULL,
+  `invite_code` varchar(20) DEFAULT NULL,
+  `inviter_code` varchar(20) DEFAULT NULL,
+  `inviter_uid` bigint(11) DEFAULT NULL,
+  `ID_img` varchar(128) DEFAULT NULL,
+  `ID_img_bk` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_owner_note` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` bigint(11) DEFAULT NULL,
+  `owner_id` bigint(11) DEFAULT NULL,
+  `owner_uid` bigint(11) DEFAULT NULL,
+  `content` varchar(1024) DEFAULT NULL,
+  `time` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_owner_withdraw` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `tid` varchar(128) DEFAULT NULL,
+  `uniacid` int(8) DEFAULT NULL,
+  `uid` bigint(11) NOT NULL,
+  `openid` varchar(30) DEFAULT NULL,
+  `money` decimal(11,2) DEFAULT NULL,
+  `status` varchar(1) DEFAULT '0',
+  `generate_time` int(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=81 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_pin` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(30) DEFAULT NULL,
+  `departure_station` varchar(20) DEFAULT NULL,
+  `terminal_station` varchar(20) DEFAULT NULL,
+  `passenger_count` smallint(5) DEFAULT NULL,
+  `departure_time` int(20) DEFAULT NULL,
+  `owner_id` bigint(11) NOT NULL,
+  `car_number` varchar(15) NOT NULL,
+  `car_series` varchar(20) NOT NULL,
+  `car_color` varchar(10) NOT NULL,
+  `boarding_place` varchar(50) DEFAULT NULL,
+  `price` decimal(8,2) DEFAULT NULL,
+  `mode` varchar(20) DEFAULT NULL,
+  `line` varchar(50) DEFAULT NULL,
+  `note` varchar(128) DEFAULT NULL,
+  `release_time` bigint(20) NOT NULL,
+  `status` varchar(1) NOT NULL DEFAULT '0',
+  `type` varchar(2) DEFAULT '1' COMMENT '1:拼车;2:快车;3:包车',
+  `lng` decimal(15,10) DEFAULT NULL,
+  `lat` decimal(15,10) DEFAULT NULL,
+  `is_fixed` varchar(1) DEFAULT '0',
+  `fixed_expire` bigint(20) DEFAULT NULL,
+  `fixed_release_time` bigint(20) DEFAULT NULL,
+  `is_stick` varchar(1) DEFAULT '0',
+  `stick_expire` bigint(20) DEFAULT NULL,
+  `stick_release_time` bigint(20) DEFAULT NULL,
+  `pined_amount` int(8) DEFAULT '0',
+  `left_amount` int(8) DEFAULT NULL,
+  `departure_city` varchar(50) DEFAULT NULL,
+  `terminal_city` varchar(50) DEFAULT NULL,
+  `stations` varchar(255) DEFAULT NULL,
+  `departure_district` varchar(50) DEFAULT NULL,
+  `terminal_district` varchar(50) DEFAULT NULL,
+  `line_id` bigint(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=112 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_pin_fixed_package` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `period` int(8) DEFAULT NULL,
+  `price` decimal(11,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_pin_fixed_record` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `pin_id` bigint(11) DEFAULT NULL,
+  `fixed_package_id` bigint(11) DEFAULT NULL,
+  `period` int(8) DEFAULT NULL,
+  `money` decimal(11,2) DEFAULT NULL,
+  `release_time` bigint(20) DEFAULT NULL,
+  `status` varchar(2) DEFAULT '0',
+  `sn` varchar(50) DEFAULT NULL,
+  `payed_money` decimal(11,2) DEFAULT NULL,
+  `pay_mode` varchar(2) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_pin_station` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `pin_id` bigint(11) DEFAULT NULL,
+  `station` varchar(128) DEFAULT NULL,
+  `order_index` int(8) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_pin_stick_package` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `period` int(8) DEFAULT NULL,
+  `price` decimal(11,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_platform` (
+  `uniacid` bigint(11) NOT NULL,
+  `owner_amount` bigint(11) DEFAULT '0',
+  `passenger_amount` bigint(11) DEFAULT '0',
+  PRIMARY KEY (`uniacid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_recharge` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(50) DEFAULT NULL,
+  `sn` varchar(50) DEFAULT NULL,
+  `pay_tid` varchar(50) DEFAULT NULL,
+  `package_id` bigint(11) DEFAULT NULL,
+  `money` decimal(11,2) DEFAULT NULL,
+  `gift_money` decimal(11,2) DEFAULT NULL,
+  `status` varchar(1) DEFAULT NULL,
+  `time` decimal(20,0) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=180 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_station` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `is_pin_departure_station` varchar(1) DEFAULT '0',
+  `is_pin_terminal_station` varchar(1) DEFAULT '0',
+  `prov` varchar(50) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `district` varchar(50) DEFAULT NULL,
+  `address` varchar(128) DEFAULT NULL,
+  `lng` decimal(15,10) DEFAULT NULL,
+  `lat` decimal(15,10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_store` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `sn` varchar(20) DEFAULT NULL,
+  `type` varchar(2) DEFAULT NULL,
+  `admin_uid` bigint(11) DEFAULT '0',
+  `username` varchar(128) DEFAULT NULL,
+  `password` varchar(128) DEFAULT NULL,
+  `openid` varchar(30) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `name` varchar(128) DEFAULT NULL,
+  `mobile` varchar(20) DEFAULT NULL,
+  `prov` varchar(128) DEFAULT NULL,
+  `city` varchar(128) DEFAULT NULL,
+  `district` varchar(128) DEFAULT NULL,
+  `address` varchar(256) DEFAULT NULL,
+  `img` varchar(128) DEFAULT NULL,
+  `tel` varchar(20) DEFAULT NULL,
+  `lng` decimal(15,10) DEFAULT NULL,
+  `lat` decimal(15,10) DEFAULT NULL,
+  `scale` varchar(50) DEFAULT NULL,
+  `intro` varchar(1024) DEFAULT NULL,
+  `detail` text,
+  `register_time` bigint(20) DEFAULT NULL,
+  `is_default` varchar(1) DEFAULT '0',
+  `license` varchar(128) DEFAULT NULL,
+  `customer_slot_on` varchar(1) DEFAULT '0',
+  `total_income` decimal(11,2) DEFAULT '0.00',
+  `deduct_income` decimal(11,2) DEFAULT '0.00',
+  `withdrawed_income` decimal(11,2) DEFAULT '0.00',
+  `order_index` bigint(11) DEFAULT NULL,
+  `status` varchar(1) DEFAULT '0',
+  `qq` varchar(50) DEFAULT NULL,
+  `email` varchar(128) DEFAULT NULL,
+  `wx` varchar(128) DEFAULT NULL,
+  `wx_qrcode` varchar(128) DEFAULT NULL,
+  `wxapp` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_suggestion` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `type` varchar(2) DEFAULT '0' COMMENT '0:商家',
+  `store_id` bigint(11) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(30) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `mobile` varchar(20) DEFAULT NULL,
+  `content` text,
+  `release_time` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `ims_navlange_pinche_travel` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `uniacid` int(8) DEFAULT NULL,
+  `uid` bigint(11) DEFAULT NULL,
+  `openid` varchar(30) DEFAULT NULL,
+  `bus_line` bigint(11) DEFAULT NULL,
+  `departure_station` varchar(50) DEFAULT NULL,
+  `terminal_station` varchar(50) DEFAULT NULL,
+  `departure_time` bigint(20) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `mobile` varchar(20) DEFAULT NULL,
+  `amount` int(8) DEFAULT NULL,
+  `boarding_place` varchar(50) DEFAULT NULL,
+  `release_time` bigint(20) DEFAULT NULL,
+  `status` varchar(2) DEFAULT '0',
+  `type` varchar(2) DEFAULT '1' COMMENT '1:拼车;2:快车;3:包车;',
+  `is_booking` varchar(1) DEFAULT '0',
+  `lng` decimal(15,10) DEFAULT NULL,
+  `lat` decimal(15,10) DEFAULT NULL,
+  `expected_price` decimal(11,2) DEFAULT NULL,
+  `owner_confirmed` varchar(1) DEFAULT '0',
+  `note` varchar(255) DEFAULT NULL,
+  `owner_comming_to_departure_station` varchar(1) DEFAULT '0',
+  `owner_arrived_departure_station` varchar(1) DEFAULT '0',
+  `terminal_lng` decimal(15,10) DEFAULT NULL,
+  `terminal_lat` decimal(15,10) DEFAULT NULL,
+  `departure_city` varchar(50) DEFAULT NULL,
+  `terminal_city` varchar(50) DEFAULT NULL,
+  `departure_district` varchar(50) DEFAULT NULL,
+  `terminal_district` varchar(50) DEFAULT NULL,
+  `source` varchar(128) DEFAULT NULL,
+  `goods_type` varchar(2) DEFAULT '0',
+  `weight` decimal(11,2) DEFAULT '0.00',
+  `terminal_time` bigint(20) DEFAULT NULL,
+  `car_type` varchar(128) DEFAULT NULL,
+  `car_length` decimal(11,2) DEFAULT NULL,
+  `need_cover` varchar(1) DEFAULT NULL,
+  `goods_name` varchar(128) DEFAULT NULL,
+  `departure_prov` varchar(50) DEFAULT NULL,
+  `terminal_prov` varchar(50) DEFAULT NULL,
+  `volume` decimal(11,2) DEFAULT '0.00',
+  `goods_length` decimal(11,2) DEFAULT '0.00',
+  `goods_width` decimal(11,2) DEFAULT '0.00',
+  `goods_height` decimal(11,2) DEFAULT '0.00',
+  `delivery_need` varchar(255) DEFAULT NULL,
+  `arrival_service` varchar(255) DEFAULT NULL,
+  `pay_mode` varchar(2) DEFAULT '0',
+  `is_trans_provincial` varchar(1) DEFAULT '0',
+  `share_income` decimal(11,2) DEFAULT '0.00',
+  `accept_invoice` varchar(1) DEFAULT '0',
+  `start_time` bigint(20) DEFAULT NULL,
+  `end_time` bigint(20) DEFAULT NULL,
+  `zhuangxie_mode` varchar(1) DEFAULT '0',
+  `start_slot` varchar(20) DEFAULT NULL,
+  `end_slot` varchar(20) DEFAULT NULL,
+  `insure_price` decimal(11,2) DEFAULT '0.00',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=272 DEFAULT CHARSET=utf8;
+]]></install>
+	<uninstall><![CDATA[DROP TABLE IF EXISTS `ims_navlange_pinche_action`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_banner`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_bus_line`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_bus_line_owner`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_bus_line_station`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_cargo_accept_order`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_city`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_client`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_comment`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_comment_template`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_conf`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_credit3_record`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_credit4_record`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_credit_level`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_gallery`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_goods_insurance`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_integral_record`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_line`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_line_price`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_line_station`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_marketing_conf`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_member`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_menu`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_message`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_note_template`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_notice`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_notice_type`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_owner`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_owner_note`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_owner_withdraw`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_pin`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_pin_fixed_package`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_pin_fixed_record`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_pin_station`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_pin_stick_package`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_platform`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_recharge`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_station`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_store`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_suggestion`;
+DROP TABLE IF EXISTS `ims_navlange_pinche_travel`;
+]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

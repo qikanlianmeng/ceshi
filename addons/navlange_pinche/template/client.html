@@ -1,0 +1,86 @@
+<?php
+$this->qc_template('header');
+?>
+<ol class="breadcrumb">
+    <li class="active">
+        乘客管理
+    </li>
+</ol>
+    <div class="panel panel-default">
+        <div class="panel-heading">乘客列表</div>
+        <div class="panel-body">
+            <table class="table table-condensed table-striped" style="background-color: white;table-layout:fixed;word-wrap:break-word">
+                <thead style="border-top-left-radius: 3px;border-top-right-radius: 3px;">
+                    <tr>
+                        <th style="text-align: center">头像、昵称</th>
+                        <th style="text-align: center">姓名</th>
+                        <th style="text-align: center">联系电话</th>
+                        <th style="text-align: center">注册时间</th>
+                        <th style="text-align: center">信誉值</th>
+                        <th style="text-align: center;width:100px">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {loop $client $index $item}
+                        <tr id="{$item['id']}">
+                            <td style="text-align: center">
+                                <img src="{$item['avatar']}" width="30px" height="30px" />
+                                <span style="position: relative;top:2px">{$item['nickname']}</span>
+                            </td>
+                            <td style="text-align: center">{$item['realname']}</td>
+                            <td style="text-align: center">{$item['mobile']}</td>
+                            <td style="text-align: center">{php echo date('Y-m-d H:i',$item['register_time'])}</td>
+                            <td style="text-align: center">
+                                <input style="width:50px;text-align: center" name="client_credit_{$item['id']}" value="{$item['credit_score']}" />
+                            </td>
+                            <td style="text-align: center">
+                                <a href="javascript:delete_client({$item['id']})" style="color:red"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    {/loop}
+                </tbody>
+            </table>
+        </div>
+    </div>
+<script>
+$("input[name^='client_credit_']").change(function(){
+    var id_str = $(this).attr('name');
+    var id_arr = id_str.split("_");
+    $.post("{php echo $this->createWeburl('client',array('op'=>'change_credit'))}",{
+            id:id_arr[2],
+            credit_score:$("input[name='"+id_str+"']").val()
+        },function(resp) {
+            resp = $.parseJSON(resp);
+            tankuang(300,'修改成功！');
+        }
+    );
+})
+function delete_client(id) {
+    var r = confirm("删除乘客！");
+    if(r) {
+        $.post("{php echo $this->createWeburl('client', array('op' => 'delete_client'));}",{
+                id:id
+            },
+            function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno != 0) {
+                    util.message('操作失败, 请稍后重试.')
+                } else {
+                    util.message('操作成功', location.href, 'success');
+                }
+            }
+        );
+    }
+}
+</script>
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;top:50%;width:100%;height:30px;line-height:30px;margin-top:-15px;"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>

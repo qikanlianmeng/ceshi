@@ -1,0 +1,516 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=4" />
+<style>
+    body {
+        background-color:#F3F3F3;
+    }
+    .mui-segmented-control.mui-segmented-control-inverted .mui-control-item {
+        border-bottom: 2px white solid;
+        color:grey;
+    }
+    .mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+        border-bottom: 2px {$conf['owner_color']} solid;
+        color:{$conf['owner_color']};
+    }
+    .mui-bar-tab .mui-tab-item.mui-active {
+        color: {$conf['owner_color']};
+    }
+    .mode {
+        height:35px;
+        line-height: 33px;
+        width:50px;
+        margin:0px auto;
+        text-align: center
+    }
+    .mode_active {
+        border-bottom:2px {$conf['owner_color']} solid;
+        color:{$conf['owner_color']}
+    }
+    a:hover {
+        text-decoration: none
+    }
+    .pin {
+        margin:5px;
+        padding:5px 10px;
+        background-color:white;
+    }
+    .travel {
+        margin:5px;
+        padding:5px 10px;
+        background-color:white;
+    }
+    .note_active {
+        background-color:{$conf['owner_color']};
+        border-color:{$conf['owner_color']};
+        color:white
+    }
+</style>
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+<div id="step_1">
+    <!--header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-person mui-pull-left mui-plus-visble" href="javascript:person()"></a>
+        <a class="mui-pull-right" style="font-size:14px;height:44px;line-height: 44px" href="{php echo $this->createMobileurl('cargo')}"><img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon2.png" height="20px" width="auto" />&nbsp;乘客</a>
+        {if $conf['city_on']=='1'}
+        <h1 class="mui-title" style="font-weight: normal"><span class="mui-icon mui-icon-location" style="font-size:16px"></span><span onclick="change_city()">{php echo $this->rtrim_cn($_SESSION['city'],'市');}&nbsp;<i class="fa fa-angle-down"></i></span></h1>
+        {/if}
+    </header>
+    <script>
+    var mask = mui.createMask(function(){
+        $("#person_panel").hide();
+    });//callback为用户点击蒙版时自动执行的回调；;
+    function person() {
+        mask.show();
+        $("#person_panel").show();
+    }
+    </script>
+    <div id="person_panel" style="position: fixed;width:60%;top:0px;height:100%;background-color: white;z-index: 999;display:none">
+        <div style="margin-top:40px;text-align: center">
+            <img src="{$_W['fans']['headimgurl']}" width="50px" height="50px" style="border-radius: 40px;border:2px white solid" />
+        </div>
+        <div style="text-align: center">
+            {$_W['fans']['nickname']}
+        </div>
+        {if $conf['member_on'] == '1' && $member_info['level_id'] > 0}
+            <div style="text-align: center;font-size:12px;color:grey" onclick="location.href='{php echo murl('entry', array('m' => 'navlange_member', 'do' => 'index'), true, true);}'">
+                {$member_info['level']}
+            </div>
+        {/if}
+        <div style="margin-top:40px">
+            <div style="height:40px;margin-left:30px" onclick="location.href='{php echo $this->createMobileurl('owner_pin');}'">
+                <div style="width:40px;height:40px;text-align: center;padding-top:9px">
+                    <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/travel.png" height="20px" width="auto" />
+                </div>
+                <div style="margin:-40px 0px 0px 40px;height:40px;line-height: 40px">
+                    出车
+                </div>
+            </div>
+            <div style="height:40px;margin-top:20px;margin-left:30px" onclick="location.href='{php echo $this->createMobileurl('owner');}'">
+                <div style="width:40px;height:40px;text-align: center;padding-top:9px">
+                    <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/person_profile.png" height="20px" width="auto" />
+                </div>
+                <div style="margin:-40px 0px 0px 40px;height:40px;line-height: 40px">
+                    司机中心
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="height:44px"></div-->
+{if $menu_list}
+    <nav class="mui-bar mui-bar-tab">
+        {loop $menu_list $index $item}
+            {if ($item['name_en']=='general_release' AND $general_release_menu['display']=='1') OR $item['name_en'] != 'general_release'}
+                <a class="mui-tab-item{if $item['name_en']=='travel_index'} mui-active{/if}" href="{$item['url']}">
+                {if $item['name_en'] != 'general_release'}
+                    <div style="height:24px;padding-top:2px">
+                        {if $item['icon'] != ''}
+                        <img src="{php if($item['name_en']=='travel_index') echo tomedia($item['icon_active']);else echo tomedia($item['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_pinche/template/style/img/{$item['name_en']}{php if($item['name_en']=='travel_index') echo '_active';}.png'" width="20px" height="20px" />
+                        {else}
+                            <i class="iconfont icon-{$item['icon_name']}"></i>
+                        {/if}
+                    </div>
+                    <div style="height:21px;font-size:12px"><span class="mui-tab-label">{$item['customer_name']}</span></div>
+                {/if}
+                </a>
+            {/if}
+        {/loop}
+    </nav>
+
+    {if $general_release_menu['display'] == '1'}
+    <div style="width:50px;height:65px;position: fixed;bottom:0px;left:50%;margin-left:-25px;z-index: 11">
+        <div style="width:45px;height:45px;line-height: 45px;margin:0px auto;border-radius: 22.5px;background-color: #F7F7F7;text-align:center;color:#929292" onclick="location.href='{php echo $this->createMobileurl('general_release')}'">
+            {if $general_release_menu['icon'] != ''}
+            <img src="{php echo tomedia($release_menu['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_reserve_service/template/style/img/release.png'" width="40px" height="40px" />
+            {else}
+                <i class="iconfont icon-{$general_release_menu['icon_name']}" style="font-size:45px"></i>
+            {/if}
+        </div>
+        <div style="width:50px;height:20px;background-color: #F7F7F7;margin:0px auto;text-align: center;font-size:12px;color:#929292">
+            <span class="mui-tab-label">{$general_release_menu['customer_name']}</span>
+        </div>
+    </div>
+    {/if}
+{/if}
+    {if !empty($banner_list)}
+    <link rel="stylesheet" href="./resource/components/swiper/swiper.min.css">
+    <div class="mui-slider">
+        <div class="mui-slider-group mui-slider-loop">
+            <div class="mui-slider-item">
+                <a href="{$banner_list[count($banner_list)-1]['url']}"><img width="100%" height="auto" src="{php echo tomedia($banner_list[count($banner_list)-1]['img'])}" /></a>
+            </div>
+            {loop $banner_list $index $item}
+            <div class="mui-slider-item">
+                <a href="{$item['url']}"><img width="100%" height="auto" src="{php echo tomedia($item['img'])}" /></a>
+            </div>
+            {/loop}
+            <div class="mui-slider-item">
+                <a href="{$banner_list[0]['url']}"><img width="100%" height="auto" src="{php echo tomedia($banner_list[0]['img'])}" /></a>
+            </div>
+        </div>
+        <div class="mui-slider-indicator">   
+            {loop $banner_list $index $item}
+                <div class="mui-indicator {if $index==0}mui-active{/if}"></div> 
+            {/loop}
+        </div>  
+    </div>
+    <script>
+    var gallery = mui('.mui-slider');
+    gallery.slider({
+        interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
+    });
+    </script>
+    {/if}
+    
+    {if $conf['mode_menu_on'] == '1'}
+    <style>
+    .mui-segmented-control.mui-segmented-control-inverted .mui-control-item {
+        border-bottom: 2px white solid;
+        color:grey;
+    }
+    .mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+        border-bottom: 2px {$conf['owner_color']} solid;
+        color:{$conf['owner_color']};
+    }
+    </style>
+    <div style="margin:0px;background-color: white">
+        <div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="height:40px">
+            <div id="all_item" class="mui-scroll">
+                {if $conf['pin_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('travel_index')}')">
+                    {$conf['pin_mode_name']}
+                </a>
+                {/if}
+                {if $conf['fast_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_fast')}')">
+                    {$conf['fast_mode_name']}
+                </a>
+                {/if}
+                {if $conf['charter_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_charter')}')">
+                    {$conf['charter_mode_name']}
+                </a>
+                {/if}
+                {if $conf['cargo_mode_on'] == '1'}
+                <a class="mui-control-item mui-active" href="javascript:void(0)">
+                    {$conf['cargo_mode_name']}
+                </a>
+                {/if}
+                {if $conf['bus_mode_on'] == '1'}
+                <a class="mui-control-item" href="javascript:jump_out('{php echo $this->createMobileurl('owner_bus')}')">
+                    {$conf['bus_mode_name']}
+                </a>
+                {/if}
+            </div>
+        </div>
+    </div>
+    <script>
+        mui('.mui-scroll-wrapper').scroll({
+            deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+        });
+        function jump_out(url) {
+            location.href=url;
+        }
+    </script>
+    {/if}
+    <div id="travel_panel">
+        {if !empty($travel_info)}
+        {loop $travel_info $index $item}
+            <div class="travel">
+                <div style="padding-bottom: 5px">
+                    <div style="width:50px;text-align: center;height:40px">
+                        <img src="{$item['avatar']}" width="40px" height="40px" style="border-radius: 20px" />
+                    </div>
+                    <div style="margin:-40px 40px 0px 50px;">
+                         <div style="white-space: nowrap;text-overflow:ellipsis; overflow:hidden;">
+                            {$item['nickname']}&#12288;<span style="color:grey">{php echo $conf['passenger_info_available_before_pin'] == '1' ? $this->hidtel($item['mobile']) : $item['mobile']}</span>
+                        </div>
+                        <div>
+                            <span class="mui-badge" style="border-radius: 2px;background-color:{$conf['color']};color:white">信用分：{$item['credit_score']}</span>
+                            {if $conf['comment_display_on'] == '1'}
+                            &nbsp;<a href="{php echo $this->createMobileurl('comment_list',array('role'=>'client','uid'=>$item['uid']))}" style="color:{$conf['color']};text-decoration: underline;">评论</a>
+                            {/if}
+                        </div>
+                    </div>
+                    <div style="width:40px;margin:-40px 0px 0px auto;height:40px;line-height: 40px">
+                        <a href="tel:{$item['mobile']}" style="color:green"><i class="iconfont icon-bohao" style="font-size:30px"></i></a>
+                    </div>
+                </div>
+                <div class="container" style="border-top:1px #F3F3F3 solid;padding-bottom:8px;padding-top:5px;font-size:12px">
+                    <div class="row" style="padding:0px">
+                        <div class="col-xs-7" style="padding:0px 0px 0px 10px">
+                            <i class="iconfont icon-yuyue"></i> {php echo date('m月d日 H:i',$item['departure_time'])}
+                        </div>
+                        <div class="col-xs-2" style="padding:0px">
+                            {php echo $this->trans_goods_type($item['goods_type'])}
+                        </div>
+                        <div class="col-xs-3" style="padding:0px;text-align: right">
+                            <span style="font-size:18px">{$item['weight']}</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="min-height: 50px;padding-left: 8px">
+                    <div style="white-space: nowrap;text-overflow:ellipsis; overflow:hidden;">
+                        <span style="color:green"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+                        <span style="position: relative;top:-5px">{php echo $this->rtrim_cn($item['departure_city'],'市')}-{$item['departure_station']}</span>
+                        <span style="font-size: 12px;color:grey;position: relative;top:-5px">{$item['departure_district']}</span>
+                    </div>
+                    <div style="padding-top:5px;white-space: nowrap;text-overflow:ellipsis; overflow:hidden;">
+                        <span style="color:red"><i class="iconfont icon-yuan" style="font-size:26px"></i></span>
+                        <span style="position: relative;top:-5px">{php echo $this->rtrim_cn($item['terminal_city'],'市')}-{$item['terminal_station']}</span>
+                        <span style="font-size: 12px;color:grey;position: relative;top:-5px">{$item['terminal_district']}</span>
+                    </div>
+                </div>
+                <div style="border-top:1px #F3F3F3 solid">
+                    <div style="width:80px;margin:0px 0px 0px auto;padding-top:8px;text-align: right">
+                        <button class="mui-btn" style="background-color:{$conf['owner_color']};border-color:{$conf['owner_color']};color:white" onclick="location.href='{php echo $this->createMobileurl('goods_info',array('id'=>$item['id']))}'">详情</button>
+                    </div>
+                    {if $item['note']}
+                    <div style="margin:-41px 80px 0px 0px;min-height:41px;padding-top:10px;color:grey">
+                        备注：{$item['note']}
+                    </div>
+                    {/if}
+                </div>
+            </div>
+        {/loop}
+        {else}
+            <div style="margin-top:80px;text-align: center">
+                <i class="iconfont icon-dengdai" style="font-size:50px;color:grey"></i>
+            </div>
+            <div style="text-align: center;padding-top:10px;color:grey">
+                暂无匹配的乘客发布！<a href="{php echo $this->createMobileurl('travel_index')}" style="color:grey;text-decoration: underline;">查看其它</a>
+            </div>
+        {/if}
+    </div>
+    <div style="height:60px"></div>
+</div>
+
+<script>
+    function dail(mobile) {
+        location.href="tel:"+mobile;
+    }
+    function cancel_cargo(id) {
+        $.post("{php echo $this->createMobileurl('owner_cargo',array('op'=>'cancel_cargo'))}",{
+                id:id
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == 0) {
+                    tankuang(200,'取消成功！');
+                    $("#cargo_"+id).remove();
+                }
+            }
+        );
+    }
+    function release() {
+        $.post("{php echo $this->createMobileurl('get_cargo_releasable')}",
+            function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == 0) {
+                    $("#step_1").hide();
+                    $("#release_panel").show();
+                } else if (resp.message.errno == 1) {
+                    mui.alert("您有未完成的带货任务，请不要重复发布！");
+                }
+            }
+        );
+    }
+    function change_city() {
+        $("#step_1").hide();
+        $("#city_panel").show();
+    }
+</script>
+<style>
+    .city_item {
+        height:40px;
+        line-height: 40px;
+        background-color: white;
+        padding:0px 10px;
+    }
+</style>
+<div id="city_panel" style="background-color: {$conf['bg_color']};display:none">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-left-nav mui-pull-left" href="javascript:cancel_city_select()"></a>
+        <h1 class="mui-title">选择城市</h1>
+    </header>
+    <script type="text/javascript">
+        function cancel_city_select() {
+            $("#city_panel").hide();
+            $("#step_1").show();
+        }
+    </script>
+    <div style="position: fixed;top:0px;right:0px;width:30px;height:100%;text-align: center;background:rgba(0, 0, 0, 0.1)!important;filter:Alpha(opacity=10); background:#000;z-index: 2;padding-top: 100px;color:grey">
+        {loop $all_city $index $item}
+            <div>{$item['alphabetical_index']}</div>
+        {/loop}
+    </div>
+    <div style="height:60px"></div>
+    <div style="height:40px;line-height: 40px;background-color: white;padding:0px 10px">
+        <span style="color:grey">当前城市：</span>
+        <span id="step_2_cur_city">{php echo $this->rtrim_cn($_SESSION['city'],'市');}</span>
+    </div>
+    {loop $all_city $index $item}
+        <div style="height:40px;line-height: 40px;padding:0px 10px;color:grey">{$item['alphabetical_index']}</div>
+        {loop $item['city'] $i $city}
+            <div class="city_item" onclick="sel_city({$city['id']},'{$city['city']}')">
+                {php echo $this->rtrim_cn($city['city'],'市');}
+            </div>
+        {/loop}
+    {/loop}
+</div>
+
+<div id="release_panel" style="display:none">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-back mui-pull-left mui-plus-visble" href="javascript:cancel_release()"></a>
+        <h1 class="mui-title" style="font-weight: normal">发布带货</h1>
+    </header>
+    <div style="height:50px"></div>
+    <div style="padding:10px">
+        <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+            <div style="width:30px;height:40px;line-height: 40px;color:#3BBBA2;text-align: center">
+                <i class="fa fa-circle-o"></i>
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px 30px">
+                <input id="departure_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="始发站" />
+            </div>
+        </div>
+        <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+            <div style="width:30px;height:40px;line-height: 40px;color:#FB8641;text-align: center">
+                <i class="fa fa-circle"></i>
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px 30px">
+                <input id="terminal_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="终点站" />
+            </div>
+        </div>
+        <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+            <div style="width:30px;height:40px;line-height: 40px;color:#a8a8a8;text-align: center">
+                <i class="fa fa-clock-o"></i>
+            </div>
+            <div style="height:40px;margin:-40px 0px 0px 30px">
+                <input id="departure_time" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" readonly="true" onfocus=this.blur()  placeholder="出行时间" />
+            </div>
+        </div>
+    </div>
+    <label style="padding-left:5px;font-weight: normal;color:grey">途径路线，可拖拽切换顺序</label>
+    <ul id="items" style="margin-right:100px">
+    </ul>
+    <div style="position: fixed;right:0px;top:40%;width:100px;text-align: center">
+        <button class="mui-btn mui-btn-outlined" style="border-color:{$conf['owner_color']};color:{$conf['owner_color']}" onclick="add_station()">添&#12288;&#12288;加</button>
+        <button class="mui-btn" style="background-color:{$conf['owner_color']};border-color:{$conf['owner_color']};color:white;margin-top:15px" onclick="release_submit()">确认发布</button>
+    </div>
+</div>
+<link rel="stylesheet" href="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.css" />
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.js"></script>
+<!--script src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/Sortable.js"></script-->
+<script>
+var requireExtend = require.config({
+    paths: {
+        'sortable': "{$_W['siteroot']}addons/navlange_pinche/template/style/js/Sortable", //结尾不写.js
+    },
+    shim:{
+                        
+    }
+});
+requireExtend(["sortable"],function(res){
+    var el = document.getElementById('items');
+    res.create(el,{});
+//var sortable = Sortable.create(el,{});
+});
+function cancel_release() {
+    $("#release_panel").hide();
+    $("#step_1").show();
+}
+function add_station() {
+    var btnArray = ['取消', '确定'];
+    mui.prompt('请输入途径站点名称：', '站点名称', '添加站点', btnArray, function(e) {
+        if (e.index == 1) {
+            if(e.value == '') {
+                alert("请输入站点名称！");
+            } else {
+                var station = "<li><span>"+e.value+"</span>&#12288;<button class='mui-btn mui-btn-danger' onclick='delete_station($(this))'>删除</button></li>";
+                $("#items").append(station);
+            }
+        }
+    })
+}
+function delete_station(item) {
+    item.parent('li').remove();
+}
+$("#departure_time").click(function(){
+    var today = new Date();
+    var year = today.getFullYear();
+    var dtPicker = new mui.DtPicker({
+        beginYear: year,//设置开始日期 
+        endYear: year+1
+    }); 
+    dtPicker.show(function (selectItems) { 
+        var str_time = selectItems.y.value+"/"+selectItems.m.value+"/"+selectItems.d.value+" "+selectItems.h.value+":"+selectItems.i.value;
+        var sel_date = new Date(str_time);
+        var timestamp = Date.parse(sel_date);
+        var now = Date.parse(today);
+        if(timestamp < now) {
+            mui.alert("出行时间已过，请重新选择！");
+        } else if (timestamp > ({$conf['max_day_to_release']}*24*60*60*1000+now)) {
+            mui.alert("只能发布{$conf['max_day_to_release']}天以内的拼车，谢谢您的配合！");
+        } else {
+            $("#departure_time").val(str_time);
+        }
+    })
+})
+function release_submit() {
+    if($("#departure_station").val() == '') {
+        alert("请输入出发站！");
+        $("#departure_station").focus();
+    } else if ($("#terminal_station").val() == '') {
+        alert("请输入终点站！");
+        $("#terminal_station").focus();
+    } else if ($("#departure_time").val() == '') {
+        alert("请选择出发时间！");
+    } else {
+        var station = new Array();
+        $("#items li").each(function(){
+            station.push($(this).children('span').html());
+        })
+        $.post("{php echo $this->createMobileurl('owner_cargo',array('op'=>'release_submit'))}",{
+                departure_station:$("#departure_station").val(),
+                terminal_station:$("#terminal_station").val(),
+                departure_time:$("#departure_time").val(),
+                station:station
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == '0') {
+                    alert("带货发布成功！");
+                    location.reload();
+                }
+            }
+        );
+    }
+}
+</script>
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;top:50%;width:100%;height:30px;line-height:30px;margin-top:-15px;"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>
+
+
+{if $need_check == '1'}
+<div id="mask" style="position: fixed;top:0px;width:100%;height:100%;background:rgba(0, 0, 0, 0.6)!important;filter:Alpha(opacity=60); background:#000;z-index:999;">
+    <div style="margin-top:30%;width:100%;color:white">
+        <div style="text-align: center;font-size:18px">
+            <i class="fa fa-info-circle"></i>&nbsp;尚未认证车主不能发布带货！
+        </div>
+        <div style="text-align: center;margin-top:20px">
+            <button class="mui-btn mui-btn-outlined" style="border-color:white;color:white;font-size:18px" onclick="location.href='{php echo $this->createMobileurl('cargo')}'">返回</button>
+            <button class="mui-btn mui-btn-outlined" style="border-color:white;color:white;font-size:18px" onclick="location.href='{php echo $this->createMobileurl('owner_info')}'">去认证</button>
+        </div>
+    </div>
+</div>
+{/if}

@@ -1,0 +1,368 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+body{
+    background-color: #F3F3F3;
+}
+.express{
+    margin:10px;
+    border-radius:5px;
+    border:1px #EFEFEF solid;
+    background-color: white;
+    padding: 10px;
+}
+.address{
+    margin:10px 15px;
+    font-size:80%;
+}
+</style>
+<div id="main_panel">
+    <div id="{$pin['id']}" class="express">
+        <div style="text-align: center;width: 260px;margin:0px auto"><?php echo date('m-d H:i',$pin['departure_time']); ?></div>
+        <div style="width:260px;margin:-10px auto 0px auto">
+            <div style="width:80px;display: inline-block;text-align: center">
+                    {$pin['departure_station']}
+            </div>
+            <div style="text-align: center;display: inline-block;width:80px">
+                <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/arrow.png" height="auto" width="80px" />
+            </div>
+            <div style="width:80px;display: inline-block;text-align: center">
+                    {$pin['terminal_station']}
+            </div>
+        </div>
+        <div style="border-top: 1px #EFEFEF solid"></div>
+        <div class="container" style="margin-top:5px">
+            <div class="row">
+                <div class="col-xs-9" style="color:#EA7F17">
+                    车型：{$pin['car_series']}
+                </div>
+                <div class="col-xs-3" style="text-align: right;color:#EA7F17;padding:0px">
+                    可乘{$pin['passenger_count']}人
+                </div>
+            </div>
+        </div>
+        <div class="address">
+            集合地点：{$pin['boarding_place']}
+            &nbsp;
+            <span class="label label-success" onclick="open_location({$pin['lng']},{$pin['lat']})">一键导航</span>
+        </div>
+        <div class="address">
+            已拼人数：{$pin_count}
+        </div>
+        <div class="address">
+            车主：***（拼车后可视）
+        </div>
+        <div style="border-top: 1px #EFEFEF solid"></div>
+        <div class="address">
+            状态：{php echo $this->trans_pin_status($pin['status'])}
+        </div>
+        <div>
+            {if count($comment_info) > 0}
+                <label>乘客评价：</label>
+            {/if}
+            {loop $comment_info $index $item}
+                {if $index!=0}
+                    <div style="border-top: 1px #F3F3F3 solid">
+                {else}
+                    <div>
+                {/if}
+                    <div style="height:40px;width:40px">
+                        <div style="margin:5px">
+                            <img src="{$item['headimgurl']}" width="30px" height="30px" style="border-radius: 15px">
+                        </div>
+                    </div>
+                    <div style="margin-left:50px;margin-top:-40px">
+                        <div class="container" style="font-size:12px">
+                            <div class="row">
+                                <div class="col-xs-6" style="padding:0px">
+                                    {$item['nickname']}
+                                </div>
+                                <div class="col-xs-6" style="padding:0px;text-align: right">
+                                    {$item['time']}
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            {loop $item['content'] $i $c}
+                                <span class="label label-warning">{$c}</span>
+                            {/loop}
+                        </div>
+                        <div style="font-size:12px;margin-top:3px">
+                            留言：{$item['other']}
+                        </div>
+                    </div>
+                </div>
+            {/loop}
+        </div>
+    </div>
+    <script>
+        wx.config(jssdkconfig);
+        function open_location(lng,lat) {
+            wx.openLocation({
+                latitude: lat, // 纬度，浮点数，范围为90 ~ -90
+                longitude: lng, // 经度，浮点数，范围为180 ~ -180。
+                name: '', // 位置名
+                address: '', // 地址详情说明
+                scale: 13, // 地图缩放级别,整形值,范围从1~28。默认为最大
+                infoUrl: '' // 在查看位置界面底部显示的超链接,可点击跳转
+            });
+        }
+    </script>
+    <div style="margin:10px">
+        <button class="mui-btn mui-btn-block" style="background-color: {$conf['color']};border-color: {$conf['color']};color:white" onclick="pin({$_GPC['id']})">我要拼车</button>
+    </div>
+    <div style="margin-top:20px">
+        <div style="text-align: center;color:grey;font-size:12px">
+            {$conf['info_share_qrcode_hint']}
+        </div>
+        <div style="text-align: center">
+            <img src="{php echo tomedia($conf['info_share_qrcode'])}" width="200px" height="200px" />
+        </div>
+    </div>
+    <div id="register" style="padding:10px;display:none;position: fixed;top:40%;width:100%;z-index:999">
+        <form class="mui-input-group" action="" method="POST" style="z-index:999">
+            <div class="mui-input-row">
+                <div style="width:80px;height:40px;line-height: 40px;padding-left:15px;font-weight: bold">
+                    姓名
+                </div>
+                <div style="margin:-40px 0px 0px 80px;height:40px">
+                    <input type="text" id="name" name="name" value="{$user_info['realname']}" class="mui-input-clear" placeholder="请输入姓名">
+                </div>
+            </div>
+            <div class="mui-input-row">
+                <div style="width:80px;height:40px;line-height: 40px;padding-left:15px;font-weight: bold">
+                    联系电话
+                </div>
+                <div style="margin:-40px 0px 0px 80px;height:40px">
+                    <input type="number" id="mobile" name="mobile" value="{$user_info['mobile']}" class="mui-input-clear" placeholder="请输入联系电话">
+                </div>
+            </div>
+            <div class="mui-input-row">
+                <div style="width:80px;height:40px;line-height: 40px;padding-left:15px;font-weight: bold">
+                    人数
+                </div>
+                <div style="margin:-40px 0px 0px 80px;height:40px">
+                    <input type="number" id="amount" name="amount" value="1" class="mui-input-clear" placeholder="请输入人数">
+                </div>
+            </div>
+            <div class="mui-input-row">
+                <div style="width:80px;height:40px;line-height: 40px;padding-left:15px;font-weight: bold">
+                    登车地点
+                </div>
+                <div style="margin:-40px 90px 0px 80px;height:40px">
+                    <input type="text" id="boarding_place" name="boarding_place" class="mui-input-clear" placeholder="请输入上车地点" >
+                </div>
+                <div style="height:40px;width:90px;margin:-40px 0px 0px auto;line-height: 40px;border-left:1px #F3F3F3 solid;padding-left: 5px;text-align: center" onclick="sel_boarding_place()" >
+                    地图标注
+                    <i class="fa fa-angle-right"></i>
+                    <input type="hidden" id="lng" />
+                    <input type="hidden" id="lat" />
+                </div>
+            </div>
+            <div class="mui-button-row">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <button type="button" class="mui-btn mui-btn-danger mui-btn-block" style="font-size:16px;padding:6px;background-color: #a8a8a8;color:white;border:0px" onclick="pin_cancel()">取消</button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button type="button" class="mui-btn mui-btn-primary mui-btn-block" style="font-size:16px;padding:6px;background-color: {$conf['color']};color:white;border:0px" onclick="pin_submit()">确认</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+    <script>
+    var mask = mui.createMask(function(){
+        $("#register").hide();
+    });//callback为用户点击蒙版时自动执行的回调；;
+    var pin_id = 0;
+    function pin(id) {
+        $.post("{php echo $this->createMobileurl('index',array('op'=>'pin_check'));}",{
+                id:id
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == '1') {
+                    alert("您已拼过该车，请不要重复拼车！");
+                    $("#travel_release_panel").show();
+                } else if (resp.message.errno == '2') {
+                    alert("该车已拼满！");
+                    $("#travel_release_panel").show();
+                } else if (resp.message.errno == '3') {
+                    alert("您是车主，不能参与自己发布的拼车！");
+                    $("#travel_release_panel").show();
+                } else {
+                    pin_id = id;
+                    mask.show();//显示遮罩
+                    $("#register").show();
+                }
+            }
+        );
+    }
+    function pin_submit() {
+        if($("#name").val() == "") {
+            alert("请输入姓名！");
+            $("#name").focus();
+        } else if ($("#mobile").val() == "") {
+            alert("请输入联系电话！");
+            $("#mobile").focus();
+        } else if ($("#amount").val() == "") {
+            alert("请输入拼车人数！");
+            $("#amount").focus();
+        } else if ($("#boarding_place").val() == "") {
+            alert("请输入登车地点！");
+            $("#boarding_place").focus();
+        } else {
+            $.post("{php echo $this->createMobileurl('index',array('op'=>'pin'));}",{
+                    id:pin_id,
+                    name:$("#name").val(),
+                    mobile:$("#mobile").val(),
+                    amount:$("#amount").val(),
+                    boarding_place:$("#boarding_place").val(),
+                    lng:$("#lng").val(),
+                    lat:$("#lat").val()
+                },
+                function(resp) {
+                    mask.close();//显示遮罩
+                    $("#register").hide();
+                    resp = $.parseJSON(resp);
+                    if(resp.message.errno == '1') {
+                        alert("您已拼过该车，请不要重复拼车！");
+                        $("#travel_release_panel").show();
+                    } else if (resp.message.errno == '2') {
+                        alert("该车已拼满！");
+                        $("#travel_release_panel").show();
+                    } else {
+                        var reply = resp.message.message;
+                        location.href="{php echo $this->createMobileurl('confirm')}"+"&id="+reply.id;
+                    }
+                }
+            );
+        }
+    }
+    function pin_cancel() {
+        $("#register").hide();
+        $("#travel_release_panel").show();
+        mask.close();
+    }
+    </script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=gCF3WxqfpdvaRxciR9m1Nm7lbgEwXrky"></script>
+    <script src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/location_convertor.js"></script>
+    <script>
+    var center;
+    var map;
+    var marker;// 创建标注
+    wx.config(jssdkconfig);
+    wx.ready(function(){
+        wx.getLocation({
+            type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+            success: function (res) {
+                $("#map_container").css('width',window.screen.width);
+                $("#map_container").css('height',window.screen.height);
+                var cur_latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                var cur_longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                $("#lng").val(cur_longitude);
+                $("#lat").val(cur_latitude);
+                var bd_point = gcj02tobd09(cur_longitude,cur_latitude);
+                var gpsPoint = new BMap.Point(bd_point[0], bd_point[1]);
+                get_position(gpsPoint);
+            }
+        });     
+    });
+    function get_position(point) {
+        center = point;
+        var geoc = new BMap.Geocoder();
+        geoc.getLocation(point, function(rs){
+            var addComp = rs.addressComponents;
+            $("#boarding_place").val(addComp.street + addComp.streetNumber);
+        })
+    }
+    function sel_boarding_place() {
+        $("#main_panel").hide();
+        $("#district_panel").show();
+        map = new BMap.Map("map_container");
+        marker = new BMap.Marker(center);// 创建标注
+        map.centerAndZoom(center, 13);
+        map.addOverlay(marker);             // 将标注添加到地图中
+        marker.enableDragging();
+        marker.addEventListener("dragend",function(e){
+            center = new BMap.Point(e.point.lng,e.point.lat);
+            var geoc = new BMap.Geocoder();
+            geoc.getLocation(center, function(rs){
+                var addComp = rs.addressComponents;
+                $("#boarding_place").val(addComp.street + addComp.streetNumber);
+                var gcj_point = bd09togcj02(e.point.lng,e.point.lat);
+                $("#lng").val(gcj_point[0]);
+                $("#lat").val(gcj_point[1]);
+            });    
+        })
+    }
+    function theLocation(){
+        if($("#search_address").val() == "") {
+            alert("请输入要搜索的地名！");
+        } else {  
+            var local = new BMap.LocalSearch(map, {
+                onSearchComplete:function(res) {
+                    center = res.getPoi(0).point;
+                    var gcj_point = bd09togcj02(center.lng,center.lat);
+                    $("#lng").val(gcj_point[0]);
+                    $("#lat").val(gcj_point[1]);
+                    map.centerAndZoom(res.getPoi(0).point, 13);
+                    marker.setPosition(res.getPoi(0).point);
+                    var geoc = new BMap.Geocoder();
+                    geoc.getLocation(res.getPoi(0).point, function(rs){
+                        var addComp = rs.addressComponents;
+                        $("#boarding_place").val(addComp.street + addComp.streetNumber);
+                    })
+                }
+            });
+            local.search($("#search_address").val());
+        }
+    }
+    </script>
+<div id="district_panel" style="width:100%;height:100%;display:none;z-index: 999;position: fixed;">
+    <div id="map_container" style="position: fixed;width:100%;height:100%;top:0px">
+
+    </div>
+    <div style="position: fixed;top:10px;width:100%;">
+        <div style="margin:0px 10px">
+            <div class="input-group">
+                <input id="search_address" class="form-control" placeholder="请输入地址">
+                <span class="input-group-addon" onclick="theLocation()"><i class="fa fa-search"></i></span>
+            </div>
+        </div>
+    </div>
+    <div style="position: fixed;bottom:0px;width:100%;text-align: center;background:rgba(0, 0, 0, 0.6)!important;filter:Alpha(opacity=60); background:#000;padding:5px;color:white">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-8" style="text-align: left;line-height: 33px">
+                    精确地图标注有助于司机找到您！
+                </div>
+                <div class="col-xs-4" style="text-align: right">
+                    <button class="mui-btn mui-btn-warning" onclick="sel_address_confirm()">选取</button>
+                </div>
+            </div>              
+        </div>
+    </div>
+</div>
+<script>
+    function sel_address_confirm() {
+        $('#district_panel').hide();
+        $("#main_panel").show();
+        tankuang(200,'地图标注成功！');
+    }
+</script>
+<script>
+function tankuang(pWidth,content) {    
+    $("#msg").remove();
+    var html ='<div id="msg" style="position:fixed;bottom:30px;width:100%;height:30px;line-height:30px;margin-top:-15px;z-index:1000"><p style="background:#000;opacity:0.8;width:'+ pWidth +'px;color:#fff;text-align:center;padding:10px 10px;margin:0 auto;font-size:12px;border-radius:4px;">'+ content +'</p></div>'
+    $("body").append(html);
+    var t=setTimeout(next,2000);
+    function next() {
+        $("#msg").remove();
+    }
+}
+</script>

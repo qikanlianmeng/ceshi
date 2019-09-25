@@ -1,0 +1,85 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=5" />
+<style>
+	body{
+		background-color: #F3F3F3
+	}
+    a:hover{
+        text-decoration: none
+    }
+    .mui-bar-tab .mui-tab-item.mui-active {
+        color: {$conf['color']};
+    }
+</style>
+<script>
+	mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+{if $menu_list}
+<nav class="mui-bar mui-bar-tab">
+        {loop $menu_list $index $item}
+            {if ($item['name_en']=='general_release' AND $general_release_menu['display']=='1') OR $item['name_en'] != 'general_release'}
+                <a class="mui-tab-item" href="{$item['url']}">
+                {if $item['name_en'] != 'general_release'}
+                    <div style="height:24px;padding-top:2px">
+                        {if $item['icon'] != ''}
+                        <img src="{php if($item['name_en']=='person') echo tomedia($item['icon_active']);else echo tomedia($item['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_pinche/template/style/img/{$item['name_en']}{php if($item['name_en']=='person') echo '_active';}.png'" width="20px" height="20px" />
+                        {else}
+                            <i class="iconfont icon-{$item['icon_name']}"></i>
+                        {/if}
+                    </div>
+                    <div style="height:21px;font-size:12px"><span class="mui-tab-label">{$item['customer_name']}</span></div>
+                {/if}
+                </a>
+            {/if}
+        {/loop}
+    </nav>
+
+{if $general_release_menu['display'] == '1'}
+<div style="width:50px;height:65px;position: fixed;bottom:0px;left:50%;margin-left:-25px;z-index: 11">
+        <div style="width:45px;height:45px;line-height: 45px;margin:0px auto;border-radius: 22.5px;background-color: #F7F7F7;text-align:center;color:#929292" onclick="location.href='{php echo $this->createMobileurl('general_release')}'">
+            {if $general_release_menu['icon'] != ''}
+            <img src="{php echo tomedia($release_menu['icon']);}" onerror="this.src='{$_W['siteroot']}addons/navlange_reserve_service/template/style/img/release.png'" width="40px" height="40px" />
+            {else}
+                <i class="iconfont icon-{$general_release_menu['icon_name']}" style="font-size:45px"></i>
+            {/if}
+        </div>
+        <div style="width:50px;height:20px;background-color: #F7F7F7;margin:0px auto;text-align: center;font-size:12px;color:#929292">
+            <span class="mui-tab-label">{$general_release_menu['customer_name']}</span>
+        </div>
+    </div>
+{/if}
+{/if}
+    {if !empty($banner_list)}
+    <link rel="stylesheet" href="./resource/components/swiper/swiper.min.css">
+    <div class="mui-slider">
+        <div class="mui-slider-group mui-slider-loop">
+            <div class="mui-slider-item">
+                <a href="{$banner_list[count($banner_list)-1]['url']}"><img width="100%" height="auto" src="{php echo tomedia($banner_list[count($banner_list)-1]['img'])}" /></a>
+            </div>
+            {loop $banner_list $index $item}
+            <div class="mui-slider-item">
+                <a href="{$item['url']}"><img width="100%" height="auto" src="{php echo tomedia($item['img'])}" /></a>
+            </div>
+            {/loop}
+            <div class="mui-slider-item">
+                <a href="{$banner_list[0]['url']}"><img width="100%" height="auto" src="{php echo tomedia($banner_list[0]['img'])}" /></a>
+            </div>
+        </div>
+        <div class="mui-slider-indicator">   
+            {loop $banner_list $index $item}
+                <div class="mui-indicator {if $index==0}mui-active{/if}"></div> 
+            {/loop}
+        </div>  
+    </div>
+    <script>
+    var gallery = mui('.mui-slider');
+    gallery.slider({
+        interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
+    });
+    </script>
+    {/if}
+    <div style="padding:10px">
+        {php echo htmlspecialchars_decode(str_replace(array("\r\n", "\r", "\n"), "", $conf['help_content']));}
+    </div>

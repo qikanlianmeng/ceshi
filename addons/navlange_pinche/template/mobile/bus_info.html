@@ -1,0 +1,80 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+.express{
+    margin:10px;
+    border-radius:5px;
+    border:1px #EFEFEF solid;
+    background-color: white;
+    padding: 10px;
+}
+.address{
+    margin:10px 15px;
+    font-size:80%;
+}
+.send .goods {
+    color:#EA7F17;
+}
+.send .express-time {
+    color:#EA7F17;
+}
+.send .money {
+    color:#EA7F17;
+    text-align: right
+}
+.send .info {
+    background-color: #EA7F17;
+}
+</style>
+    <div id="pin_{$member['id']}" class='express send'>
+        <div style="text-align: center;width: 260px;margin:0px auto">{$member['departure_time']}</div>
+        <div style="width:260px;margin:-10px auto 0px auto">
+            <div style="width:80px;display: inline-block;text-align: center">
+                {$member['departure_station']}
+            </div>
+            <div style="text-align: center;display: inline-block;width:80px">
+                <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/arrow.png" height="auto" width="80px" />
+            </div>
+            <div style="width:80px;display: inline-block;text-align: center">
+                {$member['terminal_station']}
+            </div>
+        </div>
+        <div style="border-top: 1px #EFEFEF solid"></div>
+        <div class="address">
+            乘车人数：{$member['amount']}
+        </div>
+        <div class="address">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-8" style="padding:0px">
+                        出行日期：{php echo date('Y-m-d',$member['date'])}
+                    </div>
+                    <div class="col-xs-4" style="padding:0px;text-align: right">
+                        {php echo $this->trans_member_status($member['status']);}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{if $owner['id']==$member['owner_id'] && $member['status']=='3'}
+    <div style="margin:10px">
+        <button class="mui-btn mui-btn-block mui-btn-success" onclick="arrival()">到达</button>
+    </div>
+    <script>
+    function arrival() {
+        $.post("{php echo $this->createMobileurl('bus_info',array('op'=>'arrival'))}",{
+                id:{$member['id']}
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == 0) {
+                    mui.alert("已送达乘客！",function(){
+                        location.reload();
+                    })
+                }
+            }
+        );
+    }
+    </script>
+{/if}

@@ -1,0 +1,18 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+	body{
+		background-color:#F3F3F3;
+	}
+	a:hover {
+		text-decoration: none
+	}
+</style><header class="mui-bar mui-bar-nav">
+    <a class="mui-icon mui-icon-arrowleft mui-pull-left mui-plus-visble" href="javascript:history.go(-1)"></a>
+    <!--a class="mui-icon mui-icon-phone mui-pull-right"></a-->
+    <h1 class="mui-title">使用须知</h1>
+</header>
+<div style="padding:10px;background-color:white;margin-top:40px">
+	{php echo htmlspecialchars_decode(str_replace(array("\r\n", "\r", "\n"), "", $conf['use_notice']));}
+</div>

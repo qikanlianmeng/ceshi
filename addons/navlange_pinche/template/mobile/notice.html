@@ -1,0 +1,17 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+body {
+    padding:5px 10px;
+}
+</style>
+<div style="text-align: center">
+    {$notice['title']}
+</div>
+<div style="text-align: center;font-size:12px">
+    <span style="background-color: {$notice['color']};color:white">{$notice['type']}</span>&nbsp;<span>{php echo date('Y-m-d H:i:s',$notice['release_time'])}</span>
+</div>
+<div>
+    {php echo htmlspecialchars_decode(str_replace(array("\r\n", "\r", "\n"), "", $notice['content']));}
+</div>

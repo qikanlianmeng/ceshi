@@ -1,0 +1,81 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=7" />
+<style>
+	body {
+		background-color:#F3F3F3;
+	}
+</style>
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+<div style="text-align: center;padding-top:50px">
+    接单费：
+    <span style="color:{$conf['owner_color']};font-weight: bold">{$conf['cargo_accept_price']}</span>
+</div>
+<div style="position: fixed;bottom:0px;width:100%;height:40px;line-height: 40px;text-align: center;color:white">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6" style="background-color:{$conf['color']}" onclick="accept()">
+                司机接单
+            </div>
+            <div class="col-xs-6" style="background-color:{$conf['owner_color']}" onclick="accept_l()">
+                专线接单
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function accept_l() {
+        {if $store['status'] == '1'}
+        $.post("{php echo $this->createMobileurl('goods_confirm',array('op'=>'accept_l'))}",{
+                id:{$_GPC['id']}
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == 1) {
+                    var btnArray = ['确认','立即充值'];
+                    mui.confirm('前往充值！','',btnArray,function(e){
+                        if(e.index == 1) {
+                            location.href="{php echo $this->createMobileurl('recharge')}";
+                        }
+                    })
+                } else {
+                    mui.alert("接单成功！",function(){
+                        location.href="{php echo $this->createMobileurl('todo_index')}";
+                    });
+                }
+            }
+        );
+        {else}
+        mui.alert("非有效的商家！");
+        {/if}
+    }
+    function accept() {
+        {if $owner['status'] == '1'}
+        $.post("{php echo $this->createMobileurl('goods_confirm',array('op'=>'accept'))}",{
+                id:{$_GPC['id']}
+            },function(resp) {
+                resp = $.parseJSON(resp);
+                if(resp.message.errno == 1) {
+                    var btnArray = ['确认','立即充值'];
+                    mui.confirm('前往充值！','',btnArray,function(e){
+                        if(e.index == 1) {
+                            location.href="{php echo $this->createMobileurl('recharge')}";
+                        }
+                    })
+                } else if (resp.message.errno == '2') {
+                    mui.alert("不能接自己发布的货源！");
+                } else {
+                    mui.alert("接单成功！",function(){
+                        location.href="{php echo $this->createMobileurl('todo_index')}";
+                    });
+                }
+            }
+        );
+        {else}
+        mui.alert("非有效的车主！");
+        {/if}
+    }
+</script>

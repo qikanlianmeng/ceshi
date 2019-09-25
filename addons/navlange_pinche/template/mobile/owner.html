@@ -1,0 +1,129 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+	body{
+		background-color: #EEECED
+	}
+</style>
+<script>
+	mui('body').on('tap','a',function(){document.location.href=this.href;});  
+</script>
+
+<style>
+a:hover {
+    text-decoration: none
+}
+</style>
+<div style="width:100%;background-color: {$conf['owner_color']};padding:15px 10px">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6">
+                {if $conf['member_on'] == '1'}
+                    <span style="border:1px white solid;color:white;padding:5px;font-size: 12px;border-radius: 5px">{$member['level']}</span>
+                {/if}
+            </div>
+            <div class="col-xs-6">
+                <div style="text-align: right">
+                    <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/set_up.png" width="25px" height="25px" onclick="location.href='{php echo $this->createMobileurl('person_profile',array('mode'=>'1'));}'"/> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="clear:both"></div>
+    <div style="width:100%;margin-top:-15px">
+        <div style="text-align: center;width:100%">
+            <img src="{$_W['fans']['headimgurl']}" width="50px" height="50px" style="border-radius: 25px;border:2px white solid" />
+        </div>
+        <div style="text-align: center;color:white;padding-top:5px">
+            {$_W['fans']['nickname']}
+        </div>
+    </div>
+    <div style="margin-top:-20px;height:20px;text-align: right">
+        <span style="color:green">信用值：</span><span class="label" style="background-color:green;color:{$conf['owner_color']}">{$credit_score}分</span>
+    </div>
+</div>
+<div style="background-color: white">
+    <div style="width:25%;float:left;padding-top:8px;padding-bottom:8px" onclick="location.href='{php echo $this->createMobileurl('person_profile');}'">
+        <div style="text-align: center">
+            <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon1.png" width="50px" height="50px" />
+        </div>
+        <div style="text-align: center;font-size:12px">
+            修改资料
+        </div>
+    </div>
+    <div style="width:25%;float:left;padding-top:8px;padding-bottom:8px" onclick="location.href='{php echo $this->createMobileurl('owner_info');}'">
+        <div style="text-align: center">
+            <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon9.png" width="50px" height="50px" />
+        </div>
+        <div style="text-align: center;font-size:12px">
+            车辆管理
+        </div>
+    </div>
+    <div style="width:25%;float:left;padding-top:8px;padding-bottom:8px" onclick="location.href='{php echo $this->createMobileurl('owner_pin');}'">
+        <div style="text-align: center">
+            <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon3.png" width="50px" height="50px" />
+        </div>
+        <div style="text-align: center;font-size:12px">
+            司机出车
+        </div>
+    </div>
+    <div style="width:25%;float:left;padding-top:8px;padding-bottom:8px" onclick="member()">
+        <div style="text-align: center">
+            <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon4.png" width="50px" height="50px" />
+        </div>
+        <div style="text-align: center;font-size:12px">
+            VIP尊享
+        </div>
+    </div>
+    <div style="clear:both"></div>
+</div>
+<script>
+function member() {
+    if('{$conf['member_on']}' == '0') {
+        alert("系统尚未开通会员系统！");
+    } else {
+        location.href="./index.php?i={$_W['uniacid']}&c=entry&do=index&m=navlange_member&type={$conf['member_type']}";
+    }
+}
+</script>
+<div class="container" style="background-color: white">
+    <div class="row">
+        <div class="col-xs-6" style="border:1px #F3F3F3 solid;line-height: 50px;text-align: center">
+            <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon5.png" height="20px" width="auto" />
+            <span>余额</span>
+            <span style="color:red">{$_W['member']['credit2']}</span>
+        </div>
+        <div class="col-xs-6" style="border:1px #F3F3F3 solid;border-left: 0px;line-height: 50px;text-align: center" onclick="location.href='{php echo $this->createMobileurl('my_travel',array('status'=>'3'))}'">
+            <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon6.png" height="20px" width="auto" />
+            <span>待出行</span>
+            <span class="mui-badge mui-badge-danger">{$to_travel}</span>
+        </div>
+    </div>
+</div>
+<ul class="mui-table-view">
+    <li class="mui-table-view-cell">
+        <a class="mui-navigate-right" href="./index.php?i={$_W['uniacid']}&c=entry&do=withdraw&m=navlange_pay">
+            <div style="height:21px;line-height: 21px;width:50px;text-align: center;color:#66CDAA">
+                <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon12.png" height="20px" width="auto" />
+            </div>
+            <div style="height:21px;margin-top:-21px;margin-left:50px">
+                提现
+            </div>
+        </a>
+    </li>
+    <li class="mui-table-view-cell">
+        <a class="mui-navigate-right" href="{php echo $this->createMobileurl('owner_pin')}">
+            <div style="height:21px;line-height: 21px;width:50px;text-align: center;color:#66CDAA">
+                <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/user_center_icon10.png" height="20px" width="auto" />
+            </div>
+            <div style="height:21px;margin-top:-21px;margin-left:50px">
+                出车管理
+            </div>
+        </a>
+    </li>
+</ul>
+
+<div style="margin:20px 10px">
+    <div class="mui-btn mui-btn-block" style="background-color: {$conf['owner_color']};color:white;border:0px" onclick="location.href='{php echo $this->createMobileurl('owner_index');}'">立即发布</div>
+</div>

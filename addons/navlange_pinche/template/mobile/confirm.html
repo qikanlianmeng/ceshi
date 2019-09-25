@@ -1,0 +1,199 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<style>
+.head{
+	line-height: 40px;
+	background-color: #FEB930;
+	color:white;
+	font-weight: bold
+}
+body {
+	background-color: #F8F8F8
+}
+a:hover {
+    text-decoration: none
+}
+</style>
+<!--div style="padding:10px;color:#5373EE">出行信息</div style="padding:10px">
+<form class="mui-input-group">
+    <div class="mui-input-row">
+        <label>出发站</label>
+        <input type="text" value="{$travel['departure_station']}" disabled class="mui-input-clear">
+    </div>
+    <div class="mui-input-row">
+        <label>终点站</label>
+        <input type="text" value="{$travel['terminal_station']}" disabled class="mui-input-clear">
+    </div>
+    <div class="mui-input-row">
+        <label>人数</label>
+        <input type="text" value="{$travel['amount']}" disabled class="mui-input-clear">
+    </div>
+    <div class="mui-input-row">
+        <label>发车时间</label>
+        <input type="text" value="{php echo date('Y-m-d H:i:s',$travel['departure_time']);}" disabled class="mui-input-clear">
+    </div>
+    <div class="mui-input-row">
+        <label>登车地点</label>
+        <input type="text" value="{$travel['boarding_place']}" disabled class="mui-input-clear">
+    </div>
+</form-->
+<style>
+    .member {
+        margin:0px 10px 10px 10px;
+        border-radius:5px;
+        border:1px #EFEFEF solid;
+        background-color: white;
+        padding: 10px 10px 10px 10px;
+    }
+    
+    .member_active {
+        border:1px {$conf['color']} solid;
+    }
+    .member .check_icon {
+        color:grey;
+    }
+    .member_active .check_icon {
+        color:{$conf['color']};
+    }
+</style>
+<label style="margin-top:20px"><i class="fa fa-star"></i>请确认车主信息，选择要拼的车辆</label>
+{loop $member $index $item}
+    <div class="member" id="member_{$item['id']}" onclick="sel_member({$item['id']})">
+        <div style="margin:0px 40px 0px 0px;border-right: 1px #F3F3F3 solid">
+            <div>
+                车型：{$item['car_series']}&#12288;{$item['car_color']}&#12288;{$item['car_number_1']}{$item['car_number_2']}{$item['car_number_3']}
+            </div>
+            <div>
+                可拼乘客数：{$item['passenger_count']}
+            </div>
+            <div>
+                车主：{$item['owner_name']}&nbsp;<a href="tel:{$item['owner_tel']}">{$item['owner_tel']}</a>
+            </div>
+            <!--div>
+                价格：¥<span style="color:red" id="price_{$item['id']}">{$item['price']}</span>
+            </div-->
+        </div>
+        <div class="check_icon" style="margin: -50px 0px 0px auto;width:40px;height:50px;text-align: center;font-weight: bold">
+            <span class="mui-icon mui-icon-checkmarkempty"></span>
+        </div>
+    </div>
+{/loop}
+<script>
+var selected_member = {$member[0]['id']};
+function sel_member(id) {
+    $("div[id^='member_']").each(function(){
+        $(this).removeClass('member_active');
+    })
+    $("#member_"+id).addClass('member_active');
+    $.post("{php echo $this->createMobileurl('confirm',array('op'=>'get_price'))}",{
+            member_id:id
+        },function(resp) {
+            resp = $.parseJSON(resp);
+            var res = resp.message.message;
+            $("#price").html(res.price);
+            $("#need_pay").html(res.discount_price);
+            if(res.is_free == '1') {
+                $("#discount_panel").html('优惠：<span style="color:red">首单免费</span>');
+                $("#discount_panel").show();
+            } else if (res.is_first_order == '1') {
+                $("#discount_panel").html('首单立减：<span style="color:red">¥'+(res.price-res.discount_price)+'</span>');
+                $("#discount_panel").show();
+            } else if (res.discount_price < res.price) {
+                var member_info = res.member_info;
+                $("#discount_panel").html('会员信息：'+member_info.level+'('+(member_info.discount*10).toFixed(2)+'折)');
+                $("#discount_panel").show();
+            }
+            selected_member = id;
+        }
+    );
+}
+$(function(){
+    sel_member(selected_member);
+})
+</script>
+<div>
+    <ul class="mui-table-view mui-table-view-radio">
+        {if $conf['pay_mode_9_on']=='1'}
+        <li value="9" class="mui-table-view-cell{if $conf['default_pay_mode']=='9'} mui-selected{/if}">
+            <a class="mui-navigate-right">线下支付</a>
+        </li>
+        {/if}
+        {if $conf['pay_mode_0_on']=='1'}
+        <li value="0" class="mui-table-view-cell{if $conf['default_pay_mode']=='0'} mui-selected{/if}">
+            <a class="mui-navigate-right">余额支付</a>
+        </li>
+        {/if}
+        {if $conf['pay_mode_1_on']=='1'}
+        <li value="1" class="mui-table-view-cell{if $conf['default_pay_mode']=='1'} mui-selected{/if}">
+            <a class="mui-navigate-right">微信支付</a>
+        </li>
+        {/if}
+    </ul>
+</div>
+<script>
+    var list = document.querySelector('.mui-table-view.mui-table-view-radio');
+    var pay_mode = {$conf['default_pay_mode']};
+    list.addEventListener('selected',function(e){
+        pay_mode = e.detail.el.value;
+    });
+</script>
+<div style="height:200px"></div>
+<div style="position: fixed;bottom:0px;width:100%;background-color: white">
+    <div style="height:30px;line-height: 30px;margin:0px 10px">
+        拼车价格：¥<span id="price" style="color:red">--</span>
+    </div>
+    <div id="discount_panel" style="height:30px;line-height: 30px;margin:0px 10px;display:none">
+        
+    </div>
+    <div style="height:30px;line-height: 30px;margin:0px 10px">
+        需支付：¥<span id="need_pay" style="color:red">--</span>
+   	</div>
+    <form id="pay_form" action="{php echo url('mc/cash/wechat');}" method="post">
+        <input type="hidden" name="params" value="" />
+        <input type="hidden" name="code" value="" />
+        <input type="hidden" name="coupon_id" value="" />
+    </form>
+   	<div style="margin:0px 10px">
+        <button type="button" class="mui-btn mui-btn-block mui-disabled js-wechat-pay" style="background-color: #5373EE;color:white">确认</button>
+   	</div>
+</div>
+<script>
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+    $('.js-wechat-pay').removeClass('mui-disabled');
+    $('.js-wechat-pay').click(function(){
+        if(selected_member == 0) {
+            alert("请选择拼车！");
+        } else {
+            $.post("{php echo $this->createMobileurl('confirm',array('op'=>'confirm'))}",{
+                    member_id:selected_member,
+                    pay_mode:pay_mode,
+                    travel_id:{$_GPC['id']}
+                },function(resp) {
+                    resp = $.parseJSON(resp);
+                    if(resp.message.errno == '0') {
+                        if(pay_mode == '9') {
+                            var res = "订单支付成功！";
+                        } else {
+                            if(resp.message.message == '1') {
+                                var res = "恭喜你，拼车成功！";
+                            } else if (resp.message.message == '2') {
+                                var res = "订单支付成功！";
+                            }
+                        }
+                        mui.alert(res,function(){
+                            location.href="{php echo $this->createMobileurl('travel_info',array('id'=>$_GPC['id']))}";
+                        });
+                    } else if (resp.message.errno == '1') {
+                        mui.alert(resp.message.message);
+                    } else if (resp.message.errno == '2') {
+                        reply = resp.message.message;
+                        $("input[name='params']").val(reply.params);
+                        $("#pay_form").submit();
+                    }
+                }
+            );
+        }
+    });
+});
+</script>

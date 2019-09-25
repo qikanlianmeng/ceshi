@@ -1,0 +1,884 @@
+<?php
+$this->qc_template_mobile('header');
+?>
+<link rel="stylesheet" type="text/css" href="{$_W['siteroot']}addons/navlange_pinche/template/style/qc_font/iconfont.css?v=2" />
+<link rel="stylesheet" href="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.css" />
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/components/datepicker/mui.picker.all.js"></script>
+<script type="text/javascript" src="{$_W['siteroot']}app/resource/components/districtpicker/mui.city.data-3.js"></script>
+<style>
+	body {
+		background-color:#F3F3F3;
+	}
+    .mui-segmented-control .mui-control-item.mui-active {
+        color: #fff;
+        background-color: {$conf['color']};
+    }
+    .mui-segmented-control .mui-control-item {
+        border-left: 1px {$conf['color']} solid;
+        color: {$conf['color']};
+    }
+    .mui-segmented-control {
+        border: 1px {$conf['color']} solid;
+    }
+    .mui-bar-tab .mui-tab-item.mui-active {
+        color: {$conf['color']};
+    }
+    a:hover {
+        text-decoration: none
+    }
+    .mui-popup {
+        position: fixed;
+    }
+</style>
+
+<script>
+    mui('body').on('tap','a',function(){document.location.href=this.href;}); 
+    var is_trans_provincial = '0';
+    function trans_provincial(mode) {
+        is_trans_provincial = mode;
+    } 
+</script>
+<div id="main_panel">
+    <div style="padding: 10px 10px;">
+        <div id="segmentedControl" class="mui-segmented-control">
+            <a class="mui-control-item mui-active" href="javascript:trans_provincial('0')">
+                省内运输
+            </a>
+            <a class="mui-control-item" href="javascript:trans_provincial('1')">
+                省外运输
+            </a>
+        </div>
+    </div>
+    <label style="padding-left:10px;color:{$conf['color']};font-weight: normal;margin-bottom:3px">基本信息</label>
+    {if $conf['cargo_goods_line_mode'] == '0'}
+    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+        <div style="width:30px;height:40px;line-height: 40px;color:#3BBBA2;text-align: center">
+            <i class="fa fa-circle-o"></i>
+        </div>
+        <div style="height:40px;margin:-40px 0px 0px 30px">
+            <input id="departure_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="出发地" onfocus="blur()" onclick="sel_departure_place()" />
+            <input type="hidden" id="release_lng" />
+            <input type="hidden" id="release_lat" />
+        </div>
+    </div>
+    <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+        <div style="width:30px;height:40px;line-height: 40px;color:#FB8641;text-align: center">
+            <i class="fa fa-circle"></i>
+        </div>
+        <div style="height:40px;margin:-40px 0px 0px 30px">
+    		<input id="terminal_station" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="目的地" onfocus="blur()" onclick="sel_terminal_place()" />
+            <input type="hidden" id="terminal_lng" />
+            <input type="hidden" id="terminal_lat" />
+        </div>
+    </div>
+    {else}
+    <div style="background-color: white;height:80px;border-top:1px #F3F3F3 solid;padding:10px 0px">
+        <div style="width:30px;height:60px;line-height: 60px;color:#3BBBA2;text-align: center">
+            <i class="fa fa-circle-o"></i>
+        </div>
+        <div style="height:60px;margin:-60px 0px 0px 30px;padding-left:10px">
+            <div style="height:30px">
+                <input id="departure_area" value="{if $_GPC['line'] > 0}{$line['departure_prov']}{$line['departure_city']}{$line['departure_district']}{/if}" {if $_GPC['line'] > 0}disabled{/if} style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:30px;font-size:16px" placeholder="出发地" onfocus="blur()" />
+            </div>
+            <div style="height:30px">
+                <input id="departure_station_2" value="{if $_GPC['line'] > 0}{$line['departure_station']}{/if}" {if $_GPC['line'] > 0}disabled{/if} style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:30px;font-size:14px" placeholder="详细地址">
+                <input type="hidden" id="release_lng" />
+                <input type="hidden" id="release_lat" />
+            </div>
+        </div>
+    </div>
+    <div style="background-color: white;height:80px;border-top:1px #F3F3F3 solid;padding:10px 0px">
+        <div style="width:30px;height:60px;line-height: 60px;color:#FB8641;text-align: center">
+            <i class="fa fa-circle"></i>
+        </div>
+        <div style="height:60px;margin:-60px 0px 0px 30px;padding-left:10px">
+            <div style="height:30px">
+                <input id="terminal_area" value="{if $_GPC['line'] > 0}{$line['terminal_prov']}{$line['terminal_city']}{$line['terminal_district']}{/if}" {if $_GPC['line'] > 0}disabled{/if} style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:30px;font-size:16px" placeholder="目的地" onfocus="blur()" />
+            </div>
+            <div style="height:30px">
+                <input id="terminal_station_2" value="{if $_GPC['line'] > 0}{$line['terminal_station']}{/if}" {if $_GPC['line'] > 0}disabled{/if} style="width:100%;background-color: transparent;border:0px;border-radius: 0px;height:30px;font-size:14px" placeholder="详细地址">
+                <input type="hidden" id="terminal_lng" />
+                <input type="hidden" id="terminal_lat" />
+            </div>
+        </div>
+    </div>
+    {/if}
+    <div class="mui-input-row" style="background-color:white;border-top:1px #F3F3F3 solid">
+        <label style="font-weight: normal;">货物名称</label>
+        <input id="goods_name" type="text" placeholder="请输入联系货物名称" />
+    </div>
+    {if $conf['cargo_goods_type_on'] == '1'}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:70px;height:40px;line-height: 40px;padding-left:10px">
+                        货物类型
+                    </div>
+                    <div style="height:40px;margin:-40px 0px 0px 70px">
+                        <input id="goods_type" type="text" readonly="true" onfocus="blur()" onclick="sel_goods_type()" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="货物类型" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+    <script type="text/javascript">
+        var goods_type_picker = new mui.PopPicker();
+        var goods_type = '0';
+        goods_type_picker.setData([{value:'1',text:'轻货'},{value:'2',text:'重货'},{value:'3',text:'机台设备'},{value:'4',text:'其它货物'}]);
+        function sel_goods_type() {
+            goods_type_picker.show(function (selectItems) {
+                goods_type = selectItems[0].value;
+                $("#goods_type").val(selectItems[0].text);
+            })
+        }
+    </script>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:60px;height:40px;line-height: 40px;text-align: center">
+                        体积
+                    </div>
+                    <div style="width:40px;height:40px;line-height: 40px;text-align: center;margin:-40px 0px 0px auto">
+                        方
+                    </div>
+                    <div style="height:40px;margin:-40px 40px 0px 60px">
+                        <input id="volume" type="number" step="0.01" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="体积" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6" style="padding:0px">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:50px;height:40px;line-height: 40px;text-align: center">
+                        重量
+                    </div>
+                    <div style="width:40px;height:40px;line-height: 40px;text-align: center;margin:-40px 0px 0px auto">
+                        吨
+                    </div>
+                    <div style="height:40px;margin:-40px 40px 0px 50px">
+                        <input id="weight" type="number" step="0.01" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="重量" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-4" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:30px;height:40px;line-height: 40px;text-align: center">
+                        长
+                    </div>
+                    <div style="width:30px;height:40px;line-height: 40px;text-align: center;margin:-40px 0px 0px auto">
+                        cm
+                    </div>
+                    <div style="height:40px;margin:-40px 30px 0px 30px">
+                        <input id="goods_length" type="number" step="0.01" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="长" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-4" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:30px;height:40px;line-height: 40px;text-align: center">
+                        宽
+                    </div>
+                    <div style="width:30px;height:40px;line-height: 40px;text-align: center;margin:-40px 0px 0px auto">
+                        cm
+                    </div>
+                    <div style="height:40px;margin:-40px 30px 0px 30px">
+                        <input id="goods_width" type="number" step="0.01" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="宽" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-4" style="padding:0px">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:30px;height:40px;line-height: 40px;text-align: center">
+                        高
+                    </div>
+                    <div style="width:30px;height:40px;line-height: 40px;text-align: center;margin:-40px 0px 0px auto">
+                        cm
+                    </div>
+                    <div style="height:40px;margin:-40px 30px 0px 30px">
+                        <input id="goods_height" type="number" step="0.01" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="高" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="background-color:white;border-top:1px #F3F3F3 solid">
+            <label style="padding:10px 10px 0px 10px;font-weight: normal;">货物图片</label>
+            <div style="padding:10px">
+                <div style="width:50px;height:50px;margin:0px 0px 0px auto">
+                    <img src="{$_W['siteroot']}addons/navlange_pinche/template/style/img/img_upload.png" width="50px" height="50px" onclick="add_img()" />
+                    <input type="file" accept="image/*" name="img" style="display:none" />
+                </div>
+                <div id="all_img" style="margin:-50px 50px 0px 0px;min-height: 50px;text-align: right">
+                    
+                </div>
+            </div>
+            <script type="text/javascript">
+                var images = new Array();
+                var image_index = 0;
+                function add_img() {
+                    $("input[name='img']").click();
+                }
+                var requireExtend = require.config({
+                    paths: {
+                        'lrz': "{$_W['siteroot']}addons/navlange_pinche/template/style/js/lrz.all.bundle", //结尾不写.js
+                    },
+                    shim:{
+                                        
+                    }
+                });
+                function init_upload() {
+                    requireExtend(["lrz"],function(res){
+                        $("input[name='img']").on('change', function(){
+                            lrz(this.files[0], {width: 640})
+                                .then(function (rst) {
+                                    $.ajax({
+                                        url: '{php echo $this->createMobileurl('upload_image')}',
+                                        type: 'post',
+                                        data: {img: rst.base64},
+                                        dataType: 'json',
+                                        timeout: 200000,
+                                        error: function(data){
+                                            
+                                        },
+                                        success: function(data){
+                                            if(data.message.message.height > data.message.message.width) {
+                                                var html = '<img id="attachment_'+image_index+'" onclick="show_gallery('+image_index+',\''+data.message.message.url+'\')" class="attachment" src="'+data.message.message.url+'" height="50" width="auto" />';
+                                            } else {
+                                                var html = '<img id="attachment_'+image_index+'" onclick="show_gallery('+image_index+',\''+data.message.message.url+'\')" class="attachment" src="'+data.message.message.url+'" width="50" height="auto" />';
+                                            }
+                                            $("#all_img").append(html);
+                                            images.push(data.message.message.filename);
+                                            image_index += 1;
+                                            $("input[name='img']").replaceWith('<input type="file" accept="image/*" name="img" style="display:none" />');
+                                            init_upload();
+                                        }
+                                    });
+
+                                })
+                                .catch(function (err) {
+
+                                })
+                                .always(function () {
+
+                                });
+                        });
+                    });
+                }
+                $(function(){
+                    init_upload();
+                })
+                var cur_gallery = 0;
+                function show_gallery(id,url) {
+                    cur_gallery = id;
+                    var img_width = $("#attachment_"+id).css('width');
+                    img_width = parseInt(img_width.substring(0,img_width.length-2));
+                    var img_height = $("#attachment_"+id).css('height');
+                    img_height = parseInt(img_height.substring(0,img_height.length-2));
+                    var screen_width = window.screen.availWidth;
+                    var screen_height = window.screen.availHeight;
+                    if(img_width/img_height > screen_width/screen_height) {
+                        $("#preview_img").attr('width','100%');
+                        $("#preview_img").attr('height','auto');
+                        var cur_height = screen_width*img_height/img_width;
+                        var margin_top = (screen_height-cur_height)/2;
+                        $("#preview_img").css('margin-top',margin_top + "px");
+                    } else {
+                        $("#preview_img").attr('width','auto');
+                        $("#preview_img").attr('height','100%');
+                    }
+                    $("#preview_img").attr('src',url);
+                    $("#preview_panel").show();
+                }
+                function delete_gallery() {
+                    $("#attachment_"+cur_gallery).remove();
+                    $("#preview_panel").hide();
+                    images.remove(cur_gallery);
+                }
+            </script>
+    </div>
+    <label style="padding-left:10px;color:{$conf['color']};font-weight: normal;margin-top:10px;margin-bottom:3px">服务需求</label>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:30px;height:40px;line-height: 40px;padding-left:10px">
+                        车型
+                    </div>
+                    <div style="height:40px;margin:-40px 0px 0px 30px">
+                        <input id="car_type" type="text" readonly="true" onfocus="blur()" onclick="sel_car_type()" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="车型" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6" style="padding:0px">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:50px;height:40px;line-height: 40px;text-align: center">
+                        车长
+                    </div>
+                    <div style="width:40px;height:40px;line-height: 40px;text-align: center;margin:-40px 0px 0px auto">
+                        米
+                    </div>
+                    <div style="height:40px;margin:-40px 40px 0px 50px">
+                        <input id="car_length" type="number" step="0.01" value="1" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="车长" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var car_type_picker = new mui.PopPicker();
+        var car_type = '0';
+        car_type_picker.setData([{value:'1',text:'高栏'},{value:'2',text:'平板'},{value:'3',text:'冷藏'},{value:'4',text:'厢车'}]);
+        function sel_car_type() {
+            car_type_picker.show(function (selectItems) {
+                car_type = selectItems[0].value;
+                $("#car_type").val(selectItems[0].text);
+            })
+        }
+    </script>
+    {if $conf['cargo_delivery_need_on'] == '1'}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:60px;height:40px;line-height: 40px;text-align: center">
+                        配送需求
+                    </div>
+                    <div style="height:40px;margin:-40px 0px 0px 60px">
+                        <input id="delivery_need" type="text" readonly="true" onfocus="blur()" onclick="sel_delivery_need()" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="配送需求" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+    <script type="text/javascript">
+        var delivery_need_picker = new mui.PopPicker();
+        var delivery_need = '0';
+        delivery_need_picker.setData([{value:'1',text:'专线拼装'},{value:'2',text:'整车包车'},{value:'3',text:'同城速运'}]);
+        function sel_delivery_need() {
+            delivery_need_picker.show(function (selectItems) {
+                delivery_need = selectItems[0].value;
+                $("#delivery_need").val(selectItems[0].text);
+            })
+        }
+    </script>
+    {if $conf['cargo_arrival_service_on'] == '1'}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:60px;height:40px;line-height: 40px;text-align: center">
+                        到站服务
+                    </div>
+                    <div style="height:40px;margin:-40px 0px 0px 60px">
+                        <input id="arrival_service" type="text" readonly="true" onfocus="blur()" onclick="sel_arrival_service()" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="到站服务" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+    <script type="text/javascript">
+        var arrival_service_picker = new mui.PopPicker();
+        var arrival_service = '0';
+        arrival_service_picker.setData([{value:'1',text:'送货上门'},{value:'2',text:'到站自提'},{value:'3',text:'等通知送货'},{value:'4',text:'等通知放货'}]);
+        function sel_arrival_service() {
+            arrival_service_picker.show(function (selectItems) {
+                arrival_service = selectItems[0].value;
+                $("#arrival_service").val(selectItems[0].text);
+            })
+        }
+    </script>
+    <div class="mui-input-row mui-checkbox" style="background-color:white;border-top:1px #F3F3F3 solid">
+        <label style="margin-bottom:0px;font-weight: normal;">需要盖雨布</label>
+        <input name="need_cover" type="checkbox" checked>
+    </div>
+    {if $conf['cargo_price_mode'] == '1'}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;border-top:1px #F3F3F3 solid">
+                    <div style="width:90px;height:40px;line-height: 40px;text-align: center">
+                        每公里价格
+                    </div>
+                    <div style="min-height:40px;margin:-40px 0px 0px 90px;padding-top:6px">
+                        <div>
+                            <input name="price_per_km" value="2" type="radio" checked="checked"/>2元
+                            <input style="margin-left:10px" value="2.5" name="price_per_km" type="radio"/>2.5元
+                            <input style="margin-left:10px" value="3" name="price_per_km" type="radio"/>3元
+                            <input style="margin-left:10px" value="3.5" name="price_per_km" type="radio"/>3.5元
+                            <input style="margin-left:10px" value="4" name="price_per_km" type="radio"/>4元
+                        </div>
+                        <div style="padding:10px 0px">
+                            <div style="height:40px;width:60px;padding-top:5px">
+                                <input name="price_per_km" value="0" type="radio"/>其它
+                            </div>
+                            <div style="margin:-40px 0px 0px 60px;width:100px">
+                                <div class="input-group">
+                                    <input class="form-control" name="other_price_per_km">
+                                    <span class="input-group-addon">元</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+    {if $conf['cargo_price_mode'] == '0'}
+    <div class="mui-input-row" style="background-color:white;border-top:1px #F3F3F3 solid">
+        <label>意向价格</label>
+        <input id="expected_price" type="text" placeholder="请输入意向价格" />
+    </div>
+    {/if}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:70px;height:40px;line-height: 40px;padding-left: 10px">
+                        付款方式
+                    </div>
+                    <div style="height:40px;margin:-40px 0px 0px 70px">
+                        <input id="pay_mode" type="text" readonly="true" onfocus="blur()" onclick="sel_pay_mode()" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="付款方式" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var pay_mode_picker = new mui.PopPicker();
+        var pay_mode = '0';
+        pay_mode_picker.setData([{value:'1',text:'现金结算'},{value:'2',text:'货到付款'},{value:'3',text:'双方商议'}]);
+        function sel_pay_mode() {
+            pay_mode_picker.show(function (selectItems) {
+                pay_mode = selectItems[0].value;
+                $("#pay_mode").val(selectItems[0].text);
+            })
+        }
+        $("input[name='price_per_km']").change(function(){
+            cal_fee();
+        })
+    </script>
+    <label style="padding-left:10px;color:{$conf['color']};font-weight: normal;margin-top:10px;margin-bottom:3px">装货信息</label>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6" style="padding:0px">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:70px;height:40px;line-height: 40px;padding-left: 10px">
+                        装货时间
+                    </div>
+                    <div style="height:40px;margin:-40px 0px 0px 70px">
+                        <input id="start_date" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" readonly="true" onfocus=this.blur()  placeholder="装货时间" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6" style="padding:0px;border-left:1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:70px;height:40px;line-height: 40px;padding-left:10px">
+                        到货时间
+                    </div>
+                    <div style="height:40px;margin:-40px 0px 0px 70px">
+                        <input id="end_date" style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" readonly="true" onfocus=this.blur()  placeholder="到货时间" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mui-input-row" style="background-color:white;border-top:1px #F3F3F3 solid">
+        <label style="font-weight: normal;">联系电话</label>
+        <input id="mobile" value="{$_W['member']['mobile']}" type="number" placeholder="请输入联系电话" />
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12" style="padding:0px;border-right: 1px #F3F3F3 solid">
+                <div style="background-color: white;height:40px;border-top:1px #F3F3F3 solid">
+                    <div style="width:50px;height:40px;line-height: 40px;text-align: center">
+                        备注
+                    </div>
+                    <div style="height:40px;margin:-40px 0px 0px 50px">
+                        <input id="note" {if $conf['cargo_note_mode'] == '1'}readonly="true" onfocus="blur()" onclick="sel_note()"{/if} style="width:100%;text-align: center;background-color: transparent;border:0px;border-radius: 0px;height:40px" placeholder="备注要求" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="note_panel" style="position: fixed;bottom:0px;min-height:200px;width:100%;background-color:white;padding:5px;display:none;z-index: 999">
+        <div style="border-bottom:1px #F3F3F3 solid">
+            <div style="width:60px;height:40px">
+                <button class="mui-btn mui-btn-xs" onclick="cancel_note()">取消</button>
+            </div>
+            <div style="margin:-40px 60px 0px 60px;height:40px;line-height: 40px;text-align: center">
+                <label>出行要求</label>
+            </div>
+            <div style="width:60px;height:40px;margin:-40px 0px 0px auto">
+                <button class="mui-btn mui-btn-xs mui-btn-success" onclick="confirm_note()">确认</button>
+            </div>
+        </div>
+        <div style="padding-top:10px">
+            <div style="text-align: center;padding:10px">
+                <i class="iconfont icon-tixing"></i>填写下列信息，方便车主与你沟通！
+            </div>
+            {loop $note_template_list $index $item}
+                <button id="note_{$item['id']}" class="mui-btn mui-btn-default" onclick="change_note_status({$item['id']},'{$item['content']}')">{$item['content']}</button>
+            {/loop}
+        </div>
+    </div>
+    <div style="height:60px"></div>
+    <div style="position: fixed;bottom:0px;height:50px;width:100%;border-top:1px #F3F3F3 solid;z-index: 999">
+        <div style="width:100px;height:50px;line-height: 50px;margin:0px 0px 0px auto;text-align: center;background-color: {$conf['color']};color:white" onclick="release_submit()">
+            确认发布
+        </div>
+        <div style="height:50px;margin:-50px 100px 0px 0px;background-color:white">
+            <div style="height:25px;line-height:25px;padding-left:10px">总价格：<span id="total_price">--</span>元</div>
+            <div style="height:25px;line-height:25px;padding-left:10px;font-size:10px">支付5%的分享金：--元</div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/array.js"></script>
+<script type="text/javascript" src="{$_W['siteroot']}addons/navlange_pinche/template/style/js/check_reg.js"></script>
+<script>
+    var is_releasing = '0';
+    Date.prototype.format = function(format) {
+       var date = {
+              "M+": this.getMonth() + 1,
+              "d+": this.getDate(),
+              "h+": this.getHours(),
+              "m+": this.getMinutes(),
+              "s+": this.getSeconds(),
+              "q+": Math.floor((this.getMonth() + 3) / 3),
+              "S+": this.getMilliseconds()
+       };
+       if (/(y+)/i.test(format)) {
+              format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+       }
+       for (var k in date) {
+              if (new RegExp("(" + k + ")").test(format)) {
+                     format = format.replace(RegExp.$1, RegExp.$1.length == 1
+                            ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+              }
+       }
+       return format;
+    }
+    var selected_notes = new Array();
+    function sel_note() {
+        $("#note_panel").show();
+    }
+    function change_note_status(id,content) {
+        if(in_array(selected_notes,content)) {
+            removeByValue(selected_notes,content);
+            $("#note_"+id).removeClass('mui-btn-warning');
+        } else {
+            selected_notes.push(content);
+            $("#note_"+id).addClass('mui-btn-warning');
+        }
+    }
+    function confirm_note() {
+        var html = '';
+        for(var i=0;i<selected_notes.length; i++) {
+            if(i > 0) {
+                html += ';';
+            }
+            html += selected_notes[i];
+        }
+        $("#note").val(html);
+        cancel_note();
+    }
+    function cancel_note() {
+        $("#note_panel").hide();
+    }
+    $("#start_date").click(function(){
+        var today = new Date();
+        var year = today.getFullYear();
+        var start = Date.parse(today)+30*60*1000;
+        var start_d = new Date(start);
+        var dtPicker = new mui.DtPicker({
+            beginYear: year,//设置开始日期 
+            endYear: year+1,
+            value:start_d.format('yyyy-MM-dd h:m')
+        }); 
+        dtPicker.show(function (selectItems) { 
+            var str_time = selectItems.y.value+"/"+selectItems.m.value+"/"+selectItems.d.value+" "+selectItems.h.value+":"+selectItems.i.value;
+            var sel_date = new Date(str_time);
+            var timestamp = Date.parse(sel_date);
+            var now = Date.parse(today);
+            if(timestamp < now) {
+                mui.alert("预约时间已过期，请重新选择！");
+            } else {
+                $("#start_date").val(str_time);
+            }
+        })
+    })
+    $("#end_date").click(function(){
+        var today = new Date();
+        var year = today.getFullYear();
+        var start = Date.parse(today)+30*60*1000;
+        var start_d = new Date(start);
+        var dtPicker = new mui.DtPicker({
+            beginYear: year,//设置开始日期 
+            endYear: year+1,
+            value:start_d.format('yyyy-MM-dd h:m')
+        }); 
+        dtPicker.show(function (selectItems) { 
+            var str_time = selectItems.y.value+"/"+selectItems.m.value+"/"+selectItems.d.value+" "+selectItems.h.value+":"+selectItems.i.value;
+            var sel_date = new Date(str_time);
+            var timestamp = Date.parse(sel_date);
+            var now = Date.parse(today);
+            if(timestamp < now) {
+                mui.alert("预约时间已过期，请重新选择！");
+            } else {
+                $("#end_date").val(str_time);
+            }
+        })
+    })
+    function toRad(d) {  return d * Math.PI / 180; }
+    function getDistance(lat1, lng1, lat2, lng2) {
+        var dis = 0;
+        var radLat1 = toRad(lat1);
+        var radLat2 = toRad(lat2);
+        var deltaLat = radLat1 - radLat2;
+        var deltaLng = toRad(lng1) - toRad(lng2);
+        var dis = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(deltaLat / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(deltaLng / 2), 2)));
+        return dis * 6378137 / 1000;
+    }
+    function cal_fee() {
+        if($("input[name='price_per_km']:checked").val() == 0) {
+            var price_per_km = parseFloat($("#other_price_per_km").val());
+        } else {
+            var price_per_km = parseFloat($("input[name='price_per_km']:checked").val());
+        }
+        var departure_lng = parseFloat($("#release_lng").val());
+        var departure_lat = parseFloat($("#release_lat").val());
+        var terminal_lng = parseFloat($("#terminal_lng").val());
+        var terminal_lat = parseFloat($("#terminal_lat").val());
+        if(departure_lng > 0 && terminal_lng > 0 && price_per_km > 0) {
+            var dis = getDistance(departure_lat,departure_lng,terminal_lat,terminal_lng);
+            dis = Math.ceil(dis);
+            var total_price = dis*price_per_km;
+            $("#total_price").html(total_price);
+        } else {
+            $("#total_price").html('--');
+        }
+    }
+    function release_submit() {
+        if(is_releasing == '0') {
+            if("{$conf['cargo_goods_line_mode']}"=="0" && $("#departure_station").val()=="") {
+                alert("请选择出发站点！");
+                $("#departure_station").focus();
+            } else if("{$conf['cargo_goods_line_mode']}"=="0" && $("#terminal_station").val()=="") {
+                alert("请选择目的站点！");
+                $("#terminal_station").focus();
+            } else if ("{$conf['cargo_goods_line_mode']}"=="1" && departure_city == '') {
+                alert("请选择出发省市区！");
+            } else if ("{$conf['cargo_goods_line_mode']}"=="1" && $("#departure_station_2").val() == "") {
+                alert("请输入出发详细地址！");
+                $("#departure_station_2").focus();
+            } else if ("{$conf['cargo_goods_line_mode']}"=="1" && $("#terminal_station_2").val() == "") {
+                alert("请输入目的详细地址！");
+                $("#terminal_station_2").focus();
+            } else if($("#start_date").val()=="") {
+                alert("请选择装货时间！");
+                $("#start_date").focus();
+            } else if($("#end_date").val()=="") {
+                alert("请选择到货时间！");
+                $("#end_date").focus();
+            } else if(goods_type == '0') {
+                alert("请选择货物类型！");
+            } else if(car_type=="0") {
+                alert("请选择车型！");
+            } else if (!checkPhone($("#mobile").val())) {
+                $("#mobile").focus();
+            } else if ($("#goods_name").val() == '') {
+                alert("请输入货物名称！");
+                $("#goods_name").focus();
+            } else {
+                is_releasing = '1';
+                $.post("{php echo $this->createMobileurl('cargo_release',array('op'=>'release_submit'))}",{
+                        departure_station:{if $conf['cargo_goods_line_mode'] =='0'}departure_station{else}$("#departure_station_2").val(){/if},
+                        departure_district: departure_district,
+                        departure_city:departure_city,
+                        terminal_station:{if $conf['cargo_goods_line_mode'] =='0'}terminal_station{else}$("#terminal_station_2").val(){/if},
+                        terminal_district: terminal_district,
+                        terminal_city:terminal_city,
+                        start_time:$("#start_date").val(),
+                        end_time:$("#end_date").val(),
+                        goods_type:goods_type,
+                        lng:$("#release_lng").val(),
+                        lat:$("#release_lat").val(),
+                        terminal_lng:$("#terminal_lng").val(),
+                        terminal_lat:$("#terminal_lat").val(),
+                        volume:$("#volume").val(),
+                        weight:$("#weight").val(),
+                        goods_width:$("#goods_width").val(),
+                        goods_length:$("#goods_length").val(),
+                        goods_height:$("#goods_height").val(),
+                        delivery_need: delivery_need,
+                        arrival_service: arrival_service,
+                        expected_price: $("#expected_price").val(),
+                        pay_mode: pay_mode,
+                        note:$("#note").val(),
+                        car_type: car_type,
+                        car_length: $("#car_length").val(),
+                        need_cover: $("input[name='need_cover']:checked").val() == 'on' ? '1' : '0',
+                        mobile: $("#mobile").val(),
+                        goods_name: $("#goods_name").val(),
+                        attachment: images,
+                        line:{php echo $_GPC['line'] > 0 ? $_GPC['line'] : 0}
+                    },function(resp) {
+                        is_releasing = '0';
+                        resp = $.parseJSON(resp);
+                        if(resp.message.errno == '0') {
+                            mui.alert("货源发布成功！",function(){
+                                {if $wx_member['mobile']=='' && $conf['passenger_mobile_by_force']=='0'}
+                                $("#mobile_register_panel").show();
+                                {else}
+                                location.href="{php echo $this->createMobileurl('cargo')}&departure_city="+departure_city+"&terminal_city="+terminal_city;
+                                {/if}
+                            });
+                        } else if (resp.message.errno == '1') {
+                            mui.alert("您有未完成的货源，请不要重复发布货源！");
+                        } else if (resp.message.errno == '2') {
+                            mui.alert("您有未完成的拼货，暂时不能发布货源！")
+                        }
+                    }
+                );
+            }
+        }
+	}
+</script>
+
+{if $conf['cargo_goods_line_mode'] == '0'}
+<iframe id="mapPage" width="100%" height="100%" frameborder=0 
+    src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=7G4BZ-JFT3X-5TQ4M-ZDK7B-AFSP5-NAFV2&referer=myapp" style="display:none">
+</iframe> 
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp"></script>
+{/if}
+<script type="text/javascript">
+    String.prototype.trim = function (char, type) {
+        if (char) {
+            if (type == 'left') {
+                return this.replace(new RegExp('^\\'+char+'+', 'g'), '');
+            } else if (type == 'right') {
+                return this.replace(new RegExp('\\'+char+'+$', 'g'), '');
+            }
+            return this.replace(new RegExp('^\\'+char+'+|\\'+char+'+$', 'g'), '');
+        }
+        return this.replace(/^\s+|\s+$/g, '');
+    };
+    var departure_prov = '{php echo $_GPC['line'] > 0 ? $line['departure_prov'] : ''}';
+    var departure_station = '{php echo $_GPC['line'] > 0 ? $line['departure_station'] : ''}';
+    var departure_district = '{php echo $_GPC['line'] > 0 ? $line['departure_district'] : ''}';
+    var departure_city = '{php echo $_GPC['line'] > 0 ? $line['departure_city'] : ''}';
+    var terminal_prov = '{php echo $_GPC['line'] > 0 ? $line['terminal_prov'] : ''}';
+    var terminal_station = '{php echo $_GPC['line'] > 0 ? $line['terminal_station'] : ''}';
+    var terminal_district = '{php echo $_GPC['line'] > 0 ? $line['terminal_district'] : ''}';
+    var terminal_city = '{php echo $_GPC['line'] > 0 ? $line['terminal_city'] : ''}';
+    var cur_place = '0';
+    var is_init = '0';
+    {if $conf['cargo_goods_line_mode'] == '0'}
+    var geocoder = new qq.maps.Geocoder({
+        complete:function(result){
+            var addressComponents = result.detail.addressComponents;
+            if(is_init == '0') {
+                departure_prov = addressComponents.province;
+                departure_city = addressComponents.city;
+                departure_district = addressComponents.district;
+                departure_station = addressComponents.street;
+                $("#departure_station").val(addressComponents.city.trim('市','right')+'-'+addressComponents.street+'('+addressComponents.district+')');
+                is_init = '1';
+            } else {
+                if(cur_place == '0') {
+                    departure_prov = addressComponents.province;
+                    departure_district = addressComponents.district;
+                    $("#departure_station").val(departure_city.trim('市','right')+'-'+departure_station+'('+departure_district+')');
+                } else if (cur_place == '1') {
+                    terminal_prov = addressComponents.province;
+                    terminal_district = addressComponents.district;
+                    $("#terminal_station").val(terminal_city.trim('市','right')+'-'+terminal_station+'('+terminal_district+')');
+                }
+            }
+        }
+    });
+    wx.config(jssdkconfig);
+    wx.ready(function(){
+        wx.getLocation({
+            type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+            success: function (res) {
+                $("#release_lng").val(res.longitude);
+                $("#release_lat").val(res.latitude);
+                var coord=new qq.maps.LatLng(res.latitude,res.longitude);
+                geocoder.getAddress(coord);
+            }
+        });     
+    });
+
+    $(function(){
+        $("#mapPage").attr('width',window.screen.width);
+        $("#mapPage").attr('height',window.screen.height);
+    })
+    window.addEventListener('message', function(event) {
+        // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
+        var loc = event.data;
+        if (loc && loc.module == 'locationPicker') {//防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
+            if(cur_place == '0') {
+                if(loc.poiname != '我的位置') {
+                    departure_city = loc.cityname;
+                    departure_station = loc.poiname;
+                }
+                $("#release_lng").val(loc.latlng.lng);
+                $("#release_lat").val(loc.latlng.lat);
+            } else if (cur_place == '1') {
+                if(loc.poiname != '我的位置') {
+                    terminal_city = loc.cityname;
+                    terminal_station = loc.poiname;
+                }
+                $("#terminal_lng").val(loc.latlng.lng);
+                $("#terminal_lat").val(loc.latlng.lat);
+            }
+            var coord=new qq.maps.LatLng(loc.latlng.lat,loc.latlng.lng);
+            geocoder.getAddress(coord);
+            cal_fee();
+            $("#mapPage").hide();
+            $("#main_panel").show();
+        }                                
+    }, false); 
+    function sel_departure_place() {
+        cur_place = '0';
+        $("#main_panel").hide();
+        $("#mapPage").show();
+    }
+    function sel_terminal_place() {
+        cur_place = '1';
+        $("#main_panel").hide();
+        $("#mapPage").show();
+    }
+    {else}
+    $("#departure_area").click(function(){
+        var cityPicker = new mui.PopPicker({layer:3});
+        cityPicker.setData(cityData3);
+        cityPicker.show(function(items){
+            $("#departure_area").val((items[0] || {}).text + (items[1] || {}).text + (items[2] || {}).text);
+            departure_prov = (items[0] || {}).text;
+            departure_city = (items[1] || {}).text;
+            departure_district = (items[2] || {}).text;
+        })
+    })
+    $("#terminal_area").click(function(){
+        var cityPicker = new mui.PopPicker({layer:3});
+        cityPicker.setData(cityData3);
+        cityPicker.show(function(items){
+            $("#terminal_area").val((items[0] || {}).text + (items[1] || {}).text + (items[2] || {}).text);
+            terminal_prov = (items[0] || {}).text;
+            terminal_city = (items[1] || {}).text;
+            terminal_district = (items[2] || {}).text;
+        })
+    })
+    {/if}
+</script>
